@@ -1,0 +1,6 @@
+{
+  "name": "FredBoat",
+  "tagline": "FredBoat is a Discord bot (aka boat) capable of a few fun commands. For more info, say ;;help in the Discord Bots channel on Discord. FredBoat is also available on Carbonitex https://www.carbonitex.net/discord/bots",
+  "body": "### Welcome to FredBoat Docs\r\nWelcome to the FredBoat docs. FredBoat is an open-source general-purpose bot developed in Java. The bot is based off of (JDA)[https://github.com/DV8FromTheWorld/JDA] and was created by (@Frederikam).",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
