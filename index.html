@@ -32,6 +32,11 @@
 <p>Getting FredBoat running on your server is simple. You can invite the bot by authenticating it with your account using <a href="https://discordapp.com/oauth2/authorize?&amp;client_id=168686772216135681&amp;scope=bot">this</a> link. Bear in mind that you must have <code>Manage Server</code> permissions to be able to do this. </p>
 
 <h2>
+<a id="setting-up-the-music-bot" class="anchor" href="#setting-up-the-music-bot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Setting up the music bot</h2>
+
+<p>The music bot has it's own <a href="https://discordapp.com/oauth2/authorize?&amp;client_id=184405253028970496&amp;scope=bot">invite link</a>.</p>
+
+<h2>
 <a id="commands" class="anchor" href="#commands" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Commands</h2>
 
 <table>
@@ -144,6 +149,21 @@
 <td>;;skip</td>
 </tr>
 <tr>
+<td>;;stop</td>
+<td>Stop the player and <strong>clear</strong> the playlist. Reserved for moderators.</td>
+<td>;;stop</td>
+</tr>
+<tr>
+<td>;;pause</td>
+<td>Pause the player.</td>
+<td>;;pause</td>
+</tr>
+<tr>
+<td>;;unpause</td>
+<td>Unpause the player.</td>
+<td>;;unpause</td>
+</tr>
+<tr>
 <td>;;join</td>
 <td>Makes the bot join your current voice channel</td>
 <td>;;join</td>
@@ -167,6 +187,27 @@
 
 <p>The music bot supports media from many sites and even supports playlists from sites like YouTube and Soundcloud. If using a playlist, please bear in mind that you cannot use a playlist with more than 30 entries. The bot will not be able to play songs blocked in the US (usually from copyright infringements on YouTube).</p>
 
+<h2>
+<a id="adding-music-to-the-playlist" class="anchor" href="#adding-music-to-the-playlist" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Adding music to the playlist</h2>
+
+<p>Adding music to the playlist is pretty simple. To start playing a song, simply use the ;;play command. Here are two examples:</p>
+
+<pre><code>;;play https://www.youtube.com/watch?v=dQw4w9WgXcQ
+;;play rick roll
+</code></pre>
+
+<p>You can either explicitly state the URL, or you can get the bot to search YouTube and give you some choices. Here's an example response:</p>
+
+<pre><code>Please select a video with the ';;select n' command:
+1: Rick Astley - Never Gonna Give You Up (03:33)
+2: YOUTUBERS REACT TO RICKROLL (Ep. #5) (09:20)
+3: I Rick Roll My Entire Chemistry Class! (05:55)
+4: The New Rick Roll! (04:26)
+5: Melania Trump's RNC RICKROLL (00:19)
+</code></pre>
+
+<p>You can then choose your song with the <code>;;select &lt;number&gt;</code> command.</p>
+
 <p><strong>Examples of supported sites:</strong></p>
 
 <ul>
@@ -174,7 +215,6 @@
 <li>Soundcloud</li>
 <li>Google Drive</li>
 <li>Dropbox</li>
-<li>Twitch</li>
 <li>Vimeo</li>
 </ul>
 
