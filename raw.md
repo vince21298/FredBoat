@@ -41,9 +41,10 @@ The music bot has it's own [invite link](https://discordapp.com/oauth2/authorize
 | ;;join                     | Makes the bot join your current voice channel                         | ;;join                                      |
 | ;;leave                    | Makes the bot leave the current voice channel                         | ;;leave                                     |
 | ;;minfo \<url\>            | Dumps info about the given song                                       | ;;minfo https://www.youtube.com/watch?v=dQw4w9WgXcQ    |
+| ;;repeat                   | Toggles repeat mode for the current song.                             | ;;repeat                                    |
 
 ## Music Commands
-The music bot supports media from many sites and even supports playlists from sites like YouTube and Soundcloud. If using a playlist, please bear in mind that you cannot use a playlist with more than 30 entries. The bot will not be able to play songs blocked in the US (usually from copyright infringements on YouTube).
+The music bot supports media from many sites and even supports playlists from sites like YouTube and Soundcloud. If using a playlist, please bear in mind that you cannot use a playlist with more than 20 entries. The bot will not be able to play songs blocked in the US (usually from copyright infringements on YouTube).
 
 ## Adding music to the playlist
 Adding music to the playlist is pretty simple. To start playing a song, simply use the ;;play command. Here are two examples:
@@ -84,6 +85,6 @@ FredBoat is developed by Fre_d (aka Frederikam).
 Thanks to JDK#0216 for designing the [FredBoat](http://i.imgur.com/1WOFPLy.png) logo!
 
 ## Legal
-We are required to have you agree to out [Privacy Policy](http://hs.frederikam.com/zuyom.txt). You agree to this by using the bot.
+We are required to have you agree to our [Privacy Policy](http://hs.frederikam.com/zuyom.txt). You agree to this by using the bot.
 
 Steam data is provided "as is" without any liability or warranty.
