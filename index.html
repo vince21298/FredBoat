@@ -19,8 +19,8 @@
     </section>
 
     <section class="main-content">
-      <h3>
-<a id="welcome-to-fredboat-docs" class="anchor" href="#welcome-to-fredboat-docs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to FredBoat Docs</h3>
+      <h1>
+<a id="welcome-to-fredboat-docs" class="anchor" href="#welcome-to-fredboat-docs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to FredBoat Docs</h1>
 
 <p>Welcome to the FredBoat docs. FredBoat is an open-source general-purpose bot developed in Java. The bot is based off of <a href="https://github.com/DV8FromTheWorld/JDA">JDA</a> and was created by (<a href="https://github.com/Frederikam" class="user-mention">@Frederikam</a>). You'll be able to get a link back to this website simply by invoking <code>;;help</code>.</p>
 
@@ -226,6 +226,45 @@
 <p><strong><a href="https://rg3.github.io/youtube-dl/supportedsites.html">Full list of supported sites</a></strong></p>
 
 <p>(Note: Some of these may not work)</p>
+
+<h2>
+<a id="very-frequently-asked-questions" class="anchor" href="#very-frequently-asked-questions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>(Very) Frequently Asked Questions</h2>
+
+<h3>
+<a id="how-do-i-play-music-with-the-bot" class="anchor" href="#how-do-i-play-music-with-the-bot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How do I play music with the bot?</h3>
+
+<p>Please read this fine manual. Specifically the part with the music commands.</p>
+
+<h3>
+<a id="how-do-i-add-an-entire-playlist-to-the-queue" class="anchor" href="#how-do-i-add-an-entire-playlist-to-the-queue" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How do I add an entire playlist to the queue?</h3>
+
+<p>Simply link a playlist with the following syntax:</p>
+
+<p><code>;;play &lt;url-to-playlist&gt;</code></p>
+
+<p>The bot will only load the first 20 songs to reduce delays.</p>
+
+<h3>
+<a id="how-do-i-restrict-music-commands-to-a-specific-channel-or-role" class="anchor" href="#how-do-i-restrict-music-commands-to-a-specific-channel-or-role" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How do I restrict music commands to a specific channel or role?</h3>
+
+<p>The bot will only listen to music commands invoked in channels it can actually <strong>write</strong> to. Simply override it such that the music bot can only talk in the channels you want the bot to be usable from.</p>
+
+<p>If you want to restrict the bot to a specific role, you can always just restrict the bot to a channel only accessible by a specific set of roles.</p>
+
+<h3>
+<a id="how-do-i-self-host-the-bot" class="anchor" href="#how-do-i-self-host-the-bot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How do I self host the bot?</h3>
+
+<p>It's difficult. I do not advise it.</p>
+
+<h3>
+<a id="why-is-the-music-bot-slow-to-respond-to-commands" class="anchor" href="#why-is-the-music-bot-slow-to-respond-to-commands" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why is the music bot slow to respond to commands?</h3>
+
+<p>Lots of people are using the music bot 24/7 on a relatively cheap server. I'm currently working on setting up a Patreon campaign to allow me to receive funding for additional hardware for the music bot. The music quality shuld be fine for the most part though. </p>
+
+<h3>
+<a id="the-music-bot-is-telling-me-it-doesnt-have-permission-to-connectplay-music-how-do-i-give-it-permission" class="anchor" href="#the-music-bot-is-telling-me-it-doesnt-have-permission-to-connectplay-music-how-do-i-give-it-permission" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The music bot is telling me it doesn't have permission to connect/play music. How do I give it permission?</h3>
+
+<p>You are trying to play music in a voice channel, but your <strong>Discord server permissions</strong> prevents it from connecting or speaking. You would need to change the permissions of the channel to allow the bot to connect and speak, as you would do with a user. For official help on this topic, see <a href="https://support.discordapp.com/hc/en-us/articles/206029707">Discord's support center</a>.</p>
 
 <h2>
 <a id="join-fredboat-hangout" class="anchor" href="#join-fredboat-hangout" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Join FredBoat Hangout!</h2>
