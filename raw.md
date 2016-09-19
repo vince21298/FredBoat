@@ -1,4 +1,4 @@
-### Welcome to FredBoat Docs
+# Welcome to FredBoat Docs
 Welcome to the FredBoat docs. FredBoat is an open-source general-purpose bot developed in Java. The bot is based off of [JDA](https://github.com/DV8FromTheWorld/JDA) and was created by (@Frederikam). You'll be able to get a link back to this website simply by invoking `;;help`.
 
 Additionally I am also developing FredBoat♪♪ **which is in beta** and is a music bot. This is a seperate bot and must therefore be invited using [this link](https://discordapp.com/oauth2/authorize?&client_id=184405253028970496&scope=bot). See the commands below on how to use it.
@@ -75,6 +75,32 @@ You can then choose your song with the `;;select <number>` command.
 **[Full list of supported sites](https://rg3.github.io/youtube-dl/supportedsites.html)**
 
 (Note: Some of these may not work)
+
+## (Very) Frequently Asked Questions
+
+### How do I play music with the bot?
+Please read this fine manual. Specifically the part with the music commands.
+
+### How do I add an entire playlist to the queue?
+Simply link a playlist with the following syntax:
+
+```;;play <url-to-playlist>```
+
+The bot will only load the first 20 songs to reduce delays.
+
+### How do I restrict music commands to a specific channel or role?
+The bot will only listen to music commands invoked in channels it can actually **write** to. Simply override it such that the music bot can only talk in the channels you want the bot to be usable from.
+
+If you want to restrict the bot to a specific role, you can always just restrict the bot to a channel only accessible by a specific set of roles.
+
+### How do I self host the bot?
+It's difficult. I do not advise it.
+
+### Why is the music bot slow to respond to commands?
+Lots of people are using the music bot 24/7 on a relatively cheap server. I'm currently working on setting up a Patreon campaign to allow me to receive funding for additional hardware for the music bot. The music quality shuld be fine for the most part though. 
+
+### The music bot is telling me it doesn't have permission to connect/play music. How do I give it permission?
+You are trying to play music in a voice channel, but your __Discord server permissions__ prevents it from connecting or speaking. You would need to change the permissions of the channel to allow the bot to connect and speak, as you would do with a user. For official help on this topic, see [Discord's support center](https://support.discordapp.com/hc/en-us/articles/206029707).
 
 ## Join FredBoat Hangout!
 We invite everyone to join FredBoat hangout, which is a place to discuss suggestions and request for support. I'm very willing to take suggestions for the bot so don't hesitate to say what you have in mind! [Click here to join!](https://discord.gg/0yXhQ9c36F4zsJMG)
