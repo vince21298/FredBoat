@@ -41,7 +41,7 @@ The music bot has it's own [invite link](https://discordapp.com/oauth2/authorize
 | ;;join                     | Makes the bot join your current voice channel                         | ;;join                                      |
 | ;;leave                    | Makes the bot leave the current voice channel                         | ;;leave                                     |
 | ;;repeat                   | Toggles repeat mode for the current song.                             | ;;repeat                                    |
-| ;;shuffle                  | Toggles shuffle mode for the current song.                            | ;;shuffle                                   |
+| ;;shuffle                  | Toggles shuffle mode for the current queue.                           | ;;shuffle                                   |
 
 ## Music Commands
 The music bot supports media from many sites and even supports playlists from sites like YouTube and Soundcloud. If using a playlist, please bear in mind that you cannot use a playlist with more than 20 entries. The bot will not be able to play songs blocked in the US (usually from copyright infringements on YouTube).
