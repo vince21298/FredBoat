@@ -40,8 +40,8 @@ The music bot has it's own [invite link](https://discordapp.com/oauth2/authorize
 | ;;unpause                  | Unpause the player.                                                   | ;;unpause                                   |
 | ;;join                     | Makes the bot join your current voice channel                         | ;;join                                      |
 | ;;leave                    | Makes the bot leave the current voice channel                         | ;;leave                                     |
-| ;;minfo \<url\>            | Dumps info about the given song                                       | ;;minfo https://www.youtube.com/watch?v=dQw4w9WgXcQ    |
 | ;;repeat                   | Toggles repeat mode for the current song.                             | ;;repeat                                    |
+| ;;shuffle                  | Toggles shuffle mode for the current song.                            | ;;shuffle                                   |
 
 ## Music Commands
 The music bot supports media from many sites and even supports playlists from sites like YouTube and Soundcloud. If using a playlist, please bear in mind that you cannot use a playlist with more than 20 entries. The bot will not be able to play songs blocked in the US (usually from copyright infringements on YouTube).
@@ -65,16 +65,11 @@ Please select a video with the ';;select n' command:
 
 You can then choose your song with the `;;select <number>` command.
 
-**Examples of supported sites:**
+**Supported sites:**
 * YouTube
-* Soundcloud
-* Google Drive
-* Dropbox
-* Vimeo
+* SoundCloud (single tracks only)
 
-**[Full list of supported sites](https://rg3.github.io/youtube-dl/supportedsites.html)**
-
-(Note: Some of these may not work)
+Let me know if you want other sites supported. 
 
 ## (Very) Frequently Asked Questions
 
