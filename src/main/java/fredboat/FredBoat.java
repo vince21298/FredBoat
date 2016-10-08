@@ -13,7 +13,6 @@ import fredboat.command.maintenance.*;
 import fredboat.command.music.*;
 import fredboat.command.util.*;
 import fredboat.commandmeta.CommandRegistry;
-import fredboat.db.RedisCache;
 import fredboat.event.EventListenerBoat;
 import fredboat.event.EventListenerSelf;
 import fredboat.event.EventLogger;
@@ -171,16 +170,6 @@ public class FredBoat {
         String cbUser = credsjson.getString("cbUser");
         String cbKey = credsjson.getString("cbKey");
         jca = new JCABuilder().setKey(cbKey).setUser(cbUser).buildBlocking();
-
-        //Redis
-        String redisHost = credsjson.getString("redisHost");
-        String redisPassword = credsjson.getString("redisPassword");
-
-        try {
-            RedisCache.init(redisHost, redisPassword);
-        } catch (Exception e) {
-            log.error("Failed to connect to Redis! This might cause problems with the bot.", e);
-        }
 
         if (!BotConstants.IS_BETA) {
             CarbonitexAgent carbonitexAgent = new CarbonitexAgent(jdaBot, credsjson.getString("carbonKey"));
