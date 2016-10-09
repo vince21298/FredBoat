@@ -13,6 +13,7 @@ import fredboat.command.maintenance.*;
 import fredboat.command.music.*;
 import fredboat.command.util.*;
 import fredboat.commandmeta.CommandRegistry;
+import fredboat.db.DatabaseManager;
 import fredboat.event.EventListenerBoat;
 import fredboat.event.EventListenerSelf;
 import fredboat.event.EventLogger;
@@ -36,6 +37,11 @@ import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.client.JDAClientBuilder;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.utils.SimpleLog;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +81,7 @@ public class FredBoat {
 
     public static void main(String[] args) throws LoginException, IllegalArgumentException, InterruptedException, IOException {
         Runtime.getRuntime().addShutdownHook(new Thread(ON_SHUTDOWN));
-        
+
         //Attach log adapter
         SimpleLog.addListener(new SimpleLogToSLF4JAdapter());
 
@@ -115,7 +121,7 @@ public class FredBoat {
         Scanner scanner = new Scanner(is);
         credsjson = new JSONObject(scanner.useDelimiter("\\A").next());
         scanner.close();
-        
+
         accountToken = credsjson.getString(ACCOUNT_TOKEN_KEY);
         mashapeKey = credsjson.getString("mashapeKey");
         String clientToken = credsjson.getString("clientToken");
@@ -190,6 +196,11 @@ public class FredBoat {
             log.info("Started reporting to carbon-cache at " + carbonHost + " with metric name " + metricName + ".");
         } else {
             log.info("No carbon host configured. Skipping carbon daemon.");
+        }
+
+        //Initialise Hibernate
+        if (credsjson.has("jdbcUrl")) {
+            DatabaseManager.startup(credsjson);
         }
     }
 
