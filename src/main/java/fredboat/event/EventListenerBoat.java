@@ -13,10 +13,8 @@ import fredboat.commandmeta.CommandManager;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
 import fredboat.util.BotConstants;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
-import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.InviteReceivedEvent;
@@ -63,11 +61,6 @@ public class EventListenerBoat extends AbstractScopedEventListener {
         }
 
         if (event.getMessage().getContent().length() < defaultPrefix.length()) {
-            return;
-        }
-
-        if (event.getMessage().getContent().endsWith("(╯°□°）╯︵ ┻━┻")) {
-            tableflip(event);
             return;
         }
 
@@ -131,45 +124,7 @@ public class EventListenerBoat extends AbstractScopedEventListener {
         if (event.getMessage().isPrivate()) {
             event.getAuthor().getPrivateChannel().sendMessage("Sorry! Since the release of the official API, registered bots must now be invited by someone with Manage **Server permissions**. If you have permissions, you can invite me at:\n"
                     + "https://discordapp.com/oauth2/authorize?&client_id=" + BotConstants.CLIENT_ID + "&scope=bot");
-            /*
-            //log.info(event.getInvite().getUrl());
-            //InviteUtil.join(event.getInvite(), FredBoat.jda);
-            Guild guild = null;
-            try {
-                guild = FredBoat.jda.getGuildById(event.getInvite().getGuildId());
-            } catch (NullPointerException ex) {
-                event.getAuthor().getPrivateChannel().sendMessage("That invite is not valid!");
-                return;
-            }
-
-            boolean isNotInGuild = true;
-
-            if (isNotInGuild) {
-                event.getAuthor().getPrivateChannel().sendMessage("Invite accepted!");
-                InviteUtil.join(event.getInvite(), FredBoat.jda, null);
-            } else {
-                event.getAuthor().getPrivateChannel().sendMessage("Already in that channel!");
-            }
-             */
         }
-    }
-
-    public HashMap<String, ArrayList<Integer>> recentTableFlips = new HashMap<>();
-
-    public void pruneRecentTableflips(Guild guild, int seconds) {
-        ArrayList<Integer> recent = recentTableFlips.containsKey(guild.getId()) ? recentTableFlips.get(guild.getId()) : new ArrayList<>();
-        for (int time : recent) {
-
-        }
-    }
-
-    public void getRecentTableflips(Guild guild, int seconds) {
-
-    }
-
-    public void tableflip(MessageReceivedEvent event) {
-        //log.info(event.getGuild().getName() + " \t " + event.getAuthor().getUsername() + " \t " + event.getMessage().getRawContent());
-        //event.getChannel().sendMessage("┬─┬﻿ ノ( ゜-゜ノ)");
     }
 
     @Override
