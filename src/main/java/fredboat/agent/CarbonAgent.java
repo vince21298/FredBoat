@@ -26,7 +26,7 @@ public class CarbonAgent extends Thread {
     private int messagesReceivedLastSubmission = 0;
     public final JDA jda;
     public final String buildStream;
-    private int timesSubmitted = 0;
+    private int minutesWaited = 0;
 
     public CarbonAgent(JDA jda, String carbonHost, String buildStream, boolean logProductionStats) {
         this.jda = jda;
@@ -40,18 +40,18 @@ public class CarbonAgent extends Thread {
         while (true) {
             synchronized (this) {
                 try {
-                    this.wait(1000 * 60);//Only tick once per minute
+                    waitForNextMinute();
 
-                    timesSubmitted++;
-                    if (timesSubmitted % 5 == 0) {
+                    minutesWaited++;
+                    if (minutesWaited % 5 == 0) {
                         handleEvery5Minutes();
                     }
 
-                    if (timesSubmitted % 15 == 0) {
+                    if (minutesWaited % 15 == 0) {
                         handleEvery15Minutes();
                     }
 
-                    if (timesSubmitted % 60 == 0) {
+                    if (minutesWaited % 60 == 0) {
                         handleHourly();
                     }
 
@@ -65,6 +65,18 @@ public class CarbonAgent extends Thread {
                 }
             }
 
+        }
+    }
+
+    private void waitForNextMinute() throws InterruptedException {
+        long interval = 60000L;
+        long currentTerm = System.currentTimeMillis() / interval;
+        long nextTermStart = (currentTerm + 1) * interval;
+        long diff = nextTermStart - System.currentTimeMillis();
+
+        //Wait for the remaining time
+        synchronized (this) {
+            this.wait(diff);
         }
     }
 

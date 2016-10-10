@@ -8,7 +8,7 @@ import net.dv8tion.jda.entities.Guild;
 
 public class PlayerRegistry {
 
-    private static HashMap<String, GuildPlayer> registry = new HashMap<>();
+    private static final HashMap<String, GuildPlayer> REGISTRY = new HashMap<>();
     public static final float DEFAULT_VOLUME = 1f;
     public static JDA jda;
 
@@ -17,7 +17,7 @@ public class PlayerRegistry {
     }
 
     public static void put(String k, GuildPlayer v) {
-        registry.put(k, v);
+        REGISTRY.put(k, v);
     }
 
     public static GuildPlayer get(Guild guild) {
@@ -25,11 +25,11 @@ public class PlayerRegistry {
     }
 
     public static GuildPlayer get(String k) {
-        GuildPlayer player = registry.get(k);
+        GuildPlayer player = REGISTRY.get(k);
         if (player == null) {
             player = new GuildPlayer(jda, jda.getGuildById(k));
             player.setVolume(DEFAULT_VOLUME);
-            registry.put(k, player);
+            REGISTRY.put(k, player);
         }
         return player;
     }
@@ -39,24 +39,24 @@ public class PlayerRegistry {
     }
 
     public static GuildPlayer getExisting(String k) {
-        if (registry.containsKey(k)) {
+        if (REGISTRY.containsKey(k)) {
             return get(k);
         }
         return null;
     }
 
     public static GuildPlayer remove(String k) {
-        return registry.remove(k);
+        return REGISTRY.remove(k);
     }
 
     public static HashMap<String, GuildPlayer> getRegistry() {
-        return registry;
+        return REGISTRY;
     }
 
     public static List<GuildPlayer> getPlayingPlayers() {
         ArrayList<GuildPlayer> plrs = new ArrayList<>();
 
-        for (GuildPlayer plr : registry.values()) {
+        for (GuildPlayer plr : REGISTRY.values()) {
             if (plr.isPlaying()) {
                 plrs.add(plr);
             }

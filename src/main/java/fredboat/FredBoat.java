@@ -2,7 +2,7 @@ package fredboat;
 
 import fredboat.command.admin.PlayerDebugCommand;
 import fredboat.command.admin.UpdateCommand;
-import fredboat.command.admin.RestartCommand;
+import fredboat.command.admin.BotRestartCommand;
 import fredboat.command.admin.ExitCommand;
 import fredboat.command.admin.EvalCommand;
 import fredboat.agent.*;
@@ -250,7 +250,7 @@ public class FredBoat {
         CommandRegistry.registerAlias("leet", "l33t");
         CommandRegistry.registerCommand(0x101, "riot", new RiotCommand());
         CommandRegistry.registerCommand(0x101, "update", new UpdateCommand());
-        CommandRegistry.registerCommand(0x101, "restart", new RestartCommand());
+        CommandRegistry.registerCommand(0x101, "botrestart", new BotRestartCommand());
         CommandRegistry.registerCommand(0x101, "find", new FindCommand());
         CommandRegistry.registerCommand(0x101, "dance", new DanceCommand());
         CommandRegistry.registerCommand(0x101, "eval", new EvalCommand());
@@ -265,7 +265,7 @@ public class FredBoat {
 
         /* Music commands */
         CommandRegistry.registerCommand(0x010, "mexit", new ExitCommand());
-        CommandRegistry.registerCommand(0x010, "mrestart", new RestartCommand());
+        CommandRegistry.registerCommand(0x010, "mbotrestart", new BotRestartCommand());
         CommandRegistry.registerCommand(0x010, "mstats", new StatsCommand());
         CommandRegistry.registerCommand(0x010, "play", new PlayCommand());
         CommandRegistry.registerCommand(0x010, "meval", new EvalCommand());
@@ -283,6 +283,7 @@ public class FredBoat {
         CommandRegistry.registerCommand(0x010, "shuffle", new ShuffleCommand());
         CommandRegistry.registerCommand(0x010, "repeat", new RepeatCommand());
         CommandRegistry.registerCommand(0x010, "volume", new VolumeCommand());
+        CommandRegistry.registerCommand(0x010, "restart", new RestartCommand());
         CommandRegistry.registerCommand(0x010, "playerdebug", new PlayerDebugCommand());
 
         /* Other Anime Discord or Sergi memes */

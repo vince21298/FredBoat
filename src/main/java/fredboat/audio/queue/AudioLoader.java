@@ -35,69 +35,107 @@ public class AudioLoader implements AudioLoadResultHandler {
     }
 
     private void loadNextAsync() {
-        IdentifierContext ic = identifierQueue.poll();
-        if (ic != null) {
-            isLoading = true;
-            context = ic;
-            playerManager.loadItem(ic.identifier, this);
-        } else {
+        try {
+            IdentifierContext ic = identifierQueue.poll();
+            if (ic != null) {
+                isLoading = true;
+                context = ic;
+                playerManager.loadItem(ic.identifier, this);
+            } else {
+                isLoading = false;
+            }
+        } catch (Throwable th) {
+            handleThrowable(context, th);
             isLoading = false;
         }
     }
 
     @Override
     public void trackLoaded(AudioTrack at) {
-        if (!context.isQuiet()) {
-            context.textChannel.sendMessage(
-                    gplayer.isPlaying() ? "**" + at.getInfo().title + "** has been added to the queue." : "**" + at.getInfo().title + "** will now play."
-            );
-        } else {
-            log.info("Quietly loaded " + at.getIdentifier());
-        }
-        
-        at.setPosition(context.getPosition());
+        try {
+            if (!context.isQuiet()) {
+                context.textChannel.sendMessage(
+                        gplayer.isPlaying() ? "**" + at.getInfo().title + "** has been added to the queue." : "**" + at.getInfo().title + "** will now play."
+                );
+            } else {
+                log.info("Quietly loaded " + at.getIdentifier());
+            }
 
-        trackProvider.add(at);
-        if (!gplayer.isPaused()) {
-            gplayer.play();
+            at.setPosition(context.getPosition());
+
+            trackProvider.add(at);
+            if (!gplayer.isPaused()) {
+                gplayer.play();
+            }
+        } catch (Throwable th) {
+            handleThrowable(context, th);
         }
         loadNextAsync();
     }
 
     @Override
     public void playlistLoaded(AudioPlaylist ap) {
-        context.textChannel.sendMessage(
-                "Found and added `" + ap.getTracks().size() + "` songs from playlist **" + ap.getName() + "**."
-        );
-
-        for (AudioTrack at : ap.getTracks()) {
-            trackProvider.add(at);
-        }
-        if (!gplayer.isPaused()) {
-            gplayer.play();
+        try {
+            context.textChannel.sendMessage(
+                    "Found and added `" + ap.getTracks().size() + "` songs from playlist **" + ap.getName() + "**."
+            );
+            
+            for (AudioTrack at : ap.getTracks()) {
+                trackProvider.add(at);
+            }
+            if (!gplayer.isPaused()) {
+                gplayer.play();
+            }
+        } catch (Throwable th) {
+            handleThrowable(context, th);
         }
         loadNextAsync();
     }
 
     @Override
     public void noMatches() {
-        context.textChannel.sendMessage("No audio could be found for `" + context.identifier + "`."
-        );
+        try {
+            context.textChannel.sendMessage("No audio could be found for `" + context.identifier + "`."
+            );
+        } catch (Throwable th) {
+            handleThrowable(context, th);
+        }
         loadNextAsync();
     }
 
     @Override
     public void loadFailed(FriendlyException fe) {
-        if (fe.severity == FriendlyException.Severity.COMMON) {
-            context.textChannel.sendMessage("Error when loading info for `" + context.identifier + "`: " + fe.getCause().getMessage()
-            );
-        } else {
-            context.textChannel.sendMessage("Suspicious error when loading info for `" + context.identifier + "`."
-            );
-            TextUtils.handleException(fe.getCause(), context.textChannel);
-        }
+        handleThrowable(context, fe);
 
         loadNextAsync();
+    }
+
+    private void handleThrowable(IdentifierContext ic, Throwable th) {
+        try {
+            if (th instanceof FriendlyException) {
+                FriendlyException fe = (FriendlyException) th;
+                if (fe.severity == FriendlyException.Severity.COMMON) {
+                    if (ic.textChannel != null) {
+                        context.textChannel.sendMessage("Error ocurred when loading info for `" + context.identifier + "`.");
+                        TextUtils.handleException(fe.getCause(), context.textChannel);
+                    } else {
+                        log.error("Error while loading track ", th);
+                    }
+                } else if (ic.textChannel != null) {
+                    context.textChannel.sendMessage("Suspicious error when loading info for `" + context.identifier + "`.");
+                    TextUtils.handleException(fe.getCause(), context.textChannel);
+                } else {
+                    log.error("Error while loading track ", th);
+                }
+            } else if (ic.textChannel != null) {
+                context.textChannel.sendMessage("Suspicious error when loading info for `" + context.identifier + "`.");
+                TextUtils.handleException(th, context.textChannel);
+            } else {
+                log.error("Error while loading track ", th);
+            }
+        } catch (Exception e) {
+            log.error("Error when trying to handle another error", th);
+        }
     }
 
 }
