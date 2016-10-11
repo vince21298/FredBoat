@@ -361,6 +361,11 @@ public class FredBoat {
         CommandRegistry.registerCommand(0x101, "roll", new RollCommand(roll));
 
         MusicPersistenceHandler.reloadPlaylists();
+
+        //Initialise Hibernate
+        if (credsjson.has("jdbcUrl")) {
+            DatabaseManager.startup(credsjson);
+        }
     }
 
     //Shutdown hook
