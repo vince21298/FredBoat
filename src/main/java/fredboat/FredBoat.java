@@ -15,6 +15,7 @@ import fredboat.command.util.*;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.db.DatabaseManager;
 import fredboat.event.EventListenerBoat;
+import fredboat.event.EventListenerPersistence;
 import fredboat.event.EventListenerSelf;
 import fredboat.event.EventLogger;
 import fredboat.sharding.FredBoatAPIServer;
@@ -37,11 +38,6 @@ import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.client.JDAClientBuilder;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.utils.SimpleLog;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -365,6 +361,7 @@ public class FredBoat {
         //Initialise Hibernate
         if (credsjson.has("jdbcUrl")) {
             DatabaseManager.startup(credsjson);
+            jdaBot.addEventListener(new EventListenerPersistence());
         }
     }
 
