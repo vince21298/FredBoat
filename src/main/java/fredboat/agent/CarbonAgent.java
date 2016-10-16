@@ -61,7 +61,6 @@ public class CarbonAgent extends Thread {
                     return;
                 } catch (Exception ex) {
                     log.error("Carbon agent caught an exception", ex);
-                    return;
                 }
             }
 
