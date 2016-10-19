@@ -8,7 +8,9 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
+import fredboat.audio.source.HttpAudioSourceManager;
 import fredboat.audio.queue.ITrackProvider;
+import fredboat.audio.source.PlaylistImportSourceManager;
 import java.util.ArrayList;
 import java.util.List;
 import net.dv8tion.jda.audio.AudioSendHandler;
@@ -26,16 +28,27 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
     @SuppressWarnings("LeakingThisInConstructor")
     protected AbstractPlayer() {
         initAudioPlayerManager();
-        player = new AudioPlayer(playerManager);
+        player = playerManager.createPlayer();
 
         player.addListener(this);
     }
 
     private static void initAudioPlayerManager() {
-        playerManager = new AudioPlayerManager();
-        playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
-        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
+        if (playerManager == null) {
+            playerManager = new AudioPlayerManager();
+            registerSourceManagers(playerManager);
+            playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
+            playerManager.enableGcMonitoring();
+        }
+    }
+
+    public static AudioPlayerManager registerSourceManagers(AudioPlayerManager mng) {
+        mng.registerSourceManager(new YoutubeAudioSourceManager());
+        mng.registerSourceManager(new SoundCloudAudioSourceManager());
+        mng.registerSourceManager(new HttpAudioSourceManager());
+        mng.registerSourceManager(new PlaylistImportSourceManager());
+        
+        return mng;
     }
 
     public void play() {
@@ -79,7 +92,7 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
     }
 
     public AudioTrack getPlayingTrack() {
-        if(player.getPlayingTrack() == null){
+        if (player.getPlayingTrack() == null) {
             play0(true);//Ensure we have something to return, unless the queue is really empty
         }
         return player.getPlayingTrack();
@@ -118,6 +131,7 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
     }
 
     public static AudioPlayerManager getPlayerManager() {
+        initAudioPlayerManager();
         return playerManager;
     }
 

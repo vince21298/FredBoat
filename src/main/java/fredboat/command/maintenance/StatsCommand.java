@@ -31,26 +31,25 @@ public class StatsCommand extends Command {
                 + secs + " seconds.\n"
                 + "This shard has executed " + (CommandManager.commandsExecuted - 1) + " commands this session.\n";
         
-        if(DiscordUtil.isMusicBot()){
-            str = str + "Players playing:           " + PlayerRegistry.getPlayingPlayers().size() + "\n";
-        }
-        
         str = str + "That's a rate of " + (float) (CommandManager.commandsExecuted - 1) / ((float) totalSecs / (float) (60 * 60)) + " commands per hour\n\n```";
-        str = str + "Reserved memory:           " + Runtime.getRuntime().totalMemory() / 1000000 + "MB\n";
-        str = str + "-> Of which is used:       " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000 + "MB\n";
-        str = str + "-> Of which is free:       " + Runtime.getRuntime().freeMemory() / 1000000 + "MB\n";
-        str = str + "Max reservable:            " + Runtime.getRuntime().maxMemory() / 1000000 + "MB\n";
+        str = str + "Reserved memory:                " + Runtime.getRuntime().totalMemory() / 1000000 + "MB\n";
+        str = str + "-> Of which is used:            " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000 + "MB\n";
+        str = str + "-> Of which is free:            " + Runtime.getRuntime().freeMemory() / 1000000 + "MB\n";
+        str = str + "Max reservable:                 " + Runtime.getRuntime().maxMemory() / 1000000 + "MB\n";
 
         str = str + "\n----------\n\n";
 
-        str = str + "Shard:                     " + FredBoat.shardId + " of a total of " + FredBoat.numShards + "\n";
-        str = str + "Known servers:             " + ShardTracker.getGlobalGuildCount() + "\n";
-        str = str + "-> In this shard:          " + guild.getJDA().getGuilds().size() + "\n";
-        str = str + "Known users in servers:    " + ShardTracker.getGlobalUserCount()+ "\n";
-        str = str + "-> In this shard:          " + guild.getJDA().getUsers().size() + "\n";
-        str = str + "Is beta:                   " + BotConstants.IS_BETA + "\n";
-        str = str + "JDA responses total:       " + guild.getJDA().getResponseTotal() + "\n";
-        str = str + "JDA version:               " + JDAInfo.VERSION;
+        str = str + "Shard:                          " + FredBoat.shardId + " of a total of " + FredBoat.numShards + "\n";
+        if(DiscordUtil.isMusicBot()){
+            str = str + "Players playing (this shard):    " + PlayerRegistry.getPlayingPlayers().size() + "\n";
+        }
+        str = str + "Known servers:                  " + ShardTracker.getGlobalGuildCount() + "\n";
+        str = str + "-> In this shard:               " + guild.getJDA().getGuilds().size() + "\n";
+        str = str + "Known users in servers:         " + ShardTracker.getGlobalUserCount()+ "\n";
+        str = str + "-> In this shard:               " + guild.getJDA().getUsers().size() + "\n";
+        str = str + "Is beta:                        " + BotConstants.IS_BETA + "\n";
+        str = str + "JDA responses total:            " + guild.getJDA().getResponseTotal() + "\n";
+        str = str + "JDA version:                    " + JDAInfo.VERSION;
         
         str = str + "```";
 

@@ -129,7 +129,7 @@ public class GuildPlayer extends AbstractPlayer {
 
         AudioTrack at = getPlayingTrack();
         if (at != null) {
-            millis += at.getDuration() - at.getPosition();
+            millis += Math.max(0, at.getDuration() - at.getPosition());
         }
 
         return millis / 1000;

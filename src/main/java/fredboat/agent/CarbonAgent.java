@@ -103,7 +103,7 @@ public class CarbonAgent extends Thread {
 
     public void submitData(String path, String value) {
         try {
-            String output = path + " " + value + " " + System.currentTimeMillis() / 1000;
+            String output = path + " " + value + " " + ((System.currentTimeMillis() / 1000) / 60) * 60;
             if (logProductionStats) {
                 Socket socket = new Socket(carbonHost, CARBON_PORT);
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());

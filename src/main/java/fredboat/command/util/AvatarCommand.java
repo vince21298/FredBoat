@@ -14,7 +14,7 @@ public class AvatarCommand extends Command {
         if(message.getMentionedUsers().isEmpty()){
             TextUtils.replyWithMention(channel, invoker, " proper usage is: ```;;avatar @<username>```");
         } else {
-            TextUtils.replyWithMention(channel, invoker, " found it!\n"+message.getMentionedUsers().get(0).getAvatarUrl());
+            TextUtils.replyWithMention(channel, invoker, " found it\n"+message.getMentionedUsers().get(0).getAvatarUrl());
         }
     }
 

@@ -40,9 +40,22 @@ public class TextUtils {
 
         if (invoker != null) {
             builder.appendMention(invoker);
-            builder.appendString(" an error occured :anger: ```java\n" + e.toString().replace(FredBoat.googleServerKey, "GOOGLE_SERVER_KEY") + "\n");
+            
+            String filtered = " an error occured :anger: ```java\n" + e.toString() + "\n";
+            
+            for(String str : FredBoat.getGoogleKeys()){
+                filtered = filtered.replace(str, "GOOGLE_SERVER_KEY");
+            }
+            
+            builder.appendString(filtered);
         } else {
-            builder.appendString("An error occured :anger: ```java\n" + e.toString().replace(FredBoat.googleServerKey, "GOOGLE_SERVER_KEY") + "\n");
+            String filtered = "An error occured :anger: ```java\n" + e.toString() + "\n";
+            
+            for(String str : FredBoat.getGoogleKeys()){
+                filtered = filtered.replace(str, "GOOGLE_SERVER_KEY");
+            }
+            
+            builder.appendString(filtered);
         }
 
         //builder.appendString("```java\n");
