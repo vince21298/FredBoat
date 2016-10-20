@@ -13,7 +13,6 @@ import fredboat.command.maintenance.*;
 import fredboat.command.music.*;
 import fredboat.command.util.*;
 import fredboat.commandmeta.CommandRegistry;
-import fredboat.common.db.AccountManager;
 import fredboat.common.db.DatabaseManager;
 import fredboat.event.EventListenerBoat;
 import fredboat.event.EventListenerPersistence;
@@ -40,10 +39,8 @@ import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.client.JDAClientBuilder;
 import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.utils.ApplicationUtil;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,12 +124,6 @@ public class FredBoat {
         String clientToken = credsjson.getString("clientToken");
         MALPassword = credsjson.getString("malPassword");
         String carbonHost = credsjson.optString("carbonHost");
-
-        try{
-            AccountManager.init(ApplicationUtil.getApplicationId(jdaBot), credsjson.getJSONObject("secret").getString(distribution.getName()));
-        } catch(JSONException ex){
-            log.warn("No client secret, web dashboard back-end inactive.");
-        }
         
         JSONArray gkeys = credsjson.optJSONArray("googleServerKeys");
         if (gkeys != null) {
