@@ -40,6 +40,7 @@ import net.dv8tion.jda.JDABuilder;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.client.JDAClientBuilder;
 import net.dv8tion.jda.events.ReadyEvent;
+import net.dv8tion.jda.utils.ApplicationUtil;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -128,7 +129,7 @@ public class FredBoat {
         String carbonHost = credsjson.optString("carbonHost");
 
         try{
-            AccountManager.init(credsjson.getJSONObject("secret").getString(distribution.getName()));
+            AccountManager.init(ApplicationUtil.getApplicationId(jdaBot), credsjson.getJSONObject("secret").getString(distribution.getName()));
         } catch(JSONException ex){
             log.warn("No client secret, web dashboard back-end inactive.");
         }
@@ -209,6 +210,7 @@ public class FredBoat {
         //Initialise Hibernate
         if (credsjson.has("jdbcUrl")) {
             DatabaseManager.startup(credsjson);
+            DatabaseManager.initBotEntities(jdaBot);
         }
     }
 
