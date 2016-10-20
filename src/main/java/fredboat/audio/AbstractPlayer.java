@@ -3,10 +3,12 @@ package fredboat.audio;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import fredboat.audio.source.HttpAudioSourceManager;
 import fredboat.audio.queue.ITrackProvider;
@@ -35,7 +37,7 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
 
     private static void initAudioPlayerManager() {
         if (playerManager == null) {
-            playerManager = new AudioPlayerManager();
+            playerManager = new DefaultAudioPlayerManager();
             registerSourceManagers(playerManager);
             playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
             playerManager.enableGcMonitoring();
@@ -136,10 +138,9 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
     }
 
     @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, boolean interrupted) {
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         //If we *were* interrupted, we would just invoke play0()
-        log.debug("Track ended. Interrupted: " + interrupted + ", player: " + player);
-        if (!interrupted) {
+        if (endReason == AudioTrackEndReason.FINISHED) {
             play0(false);
         }
     }

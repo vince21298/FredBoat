@@ -3,6 +3,7 @@ package fredboat.audio.source;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
@@ -34,7 +35,7 @@ public class HttpAudioSourceManager implements AudioSourceManager {
     }
 
     @Override
-    public AudioItem loadItem(AudioPlayerManager apm, String identifier) {
+    public AudioItem loadItem(DefaultAudioPlayerManager apm, String identifier) {
         if (!TRACK_URL_PATTERN.matcher(identifier).matches()) {
             return null;
         }
@@ -86,6 +87,10 @@ public class HttpAudioSourceManager implements AudioSourceManager {
      */
     public CloseableHttpClient createHttpClient() {
         return HTTP_CLIENT_BUILDER.build();
+    }
+
+    @Override
+    public void shutdown() {
     }
 
 }

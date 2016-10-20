@@ -4,6 +4,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
@@ -28,7 +29,7 @@ public class PlaylistImportSourceManager implements AudioSourceManager {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(PlaylistImportSourceManager.class);
 
     private static Pattern PLAYLIST_PATTERN = Pattern.compile("^https?:\\/\\/hastebin\\.com\\/(?:raw\\/)?(\\w+)(?:\\..+)?$");
-    private static AudioPlayerManager privateManager = AbstractPlayer.registerSourceManagers(new AudioPlayerManager());
+    private static AudioPlayerManager privateManager = AbstractPlayer.registerSourceManagers(new DefaultAudioPlayerManager());
 
     @Override
     public String getSourceName() {
@@ -36,7 +37,7 @@ public class PlaylistImportSourceManager implements AudioSourceManager {
     }
 
     @Override
-    public AudioItem loadItem(AudioPlayerManager manager, String identifier) {
+    public AudioItem loadItem(DefaultAudioPlayerManager manager, String identifier) {
         Matcher m = PLAYLIST_PATTERN.matcher(identifier);
 
         if (!m.find()) {
@@ -91,6 +92,10 @@ public class PlaylistImportSourceManager implements AudioSourceManager {
     @Override
     public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) throws IOException {
         throw new UnsupportedOperationException("This source manager is only for loading playlists");
+    }
+
+    @Override
+    public void shutdown() {
     }
 
     private class HastebinAudioResultHandler implements AudioLoadResultHandler {
