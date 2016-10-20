@@ -13,6 +13,7 @@ import fredboat.command.maintenance.*;
 import fredboat.command.music.*;
 import fredboat.command.util.*;
 import fredboat.commandmeta.CommandRegistry;
+import fredboat.db.AccountManager;
 import fredboat.db.DatabaseManager;
 import fredboat.event.EventListenerBoat;
 import fredboat.event.EventListenerPersistence;
@@ -41,6 +42,7 @@ import net.dv8tion.jda.client.JDAClientBuilder;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,33 +51,30 @@ public class FredBoat {
 
     private static final Logger log = LoggerFactory.getLogger(FredBoat.class);
 
-    private static int scopes = 0;
+    /* JDA */
     public static volatile JDA jdaBot;
     public static volatile JDA jdaSelf;
-    public static JCA jca;
-    public static final long START_TIME = System.currentTimeMillis();
-    public static final String ACCOUNT_TOKEN_KEY = BotConstants.IS_BETA ? "tokenBeta" : "tokenProduction";
-    private static String accountToken;
-    public static String mashapeKey;
-
-    public static String MALPassword;
-
-    public static String myUserId = "";
-
-    public static int readyEvents = 0;
-    public static int readyEventsRequired = 0;
-
+    
+    /* Configuration */
+    public static DistributionEnum distribution = DistributionEnum.BETA;
+    private static int scopes = 0;
     public static int shardId = 0;
     public static int numShards = 1;
-
+    
+    /* Credentials */
     private static JSONObject credsjson = null;
-    public static DistributionEnum distribution = DistributionEnum.BETA;
-
-    public static final int UNKNOWN_SHUTDOWN_CODE = -991023;
-    public static int shutdownCode = UNKNOWN_SHUTDOWN_CODE;//Used when specifying the intended code for shutdown hooks
-
+    private static String accountToken;
+    public static String mashapeKey;
+    public static String MALPassword;
     private final static List<String> GOOGLE_KEYS = new ArrayList<>();
 
+    public static JCA jca;
+    public static final long START_TIME = System.currentTimeMillis();
+    public static int readyEvents = 0;
+    public static int readyEventsRequired = 0;
+    public static final int UNKNOWN_SHUTDOWN_CODE = -991023;
+    public static int shutdownCode = UNKNOWN_SHUTDOWN_CODE;//Used when specifying the intended code for shutdown hooks
+    
     private FredBoat() {
     }
 
@@ -122,12 +121,18 @@ public class FredBoat {
         credsjson = new JSONObject(scanner.useDelimiter("\\A").next());
         scanner.close();
 
-        accountToken = credsjson.getString(ACCOUNT_TOKEN_KEY);
+        accountToken = credsjson.getJSONObject("token").getString(distribution.getName());
         mashapeKey = credsjson.getString("mashapeKey");
         String clientToken = credsjson.getString("clientToken");
         MALPassword = credsjson.getString("malPassword");
         String carbonHost = credsjson.optString("carbonHost");
 
+        try{
+            AccountManager.init(credsjson.getJSONObject("secret").getString(distribution.getName()));
+        } catch(JSONException ex){
+            log.warn("No client secret, web dashboard back-end inactive.");
+        }
+        
         JSONArray gkeys = credsjson.optJSONArray("googleServerKeys");
         if (gkeys != null) {
             gkeys.forEach((Object str) -> {
@@ -191,10 +196,7 @@ public class FredBoat {
 
         if (!carbonHost.equals("")) {
             //Determine metric name
-            String metricName = "beta";
-            if (!BotConstants.IS_BETA) {
-                metricName = DiscordUtil.isMusicBot() ? "music" : "production";
-            }
+            String metricName = distribution.getName();
 
             CarbonAgent carbonAgent = new CarbonAgent(jdaBot, carbonHost, metricName, !BotConstants.IS_BETA);
             carbonAgent.setDaemon(true);
