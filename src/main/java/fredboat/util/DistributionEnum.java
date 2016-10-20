@@ -17,7 +17,7 @@ public enum DistributionEnum {
     public String getUrlForShard(int shardId) {
         switch (this) {
             case BETA:
-                return "http://localhost:" + (shard0Port + shardId) + "/";
+                return "http://localhost:" + getPort(shardId) + "/";
             case MAIN:
                 return "http://fb" + shardId + ".frederikam.com:" + getPort(shardId) + "/";
             case MUSIC:

@@ -1,8 +1,8 @@
 package fredboat.event;
 
-import fredboat.db.DatabaseManager;
-import fredboat.db.entities.GuildConfig;
-import fredboat.db.entities.TCConfig;
+import fredboat.common.db.DatabaseManager;
+import fredboat.common.db.entities.GuildConfig;
+import fredboat.common.db.entities.TCConfig;
 import net.dv8tion.jda.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
