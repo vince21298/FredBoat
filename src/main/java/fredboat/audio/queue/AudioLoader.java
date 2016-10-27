@@ -79,7 +79,7 @@ public class AudioLoader implements AudioLoadResultHandler {
             context.textChannel.sendMessage(
                     "Found and added `" + ap.getTracks().size() + "` songs from playlist **" + ap.getName() + "**."
             );
-            
+
             for (AudioTrack at : ap.getTracks()) {
                 trackProvider.add(at);
             }
@@ -110,20 +110,22 @@ public class AudioLoader implements AudioLoadResultHandler {
         loadNextAsync();
     }
 
+    @SuppressWarnings("ThrowableResultIgnored")
     private void handleThrowable(IdentifierContext ic, Throwable th) {
         try {
             if (th instanceof FriendlyException) {
                 FriendlyException fe = (FriendlyException) th;
                 if (fe.severity == FriendlyException.Severity.COMMON) {
                     if (ic.textChannel != null) {
-                        context.textChannel.sendMessage("Error ocurred when loading info for `" + context.identifier + "`.");
-                        TextUtils.handleException(fe.getCause(), context.textChannel);
+                        context.textChannel.sendMessage("Error ocurred when loading info for `" + context.identifier + "`:\n"
+                        + fe.getMessage());
                     } else {
                         log.error("Error while loading track ", th);
                     }
                 } else if (ic.textChannel != null) {
                     context.textChannel.sendMessage("Suspicious error when loading info for `" + context.identifier + "`.");
-                    TextUtils.handleException(fe.getCause(), context.textChannel);
+                    Throwable exposed = fe.getCause() == null ? fe : fe.getCause();
+                    TextUtils.handleException(exposed, context.textChannel);
                 } else {
                     log.error("Error while loading track ", th);
                 }
@@ -135,6 +137,7 @@ public class AudioLoader implements AudioLoadResultHandler {
             }
         } catch (Exception e) {
             log.error("Error when trying to handle another error", th);
+            log.error("DEBUG", e);
         }
     }
 

@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import net.dv8tion.jda.MessageBuilder;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.Message.Attachment;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 
@@ -20,6 +21,17 @@ public class PlayCommand extends Command implements IMusicCommand {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, User invoker, Message message, String[] args) {
+        if (!message.getAttachments().isEmpty()) {
+            GuildPlayer player = PlayerRegistry.get(guild.getId());
+            player.setCurrentTC(channel);
+            
+            for (Attachment atc : message.getAttachments()) {
+                player.queue(atc.getUrl(), channel, invoker);
+            }
+            
+            return;
+        }
+
         if (args.length < 2) {
             //channel.sendMessage("Proper syntax: ;;play <url-or-search-terms>");
             handleNoArguments(guild, channel, invoker, message);
@@ -59,9 +71,12 @@ public class PlayCommand extends Command implements IMusicCommand {
     }
 
     private void searchForVideos(Guild guild, TextChannel channel, User invoker, Message message, String[] args) {
-        Matcher m = Pattern.compile("\\S+\\s+(.*)").matcher(message.getStrippedContent());
+        Matcher m = Pattern.compile("\\S+\\s+(.*)").matcher(message.getRawContent());
         m.find();
         String query = m.group(1);
+        
+        //Now remove all punctuation
+        query = query.replaceAll("[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]", "");
 
         Message outMsg = channel.sendMessage("Searching YouTube for `{q}`...".replace("{q}", query));
 

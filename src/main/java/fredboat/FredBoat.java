@@ -272,9 +272,12 @@ public class FredBoat {
         CommandRegistry.registerCommand(0x010, "meval", new EvalCommand());
         CommandRegistry.registerCommand(0x010, "skip", new SkipCommand());
         CommandRegistry.registerCommand(0x010, "join", new JoinCommand());
+        CommandRegistry.registerAlias("join", "summon");
         CommandRegistry.registerCommand(0x010, "nowplaying", new NowplayingCommand());
+        CommandRegistry.registerAlias("nowplaying", "np");
         CommandRegistry.registerCommand(0x010, "leave", new LeaveCommand());
         CommandRegistry.registerCommand(0x010, "list", new ListCommand());
+        CommandRegistry.registerAlias("list", "queue");
         CommandRegistry.registerCommand(0x010, "mupdate", new UpdateCommand());
         CommandRegistry.registerCommand(0x010, "select", new SelectCommand());
         CommandRegistry.registerCommand(0x010, "stop", new StopCommand());
@@ -284,6 +287,7 @@ public class FredBoat {
         CommandRegistry.registerCommand(0x010, "shuffle", new ShuffleCommand());
         CommandRegistry.registerCommand(0x010, "repeat", new RepeatCommand());
         CommandRegistry.registerCommand(0x010, "volume", new VolumeCommand());
+        CommandRegistry.registerAlias("volume", "vol");
         CommandRegistry.registerCommand(0x010, "restart", new RestartCommand());
         CommandRegistry.registerCommand(0x010, "export", new ExportCommand());
         CommandRegistry.registerCommand(0x010, "playerdebug", new PlayerDebugCommand());

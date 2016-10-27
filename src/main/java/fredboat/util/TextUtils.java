@@ -9,9 +9,12 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
+import org.slf4j.LoggerFactory;
 
 public class TextUtils {
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(TextUtils.class);
+    
     private TextUtils() {
     }
 
@@ -36,6 +39,9 @@ public class TextUtils {
             channel.sendMessage(invoker.getUsername() + ": " + e.getMessage());
             return;
         }
+        
+        log.error("Caught exception while executing a command", e);
+        
         MessageBuilder builder = new MessageBuilder();
 
         if (invoker != null) {
@@ -71,7 +77,6 @@ public class TextUtils {
             channel.sendMessage(builder.build());
         } catch (UnsupportedOperationException tooLongEx) {
             channel.sendMessage("An error occured :anger: Error was too long to display.");
-            e.printStackTrace();
         }
     }
 

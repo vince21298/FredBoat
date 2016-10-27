@@ -1,6 +1,7 @@
 package fredboat.agent;
 
 import com.mashape.unirest.http.Unirest;
+import fredboat.sharding.ShardTracker;
 import net.dv8tion.jda.JDA;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ public class CarbonitexAgent extends Thread {
     private void sendStats() {
         try {
             final String response = Unirest.post("https://www.carbonitex.net/discord/data/botdata.php").field("key", key)
-                    .field("servercount", jda.getGuilds().size()).asString().getBody();
+                    .field("servercount", ShardTracker.getGlobalGuildCount()).asString().getBody();
             log.info("Successfully posted the botdata to carbonitex.com: " + response);
         } catch (Exception e) {
             log.error("An error occured while posting the botdata to carbonitex.com", e);

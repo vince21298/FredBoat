@@ -1,5 +1,8 @@
 language: java
 
+addons:
+  srcclr: true
+
 cache:
   directories:
   - .autoconf

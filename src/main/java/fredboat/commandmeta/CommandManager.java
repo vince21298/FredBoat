@@ -49,6 +49,17 @@ public class CommandManager {
             log.info("Ignored command because it was a music command, and this bot cannot write in that channel");
             return;
         }
+        
+        //Hardcode music commands in FredBoatHangout. Blacklist any channel that isn't #general or #staff, but whitelist Frederikam
+        if(invoked instanceof IMusicCommand && guild.getId().equals("174820236481134592")){
+            if(!channel.getId().equals("174821093633294338")
+                    && !channel.getId().equals("217526705298866177")
+                    && !invoker.getId().equals("81011298891993088")){
+                message.deleteMessage();
+                channel.sendMessage("Please don't spam music commands outside of <#174821093633294338>.");
+                return;
+            }
+        }
 
         try {
             invoked.onInvoke(guild, channel, invoker, message, args);

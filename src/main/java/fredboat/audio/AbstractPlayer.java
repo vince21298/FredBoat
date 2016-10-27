@@ -10,7 +10,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import fredboat.audio.source.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
 import fredboat.audio.queue.ITrackProvider;
 import fredboat.audio.source.PlaylistImportSourceManager;
 import java.util.ArrayList;
