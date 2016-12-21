@@ -17,7 +17,7 @@ The music bot has it's own [invite link](https://discordapp.com/oauth2/authorize
 | ;;help                     | Sends a PM with instructions and a link to this site                  | ;;help                                      |
 | ;;say \<text\>             | Make the bot echo something                                           | ;;say test                                  |
 | ;;avatar                   | Displays the avatar of a user                                         | ;;avatar @Frederikam                        |
-| ;;brainfuck \<code\> [input] | Executes [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) code  | ;;brainfuck ,.+.+. a                        |
+| ;;brainfuck \<code\> \[input\] | Executes [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) code  | ;;brainfuck ,.+.+. a                        |
 | ;;lua \<code\>             | Executes Lua code                                                     | ;;lua print("Hello, world!")                |
 | ;;riot \<text\>            | Transform text, [example](https://fred.moe/qxB.png)                   | ;;riot Hello, world                         |
 | ;;lenny                    | Sends a lenny face                                                    | ;;lenny                                     |
