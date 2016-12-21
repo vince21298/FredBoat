@@ -20,7 +20,7 @@ The music bot has it's own [invite link](https://discordapp.com/oauth2/authorize
 | ;;lua \<code\>             | Executes Lua code                                                     | ;;lua print("Hello, world!")                |
 | ;;riot \<text\>            | Transform text, [example](https://fred.moe/qxB.png)                   | ;;riot Hello, world                         |
 | ;;lenny                    | Sends a lenny face                                                    | ;;lenny                                     |
-| ;;leet \<text\>            | m@k3$ y0u 50Und l1k3 a 5cr1p7 k1dd13                                  | ;;leet makes you sound like a script kiddie |
+| ;;leet \<text\>            | Makes you sound like a script kiddie                                  | ;;leet makes you sound like a script kiddie |
 | ;;mal \<search term\>      | Searched MyAnimeList for animes and users                             | ;;mal re:zero                               |
 | ;;dump \<1-2000\>          | Dumps between 1 and 2000 messages to [Hastebin](http://hastebin.com/) | ;;dump 1000                                 |
 | ;;facedesk                 | Uploads an image                                                      | ;;facedesk                                  |
