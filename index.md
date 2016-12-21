@@ -42,8 +42,7 @@ The music bot has it's own [invite link](https://discordapp.com/oauth2/authorize
 | ;;leave                    | Makes the bot leave the current voice channel                         | ;;leave                                     |
 | ;;repeat                   | Toggles repeat mode for the current song.                             | ;;repeat                                    |
 | ;;shuffle                  | Toggles shuffle mode for the current queue.                           | ;;shuffle                                   |
-           |
-| ;;volume                   | Changes the volume. Values are 0-150 and 100 is the default.          | ;;volume 75                                  |
+| ;;volume                   | Changes the volume. Values are 0-150 and 100 is the default.          | ;;volume 75                                 |
 
 ## Music Commands
 The music bot supports media from many sites and even supports playlists from sites like YouTube and Soundcloud. The bot will not be able to play songs blocked in France (usually from copyright infringements on YouTube).
@@ -104,8 +103,3 @@ We invite everyone to join FredBoat hangout, which is a place to discuss suggest
 FredBoat is developed by Fre_d (aka Frederikam).
 
 Thanks to JDK#0216 for designing the [FredBoat](http://i.imgur.com/1WOFPLy.png) logo!
-
-## Legal
-We are required to have you agree to our [Privacy Policy](http://hs.frederikam.com/zuyom.txt). You agree to this by using the bot.
-
-Steam data is provided "as is" without any liability or warranty.
