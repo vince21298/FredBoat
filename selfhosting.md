@@ -36,7 +36,7 @@ In order to run the bot, you must first populate your bot with API credentials f
 
 Example `credentials.json` file:
 
-```
+```txt
 {
 	"malPassword": null, # For the ;;mal command
 	"clientToken": null, # For hosting a selfbot
