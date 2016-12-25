@@ -5,10 +5,13 @@ This tutorial is users who want to host their own bot running FredBoat. Bear in 
 
 ## Intallation
 ### Requirements
-* Java 8 JDK  from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
-* git and maven in your PATH
-* [A registered Discord application](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
-* Linux \(Windows works too, but this tutorial is targetted Linux\)
+1. Java 8 JDK from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+
+2. git and maven in your PATH
+
+3. [A registered Discord application](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
+
+4. Linux \(Windows works too, but this tutorial is targetted Linux\)
 
 ### Instructions
 Clone the `master` branch of FredBoat:
