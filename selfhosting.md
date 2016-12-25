@@ -34,9 +34,9 @@ The compiled bot can be found in `FredBoat.git/FredBoat/target`. A sample `confi
 
 In order to run the bot, you must first populate your bot with API credentials for Discord in the `credentials.json` file.
 
-Example `credentials.json` file:
-
 ```txt
+Example credentials.json file:
+
 {
 	"malPassword": null, # For the ;;mal command
 	"clientToken": null, # For hosting a selfbot
