@@ -5,10 +5,10 @@ This tutorial is users who want to host their own bot running FredBoat. Bear in 
 
 ## Intallation
 ### Requirements
-* [Java 8 JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* Java 8 JDK  from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 * git and maven in your PATH
 * [A registered Discord application](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
-* Linux (Windows works too, but this tutorial is targetted Linux)
+* Linux \(Windows works too, but this tutorial is targetted Linux\)
 
 ### Instructions
 Clone the `master` branch of FredBoat:
@@ -23,16 +23,19 @@ mvn package shade:shade
 ```
 
 To run the bot you should set up a directory that looks like this:
+
 ```
 ├──FredBoat-1.0.jar
 ├──credentials.json
 └──config.json
 ```
+
 The compiled bot can be found in `FredBoat.git/FredBoat/target`. A sample `config.json` and an example `credentials.json` can be found in https://github.com/Frederikam/FredBoat/tree/master/FredBoat
 
 In order to run the bot, you must first populate your bot with API credentials for Discord in the `credentials.json` file.
 
 Example `credentials.json` file:
+
 ```
 {
 	"malPassword": null, # For the ;;mal command
@@ -51,6 +54,7 @@ Example `credentials.json` file:
 	"mashapeKey": null # Used for the ;;leet command
 }
 ```
+
 *Do not actually try to use a config with `#` characters in it*
 
 Once you are done configuring, run the bot with `java -jar FredBoat-1.0.jar`, which should run the bot as if it was the patron bot.
