@@ -1,7 +1,7 @@
 # Welcome to FredBoat Docs
 Welcome to the FredBoat docs. FredBoat is an open-source general-purpose bot developed in Java. The bot is based off of [JDA](https://github.com/DV8FromTheWorld/JDA) and was created by (@Frederikam). You'll be able to get a link back to this website simply by invoking `;;help`.
 
-Additionally I am also developing FredBoat♪♪ **which is in beta** and is a music bot. This is a seperate bot and must therefore be invited using [this link](https://discordapp.com/oauth2/authorize?&client_id=184405253028970496&scope=bot). See the commands below on how to use it.
+Additionally I am also developing FredBoat♪♪ and is a music bot. This is a seperate bot and must therefore be invited using [this link](https://discordapp.com/oauth2/authorize?&client_id=184405253028970496&scope=bot). See the commands below on how to use it.
 
 ## Setting up the bot
 Getting FredBoat running on your server is simple. You can invite the bot by authenticating it with your account using [this](https://discordapp.com/oauth2/authorize?&client_id=168686772216135681&scope=bot) link. Bear in mind that you must have `Manage Server` permissions to be able to do this. 
@@ -57,7 +57,7 @@ Adding music to the playlist is pretty simple. To start playing a song, simply u
 You can either explicitly state the URL, or you can get the bot to search YouTube and give you some choices. Here's an example response:
 
 ```
-Please select a video with the ';;select n' command:
+Please select a video with the ';;play n' command:
 1: Rick Astley - Never Gonna Give You Up (03:33)
 2: YOUTUBERS REACT TO RICKROLL (Ep. #5) (09:20)
 3: I Rick Roll My Entire Chemistry Class! (05:55)
@@ -68,8 +68,16 @@ Please select a video with the ';;select n' command:
 You can then choose your song with the `;;select <number>` command.
 
 **Supported sites:**
+
 * YouTube
-* SoundCloud (single tracks only)
+
+* SoundCloud
+
+* Bandcamp
+
+* Twitch
+
+* Direct links to files, including streams. Not all formats supported
 
 Let me know if you want other sites supported. 
 
@@ -81,7 +89,9 @@ Please read this fine manual. Specifically the part with the music commands.
 ### How do I add an entire playlist to the queue?
 Simply link a playlist with the following syntax:
 
-```;;play <url-to-playlist>```
+```
+;;play <url-to-playlist>
+```
 
 ### How do I restrict music commands to a specific channel or role?
 The bot will only listen to music commands invoked in channels it can actually **write** to. Simply override it such that the music bot can only talk in the channels you want the bot to be usable from.
@@ -89,7 +99,9 @@ The bot will only listen to music commands invoked in channels it can actually *
 If you want to restrict the bot to a specific role, you can always just restrict the bot to a channel only accessible by a specific set of roles.
 
 ### How do I self host the bot?
-It's difficult. I do not advise it.
+It's difficult. I do not advise it. Though I did write a tutorial for it:
+
+http://docs.frederikam.com/selfhosting
 
 ### Why is the music bot slow to respond to commands?
 Lots of people are using the music bot 24/7 on a relatively cheap server. I do have a [Patreon campaign](https://www.patreon.com/fredboat) to allow me to receive funding for additional hardware for the music bot and improve the bot response time. The music quality shuld be fine for the most part though. 
