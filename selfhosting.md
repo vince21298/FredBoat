@@ -1,7 +1,7 @@
 # How to self-host FredBoat
 This tutorial is users who want to host their own bot running FredBoat. Bear in mind that this is not a requirement for using FredBoat, as I also host a public bot. This is merely for those of you who want to host your own.
 
-#### This tutorial is for advanced users. If you can't figure out how to run this, please use the public FredBoat
+#### This tutorial is for advanced users. If you can't figure out how to run this, please use the public FredBoat♪♪
 
 ## Intallation
 ### Requirements
