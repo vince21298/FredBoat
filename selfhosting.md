@@ -5,6 +5,7 @@ This tutorial is users who want to host their own bot running FredBoat. Bear in 
 
 ## Intallation
 ### Requirements
+
 1. Java 8 JDK from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 
 2. git and maven in your PATH
