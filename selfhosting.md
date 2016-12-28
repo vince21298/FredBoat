@@ -4,6 +4,7 @@ This tutorial is users who want to host their own bot running FredBoat. Bear in 
 #### This tutorial is for advanced users. If you can't figure out how to run this, please use the public FredBoat♪♪
 
 ## Intallation
+
 ### Requirements
 
 1. Java 8 JDK from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
@@ -16,11 +17,13 @@ This tutorial is users who want to host their own bot running FredBoat. Bear in 
 
 ### Instructions
 Clone the `master` branch of FredBoat:
+
 ```sh
 git clone https://github.com/Frederikam/FredBoat.git
 ```
 
 Now compile the bot:
+
 ```sh
 cd FredBoat.git/FredBoat
 mvn package shade:shade
