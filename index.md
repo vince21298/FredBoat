@@ -112,6 +112,9 @@ You are trying to play music in a voice channel, but your __Discord server permi
 ## Join FredBoat Hangout!
 We invite everyone to join FredBoat hangout, which is a place to discuss suggestions and request for support. I'm very willing to take suggestions for the bot so don't hesitate to say what you have in mind! [Click here to join!](https://discord.gg/0yXhQ9c36F4zsJMG)
 
+## Support
+You can join either our Discord server \(above\) or tweet us at [@DiscordFredBoat](https://twitter.com/DiscordFredBoat).
+
 ## Credits
 FredBoat is developed by Fre_d (aka Frederikam).
 
