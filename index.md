@@ -1,49 +1,49 @@
 # Welcome to FredBoat Docs
-Welcome to the FredBoat docs. FredBoat is an open-source general-purpose bot developed in Java. The bot is based off of [JDA](https://github.com/DV8FromTheWorld/JDA) and was created by (@Frederikam). You'll be able to get a link back to this website simply by invoking `;;help`.
+Welcome to the FredBoat docs. FredBoat is an open-source general-purpose bot developed in Java. The bot is based off of [JDA](https://github.com/DV8FromTheWorld/JDA) and was created by [@Frederikam](https://github.com/Frederikam/).
 
 Additionally I am also developing FredBoat♪♪ and is a music bot. This is a seperate bot and must therefore be invited using [this link](https://discordapp.com/oauth2/authorize?&client_id=184405253028970496&scope=bot). See the commands below on how to use it.
 
 ## Setting up the bot
-Getting FredBoat running on your server is simple. You can invite the bot by authenticating it with your account using [this](https://discordapp.com/oauth2/authorize?&client_id=168686772216135681&scope=bot) link. Bear in mind that you must have `Manage Server` permissions to be able to do this. 
+Getting FredBoat running on your server is simple. You can invite the bot by authenticating it with your account using [this](https://discordapp.com/oauth2/authorize?&client_id=168686772216135681&scope=bot) link. Bear in mind that you must have `Manage Server` permissions to be able to do this.
 
-## Setting up the music bot
-The music bot has it's own [invite link](https://discordapp.com/oauth2/authorize?&client_id=184405253028970496&scope=bot).
-
-
-## Commands
-
-| Command                    | Description                                                           | Example usage                               |
-|----------------------------|-----------------------------------------------------------------------|---------------------------------------------|
-| ;;help                     | Sends a PM with instructions and a link to this site                  | ;;help                                      |
-| ;;say \<text\>             | Make the bot echo something                                           | ;;say test                                  |
-| ;;avatar                   | Displays the avatar of a user                                         | ;;avatar @Frederikam                        |
-| ;;brainfuck \<code\> \[input\] | Executes [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) code  | ;;brainfuck ,.+.+. a                        |
-| ;;lua \<code\>             | Executes Lua code                                                     | ;;lua print("Hello, world!")                |
-| ;;riot \<text\>            | Transform text, [example](https://fred.moe/qxB.png)                   | ;;riot Hello, world                         |
-| ;;lenny                    | Sends a lenny face                                                    | ;;lenny                                     |
-| ;;leet \<text\>            | Makes you sound like a script kiddie                                  | ;;leet makes you sound like a script kiddie |
-| ;;mal \<search term\>      | Searched MyAnimeList for animes and users                             | ;;mal re:zero                               |
-| ;;dump \<1-2000\>          | Dumps between 1 and 2000 messages to [Hastebin](http://hastebin.com/) | ;;dump 1000                                 |
-| ;;facedesk                 | Uploads an image                                                      | ;;facedesk                                  |
-| ;;roll                     | Uploads an image                                                      | ;;roll                                      |
+__If you want music__ you should be using https://discordapp.com/oauth2/authorize?&client_id=184405253028970496&scope=bot to get the music bot. The two bots are currently separate.
 
 ## Music Commands
 [(Requires the music bot)](https://discordapp.com/oauth2/authorize?&client_id=184405253028970496&scope=bot).
 
 | Command                    | Description                                                           | Example usage                               |
 |----------------------------|-----------------------------------------------------------------------|---------------------------------------------|
-| ;;play \<url\>             | Plays music from the given URLs. See supported sources below          | ;;play https://www.youtube.com/watch?v=dQw4w9WgXcQ     |
-| ;;list                     | Displays a list of the current songs in the playlist                  | ;;list                                      |
-| ;;nowplaying               | Displays the currently playing song                                   | ;;nowplaying                                |
-| ;;skip                     | Skip the current song. Please use in moderation                       | ;;skip                                      |
-| ;;stop                     | Stop the player and **clear** the playlist. Reserved for moderators.  | ;;stop                                      |
-| ;;pause                    | Pause the player.                                                     | ;;pause                                     |
-| ;;unpause                  | Unpause the player.                                                   | ;;unpause                                   |
-| ;;join                     | Makes the bot join your current voice channel                         | ;;join                                      |
-| ;;leave                    | Makes the bot leave the current voice channel                         | ;;leave                                     |
+| ;;play \<url\>             | Plays music from the given URLs. See supported sources below.         | ;;play https://www.youtube.com/watch?v=dQw4w9WgXcQ     |
+| ;;list                     | Displays a list of the current songs in the playlist.                 | ;;list                                      |
+| ;;nowplaying               | Displays the currently playing song.                                  | ;;nowplaying                                |
+| ;;skip                     | Skips the current song. Please use in moderation.                     | ;;skip                                      |
+| ;;stop                     | Stops the player and **clears** the playlist. Reserved for moderators.| ;;stop                                      |
+| ;;pause                    | Pauses the player.                                                    | ;;pause                                     |
+| ;;unpause                  | Unpauses the player.                                                  | ;;unpause                                   |
+| ;;join                     | Makes the bot join your current voice channel.                        | ;;join                                      |
+| ;;leave                    | Makes the bot leave the current voice channel.                        | ;;leave                                     |
 | ;;repeat                   | Toggles repeat mode for the current song.                             | ;;repeat                                    |
 | ;;shuffle                  | Toggles shuffle mode for the current queue.                           | ;;shuffle                                   |
-| ;;volume                   | Changes the volume. Values are 0-150 and 100 is the default.          | ;;volume 75                                 |
+| ;;fwd /<time/>             | Forwards the track by a given amount of time.                         | ;;fwd 2:30                                  |
+| ;;rew /<time/>             | Rewinds the track by a given amount of time.                          | ;;rew 30                                    |
+| ;;seek /<time/>            | Sets the position of the track to the given time.                     | ;;seek 2:45:00                              |
+
+## Non-music Commands
+[(Requires the original bot)](https://discordapp.com/oauth2/authorize?&client_id=168686772216135681&scope=bot).
+
+| Command                    | Description                                                           | Example usage                               |
+|----------------------------|-----------------------------------------------------------------------|---------------------------------------------|
+| ;;help                     | Sends a PM with instructions and a link to this site.                 | ;;help                                      |
+| ;;say \<text\>             | Makes the bot echo something.                                         | ;;say test                                  |
+| ;;avatar                   | Displays the avatar of a user.                                        | ;;avatar @Frederikam                        |
+| ;;brainfuck \<code\> \[input\] | Executes [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) code. | ;;brainfuck ,.+.+. a                        |
+| ;;lua \<code\>             | Executes Lua code.                                                    | ;;lua print("Hello, world!")                |
+| ;;riot \<text\>            | Transforms text, [example](https://fred.moe/qxB.png)                  | ;;riot Hello, world                         |
+| ;;lenny                    | Sends a lenny face.                                                   | ;;lenny                                     |
+| ;;mal \<search term\>      | Searches MyAnimeList for animes and users.                            | ;;mal re:zero                               |
+| ;;dump \<1-2000\>          | Dumps between 1 and 2000 messages to [Hastebin](http://hastebin.com/) | ;;dump 1000                                 |
+| ;;facedesk                 | Uploads an image.                                                     | ;;facedesk                                  |
+| ;;roll                     | Uploads an image.                                                     | ;;roll                                      |
 
 ## Music Commands
 The music bot supports media from many sites and even supports playlists from sites like YouTube and Soundcloud. The bot will not be able to play songs blocked in France (usually from copyright infringements on YouTube).
@@ -69,7 +69,7 @@ You can then choose your song with the `;;select <number>` command.
 
 **Supported sites:**
 
-* YouTube
+* YouTube (streams hopefully coming soon)
 
 * SoundCloud
 
@@ -77,7 +77,11 @@ You can then choose your song with the `;;select <number>` command.
 
 * Twitch
 
-* Direct links to files, including streams. Not all formats supported
+* Vimeo
+
+* Direct links to files, including streams. Not all formats supported.a
+
+* URLs pointing to .m3u and .pls can be used to start streams.
 
 Let me know if you want other sites supported. 
 
@@ -99,15 +103,18 @@ The bot will only listen to music commands invoked in channels it can actually *
 If you want to restrict the bot to a specific role, you can always just restrict the bot to a channel only accessible by a specific set of roles.
 
 ### How do I self host the bot?
-It's difficult. I do not advise it. Though I did write a tutorial for it:
+FredBoat was not originally written to be easily set up for selfhosting, but due to popular demand I have written a tutorial:
 
 http://docs.frederikam.com/selfhosting
 
-### Why is the music bot slow to respond to commands?
-Lots of people are using the music bot 24/7 on a relatively cheap server. I do have a [Patreon campaign](https://www.patreon.com/fredboat) to allow me to receive funding for additional hardware for the music bot and improve the bot response time. The music quality shuld be fine for the most part though. 
-
 ### The music bot is telling me it doesn't have permission to connect/play music. How do I give it permission?
 You are trying to play music in a voice channel, but your __Discord server permissions__ prevents it from connecting or speaking. You would need to change the permissions of the channel to allow the bot to connect and speak, as you would do with a user. For official help on this topic, see [Discord's support center](https://support.discordapp.com/hc/en-us/articles/206029707).
+
+### Why is the bot stuttering?
+The bot is sometimes under very heavy load, particularly around weekends. You can help me reduce the stuttering and bring the bot to more people by supporting me on my [Patreon campaign](https://www.patreon.com/fredboat).
+
+### Why can't I hear the music bot, but other people can?
+This is a Discord bug. Occasionally you may need to restart your Discord client before you can hear users and bots speaking in voice chat.
 
 ## Join FredBoat Hangout!
 We invite everyone to join FredBoat hangout, which is a place to discuss suggestions and request for support. I'm very willing to take suggestions for the bot so don't hesitate to say what you have in mind! [Click here to join!](https://discord.gg/0yXhQ9c36F4zsJMG)
