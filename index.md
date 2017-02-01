@@ -79,7 +79,7 @@ You can then choose your song with the `;;select <number>` command.
 
 * Vimeo
 
-* Direct links to files, including streams. Not all formats supported.a
+* Direct links to files, including streams. Not all formats supported.
 
 * URLs pointing to .m3u and .pls can be used to start streams.
 
@@ -122,5 +122,3 @@ You can join either our Discord server \(above\) or tweet us at [@DiscordFredBoa
 
 ## Credits
 FredBoat is developed by Fre_d (aka Frederikam).
-
-Thanks to JDK#0216 for designing the [FredBoat](http://i.imgur.com/1WOFPLy.png) logo!
