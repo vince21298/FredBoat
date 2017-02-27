@@ -19,7 +19,7 @@ This tutorial is users who want to host their own bot running FredBoat. Bear in 
 Clone the `master` branch of FredBoat:
 
 ```sh
-git clone https://github.com/Frederikam/FredBoat.git
+git clone --recursive https://github.com/Frederikam/FredBoat.git
 ```
 
 Now compile the bot:
