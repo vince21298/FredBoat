@@ -43,7 +43,7 @@ In order to run the bot, you must first populate your bot with API credentials f
 
 Example credentials.yaml file:
 
-```txt
+```yaml
 ---
 # For the ;;mal command
 malPassword:
