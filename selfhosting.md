@@ -48,11 +48,6 @@ Example credentials.yaml file:
 # For the ;;mal command
 malPassword:
 
-
-# For hosting a selfbot
-clientToken:
-
-
 token:
   beta: 
   production: 
@@ -64,7 +59,7 @@ token:
 
   #patron: YourTokenHere
 
-# Token for search. Must be hooked up to the Youtube Data API
+# Used by the ;;split and ;;np commands. Must be hooked up to the Youtube Data API
 # add your google API keys in the brackets below, separated by commas if more than one, uncomment by removing the #
 # how to get them: https://developers.google.com/youtube/registering_an_application
 
@@ -79,6 +74,7 @@ cbKey:
 
 # Used for the ;;leet command
 mashapeKey:
+
 ```
 
 
