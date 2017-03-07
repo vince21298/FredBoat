@@ -33,35 +33,58 @@ To run the bot you should set up a directory that looks like this:
 
 ```
 ├──FredBoat-1.0.jar
-├──credentials.json
-└──config.json
+├──credentials.yaml
+└──config.yaml
 ```
 
-The compiled bot can be found in `FredBoat.git/FredBoat/target`. A sample `config.json` and an example `credentials.json` can be found in https://github.com/Frederikam/FredBoat/tree/master/FredBoat
+The compiled bot can be found in `FredBoat.git/FredBoat/target`. A sample `config.yaml` and an example `credentials.yaml` can be found in https://github.com/Frederikam/FredBoat/tree/master/FredBoat
 
-In order to run the bot, you must first populate your bot with API credentials for Discord in the `credentials.json` file.
+In order to run the bot, you must first populate your bot with API credentials for Discord in the `credentials.yaml` file.
 
-Example credentials.json file:
+Example credentials.yaml file:
 
 ```txt
-{
-	"malPassword": null, # For the ;;mal command
-	"clientToken": null, # For hosting a selfbot
-	"token": {
-		"beta": null,
-		"production": null,
-		"music": null,
-		"patron": "your token here" # Your token should go here. Optionally fill the other token strings in
-	},
-	"googleServerKeys": [
-		# Token for search. Must be hooked up to the Youtube Data API
-	],
-	"cbUser": null, # From https://cleverbot.io/
-	"cbKey": null, # From https://cleverbot.io/
-	"mashapeKey": null # Used for the ;;leet command
-}
+---
+# For the ;;mal command
+malPassword:
+
+
+# For hosting a selfbot
+clientToken:
+
+
+token:
+  beta: 
+  production: 
+  music:
+
+  # add your discord bot token below and remove the # (but keep two spaces in front of it)
+  # find the token of your bot on https://discordapp.com/developers/applications/me
+  # Optionally fill the other token strings above in
+
+  #patron: YourTokenHere
+
+# Token for search. Must be hooked up to the Youtube Data API
+# add your google API keys in the brackets below, separated by commas if more than one, uncomment by removing the #
+# how to get them: https://developers.google.com/youtube/registering_an_application
+
+#googleServerKeys: [YourYoutubeAPIKey]
+#googleServerKeys: [Key1, Key2]
+
+
+# From https://cleverbot.io/
+cbUser:
+cbKey:
+
+
+# Used for the ;;leet command
+mashapeKey:
 ```
 
-*Do not actually try to use a config with `#` characters in it*
+
+
+You also need t set patron to true in the config.yaml file.
+
+
 
 Once you are done configuring, run the bot with `java -jar FredBoat-1.0.jar`, which should run the bot as if it was the patron bot.
