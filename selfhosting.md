@@ -83,7 +83,7 @@ mashapeKey:
 
 
 
-You also need t set patron to true in the config.yaml file.
+You also need to set patron to true in the `config.yaml` file.
 
 
 
