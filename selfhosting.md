@@ -84,3 +84,7 @@ You also need to set patron to true in the `config.yaml` file.
 
 
 Once you are done configuring, run the bot with `java -jar FredBoat-1.0.jar`, which should run the bot as if it was the patron bot.
+
+
+
+[Follow this link](http://docs.frederikam.com/systemdservice) to find a tutorial on running FredBoat as a `systemd` service.
