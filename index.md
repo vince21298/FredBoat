@@ -121,4 +121,6 @@ We invite everyone to join FredBoat hangout, which is a place to discuss suggest
 You can join either our Discord server \(above\) or tweet us at [@DiscordFredBoat](https://twitter.com/DiscordFredBoat).
 
 ## Credits
-FredBoat is developed by Fre_d (aka Frederikam).
+FredBoat is developed by Fre_d (aka Frederikam) with the help of contributors on GitHub.
+
+The FredBoat logo was created by Sturm/JDK#0216.
