@@ -22,11 +22,12 @@ __If you want music__ you should be using https://discordapp.com/oauth2/authoriz
 | ;;unpause                  | Unpauses the player.                                                  | ;;unpause                                   |
 | ;;join                     | Makes the bot join your current voice channel.                        | ;;join                                      |
 | ;;leave                    | Makes the bot leave the current voice channel.                        | ;;leave                                     |
-| ;;repeat                   | Toggles repeat mode for the current song.                             | ;;repeat                                    |
+| ;;repeat                   | Changes the repeat mode. Run this command for more info.              | ;;repeat all                                |
 | ;;shuffle                  | Toggles shuffle mode for the current queue.                           | ;;shuffle                                   |
-| ;;fwd /<time/>             | Forwards the track by a given amount of time.                         | ;;fwd 2:30                                  |
-| ;;rew /<time/>             | Rewinds the track by a given amount of time.                          | ;;rew 30                                    |
-| ;;seek /<time/>            | Sets the position of the track to the given time.                     | ;;seek 2:45:00                              |
+| ;;fwd \<time\>             | Forwards the track by a given amount of time.                         | ;;fwd 2:30                                  |
+| ;;rew \<time\>             | Rewinds the track by a given amount of time.                          | ;;rew 30                                    |
+| ;;seek \<time\>            | Sets the position of the track to the given time.                     | ;;seek 2:45:00                              |
+| ;;split                    | Takes a YouTube track and splits the track based on the tracklist.    | ;;split \<yt-track\>                                          |
 
 ## Non-music Commands
 [(Requires the original bot)](https://discordapp.com/oauth2/authorize?&client_id=168686772216135681&scope=bot).
@@ -37,7 +38,6 @@ __If you want music__ you should be using https://discordapp.com/oauth2/authoriz
 | ;;say \<text\>             | Makes the bot echo something.                                         | ;;say test                                  |
 | ;;avatar                   | Displays the avatar of a user.                                        | ;;avatar @Frederikam                        |
 | ;;brainfuck \<code\> \[input\] | Executes [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) code. | ;;brainfuck ,.+.+. a                        |
-| ;;lua \<code\>             | Executes Lua code.                                                    | ;;lua print("Hello, world!")                |
 | ;;riot \<text\>            | Transforms text, [example](https://fred.moe/qxB.png)                  | ;;riot Hello, world                         |
 | ;;lenny                    | Sends a lenny face.                                                   | ;;lenny                                     |
 | ;;mal \<search term\>      | Searches MyAnimeList for animes and users.                            | ;;mal re:zero                               |
@@ -114,6 +114,12 @@ The bot is sometimes under very heavy load, particularly around weekends. You ca
 ### Why can't I hear the music bot, but other people can?
 This is a Discord bug. Occasionally you may need to restart your Discord client before you can hear users and bots speaking in voice chat.
 
+### The bot is saying I can't play a youtube video because it is blocked! How do I get around this?
+FredBoat is currently hosted in the US, which means that any videos that YouTube blocks in the US are unavailable. There's currently no way around this, but we may set up an internal proxy.
+
+### How do I get the bot to stay in my channel?
+The bot will automatically leave a voice channel if it is left unused for too long. This is to improve performance of the bot, as leaving the bot idling in a few extra thousand voice channel takes a hit on the CPU.
+
 ## Join FredBoat Hangout!
 We invite everyone to join FredBoat hangout, which is a place to discuss suggestions and request for support. I'm very willing to take suggestions for the bot so don't hesitate to say what you have in mind! [Click here to join!](https://discord.gg/0yXhQ9c36F4zsJMG)
 
@@ -123,4 +129,4 @@ You can join either our Discord server \(above\) or tweet us at [@DiscordFredBoa
 ## Credits
 FredBoat is developed by Fre_d (aka Frederikam) with the help of contributors on GitHub.
 
-The FredBoat logo was created by Sturm/JDK#0216.
+The FredBoat logo was created by Sturm/JDK\#0216.
