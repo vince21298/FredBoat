@@ -1,26 +1,14 @@
 # Running FredBoat as a systemd service
 Your linux distro needs to be using systemd, for example Ubuntu 15.04 and later; tested on 16.04.
-You will need the files `run.sh` & `fredboat.service`, which you can find at https://github.com/Frederikam/FredBoat/tree/master/FredBoat
+You will need the file `fredboat.service`, which you can find at https://github.com/Frederikam/FredBoat/tree/master/FredBoat
 
-Put the `run.sh` file into the same folder where your `FredBoat-X.Y.jar` and the config files are located:
-```
-├──FredBoat-1.0.jar
-├──credentials.yaml
-├──config.yaml
-└──run.sh
-```
-Edit the `run.sh` file and follow its instructions closely.
-You will need to edit in the path to the folder where your FredBoat jar is located, and also add that path to the `fredboat.service` file.
+Edit the `fredboat.service` file: 
+Set the `WorkingDirectory` with your path to the folder where your FredBoat jar and the config and credentials files are located.
+You might also need to edit the path to your java executable. You can find that path by running `which java` in your commandline. The default is `/usr/bin/java`.
 
-Some of the following commands may require to be run with sudo.
-
-Make `run.sh` executable:
-```sh
-chmod +x run.sh
-```
+Some of the following commands may require to be run with `sudo`.
 
 Copy `fredboat.service` to `/etc/systemd/system/`.
-Don't forget to edit in the path to your FredBoat folder:
 ```sh
 cp fredboat.service /etc/systemd/system/
 ```
@@ -28,6 +16,16 @@ cp fredboat.service /etc/systemd/system/
 Run this to have systemd recognize the new service we just added:
 ```sh
 systemctl daemon-reload
+```
+
+Enabling the service will have your machine run Fredboat automatically after a reboot:
+```sh
+systemctl enable fredboat.service
+```
+
+To disable automatic start after a reboot:
+```sh
+systemctl disable fredboat.service
 ```
 
 Run this to start FredBoat:
