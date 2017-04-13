@@ -7,16 +7,16 @@ This tutorial is users who want to host their own bot running FredBoat. Bear in 
 
 ### Requirements
 
-1. Java 8 JDK from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+1. [Java 8 JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 
 2. git and maven in your PATH
 
 3. [A registered Discord application](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
 
-4. Linux \(Windows works too, but this tutorial is targetted Linux\)
+4. Linux \(Windows works too, but this tutorial is targetted at Linux\)
 
 ### Instructions
-Clone the `master` branch of FredBoat:
+Clone the `master` branch of FredBoat recursively:
 
 ```sh
 git clone --recursive https://github.com/Frederikam/FredBoat.git
@@ -25,7 +25,7 @@ git clone --recursive https://github.com/Frederikam/FredBoat.git
 Now compile the bot:
 
 ```sh
-cd FredBoat.git/FredBoat
+cd FredBoat/FredBoat
 mvn package shade:shade
 ```
 
@@ -37,27 +37,33 @@ To run the bot you should set up a directory that looks like this:
 └──config.yaml
 ```
 
-The compiled bot can be found in `FredBoat.git/FredBoat/target`. A sample `config.yaml` and an example `credentials.yaml` can be found in https://github.com/Frederikam/FredBoat/tree/master/FredBoat
+The compiled bot can be found in `FredBoat/FredBoat/target`. A sample `config.yaml` and an example `credentials.yaml` can be found in https://github.com/Frederikam/FredBoat/tree/master/FredBoat
 
 In order to run the bot, you must first populate your bot with API credentials for Discord in the `credentials.yaml` file.
+
+Music bot only: Fill in the Discord bot token for patron and at least one Youtube API key. Set patron to true in the `config.yaml` file and development to false.
+
+Full bot: Fill in the Discord bot token for beta and every other setting too. Set development to true in the `config.yaml`.
 
 Example credentials.yaml file:
 
 ```yaml
 ---
 # For the ;;mal command
+# Create an account on https://myanimelist.net/ and enter its login below
+malUser:
 malPassword:
 
 token:
-  beta: 
-  production: 
-  music:
-
   # add your discord bot token below and remove the # (but keep two spaces in front of it)
   # find the token of your bot on https://discordapp.com/developers/applications/me
-  # Optionally fill the other token strings above in
+  # Optionally fill the other three tokens below in
 
-  #patron: YourTokenHere
+  #beta: YourTokenHere
+
+  production: 
+  music:
+  patron:
 
 # Used by the ;;split and ;;np commands. Must be hooked up to the Youtube Data API
 # add your google API keys in the brackets below, separated by commas if more than one, uncomment by removing the #
@@ -75,16 +81,13 @@ cbKey:
 # Used for the ;;leet command
 mashapeKey:
 
+# Used to access imgur galleries for some RandomImageCommands
+# acquired from here: https://api.imgur.com/oauth2/addclient
+# choose an option that does not require an Authorization callback URL
+imgurClientId:
 ```
 
-
-
-You also need to set patron to true in the `config.yaml` file.
-
-
-
-Once you are done configuring, run the bot with `java -jar FredBoat-1.0.jar`, which should run the bot as if it was the patron bot.
-
+Once you are done configuring, run the bot with `java -jar FredBoat-1.0.jar`.
 
 
 [Follow this link](http://docs.frederikam.com/systemdservice) to find a tutorial on running FredBoat as a `systemd` service.
