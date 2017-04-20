@@ -129,7 +129,7 @@ You can join either our Discord server \(above\) or tweet us at [@DiscordFredBoa
 ## Credits
 FredBoat is developed by Fre_d (aka Frederikam) with the help of contributors on GitHub.
 
-Special thanks to EJ Technologies for providing us with open source licenses for JProfiler.
+Special thanks to EJ Technologies for providing us with open source licenses for their [Java profiler](https://www.ej-technologies.com/products/jprofiler/overview.html).
 
 [![JProfiler](https://www.ej-technologies.com/images/product_banners/jprofiler_large.png)](https://www.ej-technologies.com/products/jprofiler/overview.html)
 
