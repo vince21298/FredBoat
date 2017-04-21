@@ -121,7 +121,7 @@ FredBoat is currently hosted in the US, which means that any videos that YouTube
 The bot will automatically leave a voice channel if it is left unused for too long. This is to improve performance of the bot, as leaving the bot idling in a few extra thousand voice channel takes a hit on the CPU.
 
 ## Join FredBoat Hangout!
-We invite everyone to join FredBoat hangout, which is a place to discuss suggestions and request for support. I'm very willing to take suggestions for the bot so don't hesitate to say what you have in mind! [Click here to join!](https://discord.gg/0yXhQ9c36F4zsJMG)
+We invite everyone to join FredBoat hangout, which is a place to discuss suggestions and request for support. I'm very willing to take suggestions for the bot so don't hesitate to say what you have in mind! [Click here to join!](https://discord.gg/cgPFW4q)
 
 ## Support
 You can join either our Discord server \(above\) or tweet us at [@DiscordFredBoat](https://twitter.com/DiscordFredBoat).
