@@ -44,7 +44,7 @@ public class DanceCommand extends Command implements IFunCommand {
                 synchronized (channel) {
                     try {
                     Message msg = channel.sendMessage('\u200b' + "\\o\\").complete(true);
-                    EventListenerBoat.messagesToDeleteIfIdDeleted.put(message.getId(), msg);
+                        EventListenerBoat.messagesToDeleteIfIdDeleted.put(message.getId(), msg.getId());
                     long start = System.currentTimeMillis();
                         synchronized (this) {
                             while (start + 60000 > System.currentTimeMillis()) {

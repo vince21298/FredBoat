@@ -34,7 +34,6 @@ import fredboat.commandmeta.abs.Command;
 import fredboat.db.EntityReader;
 import fredboat.feature.I18n;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
@@ -48,13 +47,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 public class EventListenerBoat extends AbstractEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(EventListenerBoat.class);
 
-    public static HashMap<String, Message> messagesToDeleteIfIdDeleted = new HashMap<>();
+    //first string is the users message ID, second string the id of fredboat's message that should be deleted if the
+    // user's message is deleted
+    public static Map<String, String> messagesToDeleteIfIdDeleted = new HashMap<>();
     private User lastUserToReceiveHelp;
 
     public EventListenerBoat() {
@@ -107,10 +109,8 @@ public class EventListenerBoat extends AbstractEventListener {
     @Override
     public void onMessageDelete(MessageDeleteEvent event) {
         if (messagesToDeleteIfIdDeleted.containsKey(event.getMessageId())) {
-            Message msg = messagesToDeleteIfIdDeleted.remove(event.getMessageId());
-            if (msg.getJDA() == event.getJDA()) {
-                msg.delete().queue();
-            }
+            String msgId = messagesToDeleteIfIdDeleted.remove(event.getMessageId());
+            event.getChannel().deleteMessageById(msgId).queue();
         }
     }
 
