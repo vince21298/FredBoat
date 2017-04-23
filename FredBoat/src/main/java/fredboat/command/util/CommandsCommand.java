@@ -12,7 +12,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -94,7 +93,7 @@ public class CommandsCommand extends Command implements IUtilCommand {
         out += "\n" + util;
         out += "\n" + memes;
 
-        if (PermissionUtil.checkPermission(guild, invoker, Permission.MESSAGE_MANAGE)) {
+        if (invoker.hasPermission(Permission.MESSAGE_MANAGE)) {
             out += "\n" + mod;
         }
 

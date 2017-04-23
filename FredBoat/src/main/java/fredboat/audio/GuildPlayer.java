@@ -29,12 +29,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import fredboat.FredBoat;
-import fredboat.audio.queue.AbstractTrackProvider;
-import fredboat.audio.queue.AudioLoader;
-import fredboat.audio.queue.AudioTrackContext;
-import fredboat.audio.queue.IdentifierContext;
-import fredboat.audio.queue.RepeatMode;
-import fredboat.audio.queue.SimpleTrackProvider;
+import fredboat.audio.queue.*;
 import fredboat.commandmeta.MessagingException;
 import fredboat.db.DatabaseNotReadyException;
 import fredboat.db.EntityReader;
@@ -48,7 +43,6 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
@@ -91,12 +85,12 @@ public class GuildPlayer extends AbstractPlayer {
             throw new MessagingException(I18n.get(getGuild()).getString("playerUserNotInChannel"));
         }
 
-        if (!PermissionUtil.checkPermission(targetChannel, targetChannel.getGuild().getSelfMember(), Permission.VOICE_CONNECT)
+        if (!targetChannel.getGuild().getSelfMember().hasPermission(targetChannel, Permission.VOICE_CONNECT)
                 && !targetChannel.getMembers().contains(getGuild().getSelfMember())) {
             throw new MessagingException(I18n.get(getGuild()).getString("playerJoinConnectDenied"));
         }
 
-        if (!PermissionUtil.checkPermission(targetChannel, targetChannel.getGuild().getSelfMember(), Permission.VOICE_SPEAK)) {
+        if (!targetChannel.getGuild().getSelfMember().hasPermission(targetChannel, Permission.VOICE_SPEAK)) {
             throw new MessagingException(I18n.get(getGuild()).getString("playerJoinSpeakDenied"));
         }
 
@@ -275,7 +269,7 @@ public class GuildPlayer extends AbstractPlayer {
 
     //Success, fail message
     public Pair<Boolean, String> canMemberSkipTracks(Member member, List<AudioTrackContext> list) {
-        if(PermissionUtil.checkPermission(getGuild(), member, Permission.MESSAGE_MANAGE)){
+        if (member.hasPermission(Permission.MESSAGE_MANAGE)) {
             return new ImmutablePair<>(true, null);
         } else {
             //We are not a mod

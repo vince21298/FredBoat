@@ -35,7 +35,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +45,8 @@ public class ClearCommand extends Command implements IModerationCommand {
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
         JDA jda = guild.getJDA();
-        
-        if(!PermissionUtil.checkPermission(channel, invoker, Permission.MESSAGE_MANAGE) && !DiscordUtil.isUserBotOwner(invoker.getUser())){
+
+        if (!invoker.hasPermission(channel, Permission.MESSAGE_MANAGE) && !DiscordUtil.isUserBotOwner(invoker.getUser())) {
             TextUtils.replyWithName(channel, invoker, " You must have Manage Messages to do that!");
             return;
         }
@@ -72,7 +71,7 @@ public class ClearCommand extends Command implements IModerationCommand {
                 channel.sendMessage("Deleted one message.").queue();
             } else {
 
-                if (!PermissionUtil.checkPermission(channel, guild.getSelfMember(), Permission.MESSAGE_MANAGE)) {
+                if (!guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE)) {
                     throw new MessagingException("I must have the `Manage Messages` permission to delete my own messages in bulk.");
                 }
 

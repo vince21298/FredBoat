@@ -13,7 +13,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,7 @@ public class HardbanCommand extends Command implements IModerationCommand {
             return false;
         }
 
-        if (!PermissionUtil.checkPermission(mod.getGuild(), mod, Permission.BAN_MEMBERS, Permission.KICK_MEMBERS) && !mod.isOwner()) {
+        if (!mod.hasPermission(Permission.BAN_MEMBERS, Permission.KICK_MEMBERS) && !mod.isOwner()) {
             TextUtils.replyWithName(channel, mod, I18n.get(channel.getGuild()).getString("modKickBanFailUserPerms"));
             return false;
         }
@@ -79,7 +78,7 @@ public class HardbanCommand extends Command implements IModerationCommand {
             return false;
         }
 
-        if (!PermissionUtil.checkPermission(mod.getGuild(), mod.getGuild().getSelfMember(), Permission.BAN_MEMBERS)) {
+        if (!mod.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             TextUtils.replyWithName(channel, mod, I18n.get(channel.getGuild()).getString("modBanBotPerms"));
             return false;
         }

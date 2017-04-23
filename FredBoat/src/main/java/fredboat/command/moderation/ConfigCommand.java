@@ -41,7 +41,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.text.MessageFormat;
 
@@ -69,7 +68,7 @@ public class ConfigCommand extends Command implements IModerationCommand {
     }
 
     private void setConfig(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
-        if(!PermissionUtil.checkPermission(guild, invoker, Permission.ADMINISTRATOR)
+        if (!invoker.hasPermission(Permission.ADMINISTRATOR)
                 && !DiscordUtil.isUserBotOwner(invoker.getUser())){
             channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("configNotAdmin"), invoker.getEffectiveName())).queue();
             return;
