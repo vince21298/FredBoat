@@ -111,7 +111,10 @@ public class FredBoatBot extends FredBoat {
         } catch (Exception ex) {
             log.error("Caught exception while reviving shard " + this, ex);
         }
-
+        
+        //remove listeners from decommissioned jda for good memory hygiene
+        jda.removeEventListener(shardWatchdogListener);
+        jda.removeEventListener(listener);
 
         jda.shutdown(false);
         jda = buildJDA();
