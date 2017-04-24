@@ -60,7 +60,7 @@ public class GuildPlayer extends AbstractPlayer {
     private final FredBoat shard;
     private final String guildId;
     public final Map<String, VideoSelection> selections = new HashMap<>();
-    private TextChannel currentTC;
+    private String currentTCId;
 
     private final AudioLoader audioLoader;
 
@@ -187,9 +187,13 @@ public class GuildPlayer extends AbstractPlayer {
         return getUserCurrentVoiceChannel(getGuild().getSelfMember());
     }
 
+    /**
+     * @return the text channel currently used for music commands, if there is none return #general
+     */
     public TextChannel getActiveTextChannel() {
-        if (currentTC != null) {
-            return currentTC;
+        TextChannel currentTc = getCurrentTC();
+        if (currentTc != null) {
+            return currentTc;
         } else {
             log.warn("No currentTC in " + getGuild() + "! Returning public channel...");
             return getGuild().getPublicChannel();
@@ -260,11 +264,18 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public void setCurrentTC(TextChannel currentTC) {
-        this.currentTC = currentTC;
+        this.currentTCId = currentTC.getId();
     }
 
+    /**
+     * @return currently used TextChannel or null if there is none
+     */
     public TextChannel getCurrentTC() {
-        return currentTC;
+        try {
+            return shard.getJda().getTextChannelById(currentTCId);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     //Success, fail message

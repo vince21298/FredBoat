@@ -30,18 +30,18 @@ import net.dv8tion.jda.core.hooks.EventListener;
 
 public class ShardWatchdogListener implements EventListener {
 
-    private Event lastEvent = null;
+    private String lastEvent = null;
     private long lastEventTime = System.currentTimeMillis();
     private long eventCount = 0;
 
     @Override
     public void onEvent(Event event) {
-        lastEvent = event;
+        lastEvent = event.getClass().getSimpleName();
         lastEventTime = System.currentTimeMillis();
         eventCount++;
     }
 
-    public Event getLastEvent() {
+    public String getLastEvent() {
         return lastEvent;
     }
 
