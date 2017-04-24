@@ -126,6 +126,11 @@ We invite everyone to join FredBoat hangout, which is a place to discuss suggest
 ## Support
 You can join either our Discord server \(above\) or tweet us at [@DiscordFredBoat](https://twitter.com/DiscordFredBoat).
 
+## Legal
+By using any of my hosted (but not selfhosted) bots you are subject to our (very minimal!) [terms of service](http://docs.frederikam.com/terms).
+
+Effective as of 25-apr-2017.
+
 ## Credits
 FredBoat is developed by Fre_d (aka Frederikam) with the help of contributors on GitHub.
 
