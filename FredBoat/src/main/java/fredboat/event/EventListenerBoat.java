@@ -33,6 +33,8 @@ import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
 import fredboat.db.EntityReader;
 import fredboat.feature.I18n;
+import fredboat.util.ratelimit.RateResult;
+import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -64,6 +66,11 @@ public class EventListenerBoat extends AbstractEventListener {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+
+        if (Ratelimiter.getRatelimiter().isBlacklisted(event.getMember().getUser().getId())) {
+            return;
+        }
+
         if (event.getPrivateChannel() != null) {
             log.info("PRIVATE" + " \t " + event.getAuthor().getName() + " \t " + event.getMessage().getRawContent());
             return;
@@ -97,13 +104,27 @@ public class EventListenerBoat extends AbstractEventListener {
                 return;
             }
 
-            CommandManager.prefixCalled(invoked, event.getGuild(), event.getTextChannel(), event.getMember(), event.getMessage());
+            limitOrExecuteCommand(invoked, event);
             //TODO JCA (=TalkCommand) is borken. Don't throw unnecessary error reports.
 //        } else if (event.getMessage().getRawContent().startsWith("<@" + event.getJDA().getSelfUser().getId() + ">")) {
 //            log.info(event.getGuild().getName() + " \t " + event.getAuthor().getName() + " \t " + event.getMessage().getRawContent());
 //            CommandManager.commandsExecuted++;
 //            TalkCommand.talk(event.getMember(), event.getTextChannel(), event.getMessage().getRawContent().substring(event.getJDA().getSelfUser().getAsMention().length() + 1));
         }
+    }
+
+    /**
+     * check the rate limit of user and execute the command if everything is fine
+     */
+    private void limitOrExecuteCommand(Command invoked, MessageReceivedEvent event) {
+        RateResult result = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked);
+        if (result.allowed)
+            CommandManager.prefixCalled(invoked, event.getGuild(), event.getTextChannel(), event.getMember(), event.getMessage());
+        else {
+            String out = event.getMember().getAsMention() + ": " + result.reason;
+            event.getTextChannel().sendMessage(out).queue();
+        }
+
     }
 
     @Override
@@ -116,6 +137,11 @@ public class EventListenerBoat extends AbstractEventListener {
 
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+
+        if (Ratelimiter.getRatelimiter().isBlacklisted(event.getAuthor().getId())) {
+            return;
+        }
+
         if (event.getAuthor() == lastUserToReceiveHelp) {
             //Ignore, they just got help! Stops any bot chain reactions
             return;

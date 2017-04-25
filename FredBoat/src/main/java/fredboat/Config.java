@@ -77,6 +77,7 @@ public class Config {
     private String prefix = DEFAULT_PREFIX;
     private boolean restServerEnabled = true;
     private List<String> adminIds = new ArrayList<>();
+    private boolean useAutoBlacklist = false;
 
     //testing related stuff
     private String testBotToken;
@@ -126,6 +127,7 @@ public class Config {
             } else if (admins instanceof String) {
                 adminIds.add(admins + "");
             }
+            useAutoBlacklist = (boolean) config.getOrDefault("useAutoBlacklist", useAutoBlacklist);
 
             log.info("Using prefix: " + prefix);
 
@@ -344,6 +346,10 @@ public class Config {
 
     public List<String> getAdminIds() {
         return adminIds;
+    }
+
+    public boolean useAutoBlacklist() {
+        return useAutoBlacklist;
     }
 
     public String getTestBotToken() {
