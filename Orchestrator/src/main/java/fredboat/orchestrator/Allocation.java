@@ -25,14 +25,31 @@
 
 package fredboat.orchestrator;
 
-import org.springframework.boot.SpringApplication;
+public class Allocation {
 
-public class Launcher {
+    private final String key;
+    private final int chunk;
+    private final long lastBeat = System.currentTimeMillis();
 
-    public static void main(String[] args) {
-        Allocator.INSTANCE = new Allocator(5, 5); // Total of 25 shards
+    Allocation(String key, int chunk) {
+        this.key = key;
+        this.chunk = chunk;
+    }
 
-        SpringApplication.run(OrchestrationController.class, args);
+    public String getKey() {
+        return key;
+    }
+
+    public int getChunk() {
+        return chunk;
+    }
+
+    public long getLastBeat() {
+        return lastBeat;
+    }
+
+    public boolean isStale() {
+        return true; //TODO
     }
 
 }
