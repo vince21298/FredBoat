@@ -37,6 +37,7 @@
         <module>FredBoat</module>
         <module>FredBoat-Bootloader</module>
         <module>Shared</module>
+        <module>Orchestrator</module>
     </modules>
 
     <properties>
