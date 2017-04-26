@@ -23,6 +23,8 @@
  *
  */
 
+package fredboat.orchestrator;
+
 import org.springframework.boot.SpringApplication;
 
 public class Launcher {
