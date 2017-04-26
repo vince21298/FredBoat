@@ -30,6 +30,8 @@ import org.springframework.boot.SpringApplication;
 public class Launcher {
 
     public static void main(String[] args) {
+        Allocator.INSTANCE = new Allocator(5, 5); // Total of 25 shards
+
         SpringApplication.run(OrchestrationController.class, args);
     }
 
