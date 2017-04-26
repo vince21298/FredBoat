@@ -1,11 +1,13 @@
 package fredboat.util.ratelimit;
 
+import fredboat.FredBoat;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by napster on 17.04.17.
@@ -19,16 +21,15 @@ public class Ratelimit {
 
     public enum Scope {USER, GUILD}
 
-    private final ConcurrentHashMap<String, Rate> limits;
+    private final Long2ObjectOpenHashMap<Rate> limits;
     private final long maxRequests;
     private final long timeSpan;
-    private Blacklist blacklist;
 
     //users that can never be limited
-    private final Set<String> userWhiteList;
+    private final Set<Long> userWhiteList;
 
     //are we limiting the individual user or whole guilds?
-    private final Scope scope;
+    public final Scope scope;
 
     //class of commands this ratelimiter should be restricted to
     //creative use allows usage of other classes
@@ -44,20 +45,20 @@ public class Ratelimit {
      * @param maxRequests   how many maxRequests shall be possible in the specified time
      * @param milliseconds  time in milliseconds, in which maxRequests shall be allowed
      * @param clazz         the optional (=can be null) clazz of commands to be ratelimited by this ratelimiter
-     * @param blacklist     the optional (=can be null) blacklist, if none is set, no auto blacklist will be issued
      */
-    public Ratelimit(Set<String> userWhiteList, Scope scope, long maxRequests, long milliseconds, Class clazz, Blacklist blacklist) {
-        //TODO optimization: initialize the map with a sane high value, like the whole user base of fredboat (checkout where ;;mstats gets its numbers from)
-        this.limits = new ConcurrentHashMap<>();
+    public Ratelimit(Set<Long> userWhiteList, Scope scope, long maxRequests, long milliseconds, Class clazz) {
+        this.limits = new Long2ObjectOpenHashMap<>();
 
         this.userWhiteList = Collections.unmodifiableSet(userWhiteList);
         this.scope = scope;
         this.maxRequests = maxRequests;
         this.timeSpan = milliseconds;
         this.clazz = clazz;
-        this.blacklist = blacklist;
     }
 
+    public RateResult isAllowed(Member invoker, int weight) {
+        return isAllowed(invoker, weight, null, null);
+    }
 
     /**
      * @return a RateResult object containing information whether the users request is rate limited or not and the reason for that
@@ -65,18 +66,19 @@ public class Ratelimit {
      * Caveat: This allows requests to overstep the ratelimit with single high weight requests.
      * The clearing of timestamps ensures it will take longer for them to get available again though.
      */
-    public RateResult isAllowed(Member invoker, int weight) {
+    public RateResult isAllowed(Member invoker, int weight, Blacklist blacklist, TextChannel blacklistOutput) {
         //This gets called real often, right before every command execution. Keep it light, don't do any blocking stuff,
         //ensure whatever you do in here is threadsafe, but minimize usage of synchronized as it adds overhead
 
         //first of all, ppl that can never get limited or blacklisted, no matter what
-        if (userWhiteList.contains(invoker.getUser().getId())) return new RateResult(true, "User is whitelisted");
+        if (userWhiteList.contains(invoker.getUser().getIdLong())) return new RateResult(true, "User is whitelisted");
 
         RateResult result = new RateResult(false, "Rate limit has not been calculated");
 
         //user or guild scope?
-        String id = invoker.getUser().getId();
-        if (scope == Scope.GUILD) id = invoker.getGuild().getId();
+        long id;
+        if (scope == Scope.GUILD) id = invoker.getGuild().getIdLong();
+        else id = invoker.getUser().getIdLong();
 
         Rate rate = limits.get(id);
         if (rate == null)
@@ -90,8 +92,8 @@ public class Ratelimit {
             //clear outdated timestamps
             long maxTimeStampsToClear = (now - rate.lastUpdated) * maxRequests / timeSpan;
             long cleared = 0;
-            while (rate.timeStamps.size() > 0 && rate.timeStamps.get(0) + timeSpan < now && cleared < maxTimeStampsToClear) {
-                rate.timeStamps.remove(0);
+            while (rate.timeStamps.size() > 0 && rate.timeStamps.getLong(0) + timeSpan < now && cleared < maxTimeStampsToClear) {
+                rate.timeStamps.removeLong(0);
                 cleared++;
             }
 
@@ -110,19 +112,34 @@ public class Ratelimit {
         //reaching this point in the code means a rate limit was hit
         //the following code has to handle that
         result.allowed = false;
-        result.reason = "You shall not pass. Rate limit reached"; //TODO make sure the feedback the user receivers is more informative
+        result.reason = "You shall not pass. Rate limit reached";
 
 
-        if (blacklist != null)
-            result = blacklist.hitRateLimit(id, result);
+        if (blacklist != null && scope == Scope.USER)
+            FredBoat.executor.submit(() -> bannerinoUserino(invoker, blacklist, blacklistOutput));
         return result;
+    }
+
+    /**
+     * Notifies the autoblacklist that a user has hit a limit, and handles the response of the blacklist
+     * Best run async as the blacklist might be hitting a database
+     */
+    private void bannerinoUserino(Member invoker, Blacklist blacklist, TextChannel channel) {
+        long length = blacklist.hitRateLimit(invoker.getUser().getIdLong());
+        if (length <= 0) {
+            return; //nothing to do here
+        }
+        long s = length / 1000;
+        String duration = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
+        String out = ":hammer: _**BLACKLISTED**_ :hammer: for **" + duration + "**";
+        channel.sendMessage(invoker.getAsMention() + ": " + out).queue();
     }
 
 
     /**
      * synchronize the creation of new Rate objects
      */
-    private synchronized Rate getOrCreateRate(String id) {
+    private synchronized Rate getOrCreateRate(long id) {
         //was one created on the meantime? use that
         Rate result = limits.get(id);
         if (result != null) return result;
@@ -136,30 +153,30 @@ public class Ratelimit {
     /**
      * completely resets a limit for an id (user or guild for example)
      */
-    public synchronized void liftLimit(String id) {
+    public synchronized void liftLimit(long id) {
         limits.remove(id);
     }
 
     class Rate {
         //to whom this belongs
-        String id;
+        final long id;
 
         //last time this object was updated
         //useful for keeping track of how many timeStamps should be removed to ensure the limit is enforced
         long lastUpdated;
 
         //collects the requests
-        ArrayList<Long> timeStamps;
+        LongArrayList timeStamps;
 
-        private Rate(String id) {
+        private Rate(long id) {
             this.id = id;
             this.lastUpdated = System.currentTimeMillis();
-            this.timeStamps = new ArrayList<>();
+            this.timeStamps = new LongArrayList();
         }
 
         @Override
         public int hashCode() {
-            return id.hashCode();
+            return Long.hashCode(id);
         }
     }
 }

@@ -32,7 +32,7 @@ public class UnblacklistCommand extends Command implements ICommandAdminRestrict
             return;
         }
 
-        Ratelimiter.getRatelimiter().liftLimitAndBlacklist(userId);
+        Ratelimiter.getRatelimiter().liftLimitAndBlacklist(user.getIdLong());
         channel.sendMessage(TextUtils.replyWithName(channel, invoker, "Ban and rate limit lifted for " + user.getAsMention()));
 
     }

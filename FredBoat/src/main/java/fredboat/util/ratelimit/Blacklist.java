@@ -1,17 +1,23 @@
 package fredboat.util.ratelimit;
 
-import fredboat.util.TextUtils;
+import fredboat.db.EntityReader;
+import fredboat.db.EntityWriter;
+import fredboat.db.entity.BlacklistEntry;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by napster on 17.04.17.
  * <p>
  * Provides a forgiving blacklist with progressively increasing blacklist lengths
+ *
+ * In an environment where shards are running in different containers and not inside a single jar this class will need
+ * some help in keeping bans up to date, that is, reading them from the database, either on changes (rethinkDB?) or
+ * through an agent in regular periods
  */
 public class Blacklist {
 
@@ -31,15 +37,18 @@ public class Blacklist {
 
     private final long rateLimitHitsBeforeBlacklist;
 
-    private final ConcurrentHashMap<String, BlacklistEntry> blacklist;
+    private final Long2ObjectOpenHashMap<BlacklistEntry> blacklist;
 
     //users that can never be blacklisted
-    private final Set<String> userWhiteList;
+    private final Set<Long> userWhiteList;
 
 
-    public Blacklist(Set<String> userWhiteList, long rateLimitHitsBeforeBlacklist) {
-        //TODO optimization: initialize the map with a sane high value, like the whole user base of fredboat (checkout where ;;mstats gets its numbers from)
-        this.blacklist = new ConcurrentHashMap<>();
+    public Blacklist(Set<Long> userWhiteList, long rateLimitHitsBeforeBlacklist) {
+        this.blacklist = new Long2ObjectOpenHashMap<>();
+        //load blacklist from database
+        for (BlacklistEntry ble : EntityReader.loadBlacklist()) {
+            blacklist.put(ble.id, ble);
+        }
 
         this.rateLimitHitsBeforeBlacklist = rateLimitHitsBeforeBlacklist;
         this.userWhiteList = Collections.unmodifiableSet(userWhiteList);
@@ -52,7 +61,7 @@ public class Blacklist {
     //This will be called really fucking often, should be able to be accessed non-synchronized for performance
     // -> don't do any writes in here
     // -> don't call expensive methods
-    public boolean isBlacklisted(String id) {
+    public boolean isBlacklisted(long id) {
 
         //first of all, ppl that can never get blacklisted no matter what
         if (userWhiteList.contains(id)) return false;
@@ -69,8 +78,12 @@ public class Blacklist {
         return true;
     }
 
-    public RateResult hitRateLimit(String id, RateResult result) {
+    /**
+     * @return length if issued blacklisting, 0 if none has been issued
+     */
+    public long hitRateLimit(long id) {
         //update blacklist entry of this id
+        long blacklistingLength = 0;
         BlacklistEntry blEntry = blacklist.get(id);
         if (blEntry == null)
             blEntry = getOrCreateBlacklistEntry(id);
@@ -86,11 +99,12 @@ public class Blacklist {
                 blEntry.blacklistedTimestamp = System.currentTimeMillis();
                 blEntry.rateLimitReached = 0; //reset these for the next time
 
-                long milliseconds = getBlacklistTimeLength(blEntry.level);
-                String duration = TextUtils.formatTime(milliseconds);
-                result.reason = ":hammer: _**BLACKLISTED**_ :hammer: for **" + duration + "**";
+                blacklistingLength = getBlacklistTimeLength(blEntry.level);
             }
-            return result;
+            //persist it
+            //if this turns up to be a performance bottleneck, have an agent run that persists the blacklist occasionally
+            EntityWriter.mergeBlacklistEntry(blEntry);
+            return blacklistingLength;
         }
     }
 
@@ -98,7 +112,7 @@ public class Blacklist {
     /**
      * synchronize the creation of new blacklist entries
      */
-    private synchronized BlacklistEntry getOrCreateBlacklistEntry(String id) {
+    private synchronized BlacklistEntry getOrCreateBlacklistEntry(long id) {
         //was one created in the meantime? use that
         BlacklistEntry result = blacklist.get(id);
         if (result != null) return result;
@@ -112,8 +126,9 @@ public class Blacklist {
     /**
      * completely resets a blacklist for an id
      */
-    public synchronized void liftBlacklist(String id) {
+    public synchronized void liftBlacklist(long id) {
         blacklist.remove(id);
+        EntityWriter.deleteBlacklistEntry(id);
     }
 
     /**
@@ -122,32 +137,5 @@ public class Blacklist {
     private long getBlacklistTimeLength(int blacklistLevel) {
         if (blacklistLevel < 0) return 0;
         return blacklistLevel >= blacklistLevels.size() ? blacklistLevels.get(blacklistLevels.size() - 1) : blacklistLevels.get(blacklistLevel);
-    }
-
-    class BlacklistEntry {
-        //id of the user or guild that this blacklist entry belongs to
-        String id;
-
-        //blacklist level that the user or guild is on
-        //this should increase every time progressively
-        int level;
-
-        //keeps track of how many times a user or guild reached the rate limit on the current blacklist level
-        int rateLimitReached;
-
-        //time when the id was blacklisted
-        long blacklistedTimestamp;
-
-        public BlacklistEntry(String id) {
-            this.id = id;
-            this.level = -1;
-            this.rateLimitReached = 0;
-            this.blacklistedTimestamp = System.currentTimeMillis();
-        }
-
-        @Override
-        public int hashCode() {
-            return id.hashCode();
-        }
     }
 }

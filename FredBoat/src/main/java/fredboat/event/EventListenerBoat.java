@@ -67,7 +67,7 @@ public class EventListenerBoat extends AbstractEventListener {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
 
-        if (Ratelimiter.getRatelimiter().isBlacklisted(event.getMember().getUser().getId())) {
+        if (Ratelimiter.getRatelimiter().isBlacklisted(event.getMember().getUser().getIdLong())) {
             return;
         }
 
@@ -117,7 +117,7 @@ public class EventListenerBoat extends AbstractEventListener {
      * check the rate limit of user and execute the command if everything is fine
      */
     private void limitOrExecuteCommand(Command invoked, MessageReceivedEvent event) {
-        RateResult result = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked);
+        RateResult result = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked, 1, event.getTextChannel());
         if (result.allowed)
             CommandManager.prefixCalled(invoked, event.getGuild(), event.getTextChannel(), event.getMember(), event.getMessage());
         else {
@@ -138,7 +138,7 @@ public class EventListenerBoat extends AbstractEventListener {
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
 
-        if (Ratelimiter.getRatelimiter().isBlacklisted(event.getAuthor().getId())) {
+        if (Ratelimiter.getRatelimiter().isBlacklisted(event.getAuthor().getIdLong())) {
             return;
         }
 

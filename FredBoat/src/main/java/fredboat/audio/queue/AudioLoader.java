@@ -41,7 +41,6 @@ import fredboat.util.YoutubeAPI;
 import fredboat.util.YoutubeVideo;
 import fredboat.util.ratelimit.RateResult;
 import fredboat.util.ratelimit.Ratelimiter;
-import fredboat.util.ratelimit.SlowImportedPlaylistRateIdentifier;
 import net.dv8tion.jda.core.MessageBuilder;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -120,7 +119,7 @@ public class AudioLoader implements AudioLoadResultHandler {
         if (playlistInfo == null) //not a slow loading playlist
             return true;
         else {
-            RateResult result = Ratelimiter.getRatelimiter().isAllowed(ic.getMember(), new SlowImportedPlaylistRateIdentifier(), playlistInfo.getTotalTracks());
+            RateResult result = Ratelimiter.getRatelimiter().isAllowed(ic.getMember(), playlistInfo, playlistInfo.getTotalTracks(), ic.getTextChannel());
 
             if (result.allowed) {
                 //inform user we are possibly about to do nasty time consuming work

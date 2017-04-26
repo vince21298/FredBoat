@@ -26,6 +26,7 @@
 package fredboat.db;
 
 import fredboat.FredBoat;
+import fredboat.db.entity.BlacklistEntry;
 import fredboat.db.entity.GuildConfig;
 import fredboat.db.entity.IEntity;
 import fredboat.db.entity.UConfig;
@@ -47,6 +48,10 @@ public class EntityWriter {
         merge(config);
     }
 
+    public static void mergeBlacklistEntry(BlacklistEntry ble) {
+        merge(ble);
+    }
+
     private static void merge(IEntity entity) {
         DatabaseManager dbManager = FredBoat.getDbManager();
         if (!dbManager.isAvailable()) {
@@ -60,6 +65,26 @@ public class EntityWriter {
             em.getTransaction().commit();
         } catch (JDBCConnectionException e) {
             log.error("Failed to merge entity", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    public static void deleteBlacklistEntry(long id) {
+        DatabaseManager dbManager = FredBoat.getDbManager();
+        if (!dbManager.isAvailable()) {
+            throw new DatabaseNotReadyException("The database is not available currently. Please try again later.");
+        }
+
+        EntityManager em = dbManager.getEntityManager();
+        try {
+            BlacklistEntry ble = em.find(BlacklistEntry.class, id);
+
+            if (ble != null) {
+                em.getTransaction().begin();
+                em.remove(ble);
+                em.getTransaction().commit();
+            }
         } finally {
             em.close();
         }
