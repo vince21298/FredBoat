@@ -34,5 +34,6 @@
     <modules>
         <module>FredBoat</module>
         <module>FredBoat-Bootloader</module>
+        <module>Orchestrator</module>
     </modules>
 </project>
