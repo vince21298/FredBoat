@@ -25,14 +25,34 @@
 
 package fredboat.orchestrator;
 
-import org.springframework.boot.SpringApplication;
+import java.util.HashMap;
 
-public class Launcher {
+public class Allocator {
 
-    public static void main(String[] args) {
-        Allocator.INSTANCE = new Allocator(5, 5); // Total of 25 shards
+    public static Allocator INSTANCE;
+    
+    private final HashMap<Integer, Allocation> allocations = new HashMap<>();
+    private final int chunkSize;
+    private final int totalChunkCount;
 
-        SpringApplication.run(OrchestrationController.class, args);
+    public Allocator(int chunkSize, int totalChunkCount) {
+        this.chunkSize = chunkSize;
+        this.totalChunkCount = totalChunkCount;
+    }
+
+    Allocation allocate(String key) {
+        int chunk = getLowestAvailableChunk();
+        allocations.put(chunk, new Allocation(key, chunk));
+    }
+    
+    private int getLowestAvailableChunk() {
+        for (int i = 0; i < totalChunkCount; i++) {
+            if(!allocations.containsKey(i) || allocations.get(i).isStale()) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
 }
