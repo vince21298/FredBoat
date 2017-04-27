@@ -29,7 +29,6 @@ import fredboat.Config;
 import fredboat.FredBoat;
 import fredboat.event.ShardWatchdogListener;
 import fredboat.util.DistributionEnum;
-import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +40,14 @@ public class ShardWatchdogAgent extends Thread {
     private static final int INTERVAL_MILLIS = 10000; // 10 secs
     private static final int ACCEPTABLE_SILENCE = getAcceptableSilenceThreshold();
 
+    private boolean shutdown = false;
+
     @Override
     public void run() {
         log.info("Started shard watchdog");
 
         //noinspection InfiniteLoopStatement
-        while (true) {
+        while (!shutdown) {
             try {
                 inspect();
                 sleep(INTERVAL_MILLIS);
@@ -65,14 +66,13 @@ public class ShardWatchdogAgent extends Thread {
         List<FredBoat> shards = FredBoat.getShards();
 
         for(FredBoat shard : shards) {
+            if (shutdown) break;
             ShardWatchdogListener listener = shard.getShardWatchdogListener();
 
             long diff = System.currentTimeMillis() - listener.getLastEventTime();
 
             if(diff > ACCEPTABLE_SILENCE) {
-                if (shard.getJda().getStatus() == JDA.Status.SHUTDOWN) {
-                    log.warn("Did not revive shard " + shard.getShardInfo() + " because it was shut down!");
-                } else if(listener.getEventCount() < 100) {
+                if (listener.getEventCount() < 100) {
                     log.warn("Did not revive shard " + shard.getShardInfo() + " because it did not receive enough events since construction!");
                 } else {
                     log.warn("Reviving shard " + shard.getShardInfo() + " after " + (diff / 1000) +
@@ -82,6 +82,10 @@ public class ShardWatchdogAgent extends Thread {
                 }
             }
         }
+    }
+
+    public void shutdown() {
+        shutdown = true;
     }
 
     private static int getAcceptableSilenceThreshold() {

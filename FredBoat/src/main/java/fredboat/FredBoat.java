@@ -99,6 +99,8 @@ public abstract class FredBoat {
     JDA jda;
     private static FredBoatClient fbClient;
 
+    private static ShardWatchdogAgent shardWatchdogAgent;
+
     private boolean hasReadiedOnce = false;
 
     public static void main(String[] args) throws LoginException, IllegalArgumentException, InterruptedException, IOException, UnirestException {
@@ -198,7 +200,7 @@ public abstract class FredBoat {
             carbonitexAgent.start();
         }
 
-        ShardWatchdogAgent shardWatchdogAgent = new ShardWatchdogAgent();
+        shardWatchdogAgent = new ShardWatchdogAgent();
         shardWatchdogAgent.setDaemon(true);
         shardWatchdogAgent.start();
     }
@@ -330,6 +332,8 @@ public abstract class FredBoat {
     //Shutdown hook
     private static final Runnable ON_SHUTDOWN = () -> {
         int code = shutdownCode != UNKNOWN_SHUTDOWN_CODE ? shutdownCode : -1;
+
+        shardWatchdogAgent.shutdown();
 
         try {
             MusicPersistenceHandler.handlePreShutdown(code);
