@@ -52,6 +52,9 @@
     </dependencies>
 
     <build>
+        <finalName>
+            FredBoat-Bootloader
+        </finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
