@@ -35,14 +35,21 @@ public class Allocator {
     private final int chunkSize;
     private final int totalChunkCount;
 
-    public Allocator(int chunkSize, int totalChunkCount) {
+    Allocator(int chunkSize, int totalChunkCount) {
         this.chunkSize = chunkSize;
         this.totalChunkCount = totalChunkCount;
     }
 
     Allocation allocate(String key) {
         int chunk = getLowestAvailableChunk();
-        allocations.put(chunk, new Allocation(key, chunk));
+
+        if(chunk == -1) {
+            throw new IllegalStateException("Can't allocate new shards! All shards are already taken.");
+        }
+        
+        Allocation allocation = new Allocation(key, chunk);
+        allocations.put(chunk, allocation);
+        return allocation;
     }
     
     private int getLowestAvailableChunk() {
