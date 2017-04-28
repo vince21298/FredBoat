@@ -190,6 +190,9 @@
         </repository>
     </repositories>
     <build>
+        <finalName>
+            FredBoat
+        </finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
