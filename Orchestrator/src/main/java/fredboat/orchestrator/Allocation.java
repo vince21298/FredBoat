@@ -29,11 +29,13 @@ public class Allocation {
 
     private final String key;
     private final int chunk;
-    private final long lastBeat = System.currentTimeMillis();
+    private final long assignedStartTime;
+    private long lastBeat = System.currentTimeMillis();
 
-    Allocation(String key, int chunk) {
+    Allocation(String key, int chunk, long assignedStartTime) {
         this.key = key;
         this.chunk = chunk;
+        this.assignedStartTime = assignedStartTime;
     }
 
     public String getKey() {
@@ -44,8 +46,16 @@ public class Allocation {
         return chunk;
     }
 
+    public long getAssignedStartTime() {
+        return assignedStartTime;
+    }
+
     public long getLastBeat() {
         return lastBeat;
+    }
+
+    void onBeat() {
+        lastBeat = System.currentTimeMillis();
     }
 
     public boolean isStale() {

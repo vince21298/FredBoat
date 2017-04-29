@@ -26,14 +26,18 @@
 package fredboat.orchestrator;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Allocator {
 
     public static Allocator INSTANCE;
-    
+
+    private static final int SHARD_START_INTERVAL_TIME = 5500; //Millis we expect a shard to take to start
+
     private final HashMap<Integer, Allocation> allocations = new HashMap<>();
     private final int chunkSize;
     private final int totalChunkCount;
+    private long earliestNewStartTime = System.currentTimeMillis();
 
     Allocator(int chunkSize, int totalChunkCount) {
         this.chunkSize = chunkSize;
@@ -46,10 +50,23 @@ public class Allocator {
         if(chunk == -1) {
             throw new IllegalStateException("Can't allocate new shards! All shards are already taken.");
         }
+
+        long startTime = Math.max(earliestNewStartTime, System.currentTimeMillis());
+        earliestNewStartTime = startTime + chunkSize * SHARD_START_INTERVAL_TIME;
         
-        Allocation allocation = new Allocation(key, chunk);
+        Allocation allocation = new Allocation(key, chunk, startTime);
         allocations.put(chunk, allocation);
         return allocation;
+    }
+
+    Allocation getAllocation(String key) {
+        for(Allocation alloc : allocations.values()) {
+            if(Objects.equals(alloc.getKey(), key)) {
+                return alloc;
+            }
+        }
+
+        return null;
     }
     
     private int getLowestAvailableChunk() {
