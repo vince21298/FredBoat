@@ -25,10 +25,12 @@
 
 package fredboat.orchestrator;
 
+import org.json.JSONObject;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -36,28 +38,34 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class OrchestrationController {
 
     // Called when a new container starts. Returns a list of shards to build
-    @GetMapping("/allocate")
+    @GetMapping(value = "/allocate", produces = "application/json")
     @ResponseBody
-    String allocate() {
+    String allocate(@RequestParam("key") String key) {
+        Allocation alloc = Allocator.INSTANCE.allocate(key);
+
+        JSONObject out = new JSONObject();
+
+        out.put("chunk", alloc.getChunk());
+        out.put("assignedStartTime", alloc.getAssignedStartTime());
+
         return "";
     }
 
     // Status of the swarm, like total number of guilds. Can also be used manually
-    @GetMapping("/status")
+    @GetMapping(value = "/status", produces = "application/json")
     @ResponseBody
     String status() {
         return "";
     }
 
     // Post shard statusses and make sure shards are still alive
-    @PostMapping("/heartbeat")
-    @ResponseBody
-    String heartbeat() {
-        return "";
+    @PostMapping(value = "/heartbeat", produces = "application/json")
+    void heartbeat(@RequestParam("key") String key) {
+        Allocator.INSTANCE.getAllocation(key).onBeat();
     }
 
     // Post an array of users so we can filter out duplicates
-    @PostMapping("/userstats")
+    @PostMapping(value = "/userstats", produces = "application/json")
     @ResponseBody
     String userstats() {
         return "";
