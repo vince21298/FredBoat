@@ -26,8 +26,13 @@
 package fredboat.orchestrator;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@ConfigurationProperties(prefix="orchestrator")
 public class Launcher {
+
+    private int chunkSize = 5;
+    private int chunkCount = 10;
 
     public static void main(String[] args) {
         Allocator.INSTANCE = new Allocator(5, 5); // Total of 25 shards
