@@ -1,0 +1,7 @@
+orchestrator:
+  chunkSize: 5
+  chunkCount: 5
+
+server:
+  port: 2500
+  address: 127.0.0.1
