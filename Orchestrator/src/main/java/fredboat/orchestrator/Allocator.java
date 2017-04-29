@@ -25,7 +25,11 @@
 
 package fredboat.orchestrator;
 
+import fredboat.orchestrator.stats.ShardReport;
+
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 public class Allocator {
@@ -77,6 +81,14 @@ public class Allocator {
         }
 
         return -1;
+    }
+
+    public List<ShardReport> getReports() {
+        List<ShardReport> reports = new LinkedList<>();
+
+        allocations.values().forEach(alloc -> reports.addAll(alloc.getReports()));
+
+        return reports;
     }
 
 }

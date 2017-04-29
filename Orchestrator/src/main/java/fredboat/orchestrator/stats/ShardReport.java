@@ -23,7 +23,7 @@
  *
  */
 
-package fredboat.orchestrator;
+package fredboat.orchestrator.stats;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,7 +36,7 @@ public class ShardReport {
     private int id;
     private String status;
     private int guilds;
-    private List<String> users = new LinkedList<>();
+    private List<Long> users = new LinkedList<>();
 
     public ShardReport(JSONObject json) {
         id = json.getInt("id");
@@ -44,7 +44,7 @@ public class ShardReport {
         guilds = json.getInt("guilds");
         JSONArray a = json.getJSONArray("users");
 
-        a.forEach(o -> users.add((String) o));
+        a.forEach(o -> users.add((Long) o));
     }
 
     public int getId() {
@@ -59,7 +59,7 @@ public class ShardReport {
         return guilds;
     }
 
-    public List<String> getUsers() {
+    public List<Long> getUsers() {
         return users;
     }
 }

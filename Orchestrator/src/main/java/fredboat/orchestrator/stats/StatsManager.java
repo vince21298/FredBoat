@@ -23,57 +23,48 @@
  *
  */
 
-package fredboat.orchestrator;
+package fredboat.orchestrator.stats;
 
-import fredboat.orchestrator.stats.ShardReport;
+import fredboat.orchestrator.Allocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-public class Allocation {
+public class StatsManager {
 
-    private static final int TIMEOUT_MILLIS = 15 * 1000;
+    private static final Logger log = LoggerFactory.getLogger(StatsManager.class);
+    private static int USER_COUNT_TIME_THRESHOLD = 5 * 60 * 1000;
+    
+    private static int totalUsers = 0;
+    private static long lastTimeUsersComputed = 0;
 
-    private final String key;
-    private final int chunk;
-    private final long assignedStartTime;
-    private long lastBeat = System.currentTimeMillis();
-    private List<ShardReport> reports = new ArrayList<>();
+    public static int getTotalGuilds() {
+        List<ShardReport> reports = Allocator.INSTANCE.getReports();
 
-    // Statistics
-    private List<String> users;
+        final int[] guilds = {0};
 
-    Allocation(String key, int chunk, long assignedStartTime) {
-        this.key = key;
-        this.chunk = chunk;
-        this.assignedStartTime = assignedStartTime;
+        reports.forEach(shardReport -> guilds[0] += shardReport.getGuilds());
+
+        return guilds[0];
+    }
+    
+    public static int getTotalUsers() {
+        // TODO: 4/29/2017  
     }
 
-    void onBeat() {
-        lastBeat = System.currentTimeMillis();
+    private static int computeTotalUsers() {
+        List<ShardReport> reports = Allocator.INSTANCE.getReports();
+        LinkedHashSet<Long> lhs = new LinkedHashSet<>();
+        
+        reports.forEach(shardReport -> lhs.addAll(shardReport.getUsers()));
+        
+        totalUsers = lhs.size();
+        
+        log.info("Calculated user count: " + totalUsers);
+        
+        return totalUsers;
     }
 
-    public void setReports(List<ShardReport> reports) {
-        this.reports = reports;
-    }
-
-    public boolean isStale() {
-        return (System.currentTimeMillis() - lastBeat) < TIMEOUT_MILLIS;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public int getChunk() {
-        return chunk;
-    }
-
-    public long getAssignedStartTime() {
-        return assignedStartTime;
-    }
-
-    public List<ShardReport> getReports() {
-        return reports;
-    }
 }
