@@ -25,53 +25,41 @@
 
 package fredboat.orchestrator;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.LinkedList;
 import java.util.List;
 
-public class Allocation {
+public class ShardReport {
 
-    private static final int TIMEOUT_MILLIS = 15 * 1000;
+    private int id;
+    private String status;
+    private int guilds;
+    private List<String> users = new LinkedList<>();
 
-    private final String key;
-    private final int chunk;
-    private final long assignedStartTime;
-    private long lastBeat = System.currentTimeMillis();
-    private List<ShardReport> reports = new ArrayList<>();
+    public ShardReport(JSONObject json) {
+        id = json.getInt("id");
+        status = json.getString("status");
+        guilds = json.getInt("guilds");
+        JSONArray a = json.getJSONArray("users");
 
-    // Statistics
-    private List<String> users;
-
-    Allocation(String key, int chunk, long assignedStartTime) {
-        this.key = key;
-        this.chunk = chunk;
-        this.assignedStartTime = assignedStartTime;
+        a.forEach(o -> users.add((String) o));
     }
 
-    void onBeat() {
-        lastBeat = System.currentTimeMillis();
+    public int getId() {
+        return id;
     }
 
-    public void setReports(List<ShardReport> reports) {
-        this.reports = reports;
+    public String getStatus() {
+        return status;
     }
 
-    public boolean isStale() {
-        return (System.currentTimeMillis() - lastBeat) < TIMEOUT_MILLIS;
+    public int getGuilds() {
+        return guilds;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public int getChunk() {
-        return chunk;
-    }
-
-    public long getAssignedStartTime() {
-        return assignedStartTime;
-    }
-
-    public List<ShardReport> getReports() {
-        return reports;
+    public List<String> getUsers() {
+        return users;
     }
 }

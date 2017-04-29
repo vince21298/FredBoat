@@ -26,18 +26,26 @@
 package fredboat.orchestrator;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @EnableAutoConfiguration
 public class OrchestrationController {
 
-    // Called when a new container starts. Returns a list of shards to build
+    private static final Logger log = LoggerFactory.getLogger(OrchestrationController.class);
+
+    // Called when a new container starts. Tells the invoker which shards to start and when
     @GetMapping(value = "/allocate", produces = "application/json")
     @ResponseBody
     String allocate(@RequestParam("key") String key) {
@@ -48,7 +56,10 @@ public class OrchestrationController {
         out.put("chunk", alloc.getChunk());
         out.put("assignedStartTime", alloc.getAssignedStartTime());
 
-        return "";
+        log.info("Allocated chunk " + alloc.getChunk() + " to " + key
+                + ". Will begin building in " + (alloc.getAssignedStartTime() - System.currentTimeMillis()) + " millis,");
+
+        return out.toString();
     }
 
     // Status of the swarm, like total number of guilds. Can also be used manually
@@ -60,15 +71,24 @@ public class OrchestrationController {
 
     // Post shard statusses and make sure shards are still alive
     @PostMapping(value = "/heartbeat", produces = "application/json")
-    void heartbeat(@RequestParam("key") String key) {
-        Allocator.INSTANCE.getAllocation(key).onBeat();
+    void heartbeat(@RequestBody String rawJson) {
+        JSONObject json = new JSONObject(rawJson);
+        Allocator.INSTANCE.getAllocation(json.getString("key")).onBeat();
     }
 
-    // Post an array of users so we can filter out duplicates
-    @PostMapping(value = "/userstats", produces = "application/json")
-    @ResponseBody
-    String userstats() {
-        return "";
+    // Collection of shard reports
+    @PostMapping(value = "/stats", produces = "application/json")
+    void userstats(@RequestBody String rawJson) {
+        JSONObject json = new JSONObject(rawJson);
+        Allocation alloc = Allocator.INSTANCE.getAllocation(json.getString("key"));
+
+        List<ShardReport> reports = new ArrayList<>();
+
+        json.getJSONArray("shards").forEach(o -> reports.add(new ShardReport((JSONObject) o)));
+
+        log.info("Received " + reports.size() + " reports from chunk " + alloc.getChunk());
+
+        alloc.setReports(reports);
     }
 
 }
