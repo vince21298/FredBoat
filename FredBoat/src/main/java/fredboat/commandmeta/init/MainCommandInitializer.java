@@ -85,7 +85,6 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("gif", new RemoteFileCommand("http://i.imgur.com/eBUFNJq.gif"));
         CommandRegistry.registerCommand("noods", new RemoteFileCommand("http://i.imgur.com/mKdTGlg.png"));
         CommandRegistry.registerCommand("internetspeed", new RemoteFileCommand("http://i.imgur.com/84nbpQe.png"));
-        CommandRegistry.registerCommand("hug", new RemoteFileCommand("http://i.imgur.com/E8zQ4yX.gif"));
         CommandRegistry.registerCommand("powerpoint", new RemoteFileCommand("http://i.imgur.com/i65ss6p.png"));
         CommandRegistry.registerCommand("cooldog", new DogCommand());
         CommandRegistry.registerAlias("cooldog", "dog");
@@ -96,6 +95,7 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("github", new TextCommand("https://github.com/Frederikam"));
         CommandRegistry.registerCommand("repo", new TextCommand("https://github.com/Frederikam/FredBoat"));
 
+        CommandRegistry.registerCommand("hug", new HugCommand("https://imgur.com/a/jHJOc"));
         CommandRegistry.registerCommand("pat", new PatCommand("https://imgur.com/a/WiPTl"));
         CommandRegistry.registerCommand("facedesk", new FacedeskCommand("https://imgur.com/a/I5Q4U"));
         CommandRegistry.registerCommand("roll", new RollCommand("https://imgur.com/a/lrEwS"));
