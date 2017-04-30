@@ -59,7 +59,7 @@ public class Config {
     private String oauthSecret;
     private final String jdbcUrl;
     private final int hikariPoolSize;
-    private final int numShards;
+    private int numShards;
     private String mashapeKey;
     private String malUser;
     private String malPassword;
@@ -171,7 +171,18 @@ public class Config {
                 log.info("Development distribution; forcing 2 shards");
                 numShards = 2;
             } else {
-                numShards = DiscordUtil.getRecommendedShardCount(getBotToken());
+                //this is the first request on start
+                //it sometimes fails cause network isn'T set up yet. wait 10 sec and try one more time in that case
+                try {
+                    numShards = DiscordUtil.getRecommendedShardCount(getBotToken());
+                } catch (Exception e) {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ex) {
+                        //duh
+                    }
+                    numShards = DiscordUtil.getRecommendedShardCount(getBotToken());
+                }
                 log.info("Discord recommends " + numShards + " shard(s)");
             }
 
