@@ -36,6 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Spark;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class API {
 
     private static final Logger log = LoggerFactory.getLogger(API.class);
@@ -66,7 +69,9 @@ public class API {
             JSONObject root = new JSONObject();
             JSONArray a = new JSONArray();
 
-            for(FredBoat fb : FredBoat.getShards()) {
+            //make a copy to avoid concurrent modification errors
+            List<FredBoat> shards = new ArrayList<>(FredBoat.getShards());
+            for (FredBoat fb : shards) {
                 JSONObject fbStats = new JSONObject();
                 fbStats.put("id", fb.getShardInfo().getShardId())
                         .put("guilds", fb.getJda().getGuilds().size())
