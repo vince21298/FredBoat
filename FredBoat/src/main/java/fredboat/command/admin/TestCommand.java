@@ -28,6 +28,7 @@ package fredboat.command.admin;
 import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.ICommandOwnerRestricted;
+import fredboat.db.DatabaseManager;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -54,10 +55,10 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
-        FredBoat.executor.submit(() -> invoke(channel, invoker, args));
+        FredBoat.executor.submit(() -> invoke(FredBoat.getDbManager(), channel, invoker, args));
     }
 
-    boolean invoke(TextChannel channel, Member invoker, String[] args) {
+    boolean invoke(DatabaseManager dbm, TextChannel channel, Member invoker, String[] args) {
 
         boolean result = false;
 
@@ -73,14 +74,14 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
             TextUtils.replyWithName(channel, invoker, "Beginning stress test with " + threads + " threads each doing " + operations + " operations");
         }
 
-        prepareStressTest();
+        prepareStressTest(dbm);
         long started = System.currentTimeMillis();
         Result[] results = new Result[threads];
         Throwable[] exceptions = new Throwable[threads];
 
         for (int i = 0; i < threads; i++) {
             results[i] = Result.WORKING;
-            new StressTestThread(i, operations, results, exceptions).start();
+            new StressTestThread(i, operations, results, exceptions, dbm).start();
         }
 
         //wait for when it's done and report the results
@@ -130,9 +131,9 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
         return true;
     }
 
-    private void prepareStressTest() {
+    private void prepareStressTest(DatabaseManager dbm) {
         //drop and recreate the test table
-        EntityManager em = FredBoat.getDbManager().getEntityManager();
+        EntityManager em = dbm.getEntityManager();
         try {
             em.getTransaction().begin();
             em.createNativeQuery(DROP_TEST_TABLE).executeUpdate();
@@ -149,13 +150,15 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
         private int operations;
         private Result[] results;
         private Throwable[] exceptions;
+        private DatabaseManager dbm;
 
 
-        StressTestThread(int number, int operations, Result[] results, Throwable[] exceptions) {
+        StressTestThread(int number, int operations, Result[] results, Throwable[] exceptions, DatabaseManager dbm) {
             this.number = number;
             this.operations = operations;
             this.results = results;
             this.exceptions = exceptions;
+            this.dbm = dbm;
         }
 
         @Override
@@ -164,7 +167,7 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
             EntityManager em = null;
             try {
                 for (int i = 0; i < operations; i++) {
-                    em = FredBoat.getDbManager().getEntityManager();
+                    em = dbm.getEntityManager();
                     try {
                         em.getTransaction().begin();
                         em.createNativeQuery(INSERT_TEST_TABLE)
