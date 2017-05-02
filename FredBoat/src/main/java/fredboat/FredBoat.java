@@ -107,7 +107,7 @@ public abstract class FredBoat {
     private boolean hasReadiedOnce = false;
 
     public static void main(String[] args) throws LoginException, IllegalArgumentException, InterruptedException, IOException, UnirestException {
-        Runtime.getRuntime().addShutdownHook(new Thread(ON_SHUTDOWN));
+        Runtime.getRuntime().addShutdownHook(new Thread(ON_SHUTDOWN, "FredBoat main shutdownhook"));
 
         log.info("\n\n" +
                 "  ______            _ ____              _   \n" +

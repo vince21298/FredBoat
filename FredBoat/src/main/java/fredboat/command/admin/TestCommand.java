@@ -152,8 +152,9 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
         private Throwable[] exceptions;
         private DatabaseManager dbm;
 
-
+        
         StressTestThread(int number, int operations, Result[] results, Throwable[] exceptions, DatabaseManager dbm) {
+            super(StressTestThread.class.getSimpleName() + " number");
             this.number = number;
             this.operations = operations;
             this.results = results;

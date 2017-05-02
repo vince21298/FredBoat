@@ -66,7 +66,7 @@ public abstract class ProvideJDASingleton {
     private static int totalAttempted = 0;
     private static List<String> classStats = new ArrayList<>();
 
-    private static Thread SHUTDOWNHOOK = new Thread() {
+    private static Thread SHUTDOWNHOOK = new Thread(ProvideJDASingleton.class.getSimpleName() + " shutdownhook") {
         @Override
         public void run() {
 

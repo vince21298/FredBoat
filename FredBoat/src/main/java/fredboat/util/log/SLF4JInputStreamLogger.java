@@ -38,6 +38,7 @@ public class SLF4JInputStreamLogger extends Thread {
     final BufferedReader br;
 
     public SLF4JInputStreamLogger(Logger log, InputStream is) {
+        super(SLF4JInputStreamLogger.class.getSimpleName());
         this.log = log;
         this.br = new BufferedReader(new InputStreamReader(is));
         setDaemon(true);

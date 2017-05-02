@@ -78,7 +78,7 @@ public class RandomImageCommand extends Command implements IFunCommand {
                     run = false;
                 }
             }
-        }).start();
+        }, RandomImageCommand.class.getSimpleName() + " imgur updater").start();
     }
 
     @Override

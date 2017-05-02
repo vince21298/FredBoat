@@ -42,6 +42,10 @@ public class ShardWatchdogAgent extends Thread {
 
     private boolean shutdown = false;
 
+    public ShardWatchdogAgent() {
+        super(ShardWatchdogAgent.class.getSimpleName());
+    }
+
     @Override
     public void run() {
         log.info("Started shard watchdog");

@@ -60,7 +60,7 @@ public class DanceCommand extends Command implements IFunCommand {
             }
         };
 
-        Thread thread = new Thread(func);
+        Thread thread = new Thread(func, DanceCommand.class.getSimpleName() + " dance");
         thread.start();
     }
 
