@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class DBConnectionWatchdogAgent extends Thread {
 
     private static final Logger log = LoggerFactory.getLogger(DBConnectionWatchdogAgent.class);
-    private static final int INTERVAL_MILLIS = 10000; // 10 secs
+    private static final int INTERVAL_MILLIS = 5000; // 5 sec
 
     private boolean shutdown = false;
 
@@ -38,6 +38,8 @@ public class DBConnectionWatchdogAgent extends Thread {
                 //the ssh tunnel does detect a disconnect, but doesn't provide a callback for that, so we have to check
                 //it ourselves
                 dbManager.isAvailable();
+
+                //only recover the database from a failed state
                 if (dbManager.state == DatabaseManager.DatabaseState.FAILED) {
                     log.info("Attempting to recover failed database connection");
                     dbManager.startup();

@@ -52,7 +52,8 @@ public class Config {
     public static Config CONFIG = null;
 
     public static String DEFAULT_PREFIX = ";;";
-    public static int HIKARI_TIMEOUT_MILLISECONDS = 10000;
+    //see https://github.com/brettwooldridge/HikariCP connectionTimeout
+    public static int HIKARI_TIMEOUT_MILLISECONDS = 1000;
 
     private final DistributionEnum distribution;
     private final String botToken;
@@ -186,7 +187,6 @@ public class Config {
                 log.info("Discord recommends " + numShards + " shard(s)");
             }
 
-            // hikariPoolSize = numShards * 2;
             //more database connections don't help with performance, so use a value based on available cores
             //http://www.dailymotion.com/video/x2s8uec_oltp-performance-concurrent-mid-tier-connections_tech
             if (jdbcUrl == null || "".equals(jdbcUrl))

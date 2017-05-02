@@ -43,6 +43,7 @@ class TestCommandTest extends ProvideJDASingleton {
         }
 
         //test the internal SQLite db
+        args[1] = args[2] = "2";
         DatabaseManager dbm = new DatabaseManager("jdbc:sqlite:fredboat.db", "org.hibernate.dialect.SQLiteDialect", 1);
         try {
             dbm.startup();
