@@ -28,7 +28,6 @@ package fredboat.command.admin;
 import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.ICommandOwnerRestricted;
-import fredboat.db.DatabaseManager;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -133,13 +132,15 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
 
     private void prepareStressTest() {
         //drop and recreate the test table
-        EntityManager em = DatabaseManager.getEntityManager();
-        em.getTransaction().begin();
-        em.createNativeQuery(DROP_TEST_TABLE).executeUpdate();
-        em.createNativeQuery(CREATE_TEST_TABLE).executeUpdate();
-        em.getTransaction().commit();
-
-        em.close();
+        EntityManager em = FredBoat.getDbManager().getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNativeQuery(DROP_TEST_TABLE).executeUpdate();
+            em.createNativeQuery(CREATE_TEST_TABLE).executeUpdate();
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
 
     private class StressTestThread extends Thread {
@@ -163,13 +164,16 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
             EntityManager em = null;
             try {
                 for (int i = 0; i < operations; i++) {
-                    em = DatabaseManager.getEntityManager();
-                    em.getTransaction().begin();
-                    em.createNativeQuery(INSERT_TEST_TABLE)
-                            .setParameter("val", (int) (Math.random() * 10000))
-                            .executeUpdate();
-                    em.getTransaction().commit();
-                    em.close(); //go crazy and request and close the EM for every single operation, this is a stress test after all
+                    em = FredBoat.getDbManager().getEntityManager();
+                    try {
+                        em.getTransaction().begin();
+                        em.createNativeQuery(INSERT_TEST_TABLE)
+                                .setParameter("val", (int) (Math.random() * 10000))
+                                .executeUpdate();
+                        em.getTransaction().commit();
+                    } finally {
+                        em.close(); //go crazy and request and close the EM for every single operation, this is a stress test after all
+                    }
                 }
             } catch (Exception e) {
                 results[number] = Result.FAILED;

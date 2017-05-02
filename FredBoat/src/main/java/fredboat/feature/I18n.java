@@ -25,7 +25,7 @@
 
 package fredboat.feature;
 
-import fredboat.db.DatabaseManager;
+import fredboat.db.DatabaseNotReadyException;
 import fredboat.db.EntityReader;
 import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildConfig;
@@ -77,46 +77,35 @@ public class I18n {
     }
 
     public static ResourceBundle get(Guild guild) {
-        if (DatabaseManager.state != DatabaseManager.DatabaseState.READY || guild == null) {
+        if (guild == null) {
             return DEFAULT.getProps();
         }
-
-        GuildConfig config;
-        
-        try {
-            config = EntityReader.getGuildConfig(guild.getId());
-        } catch (Exception e) {
-            log.error("Error when reading entity", e);
-            return DEFAULT.getProps();
-        }
-
-        return LANGS.getOrDefault(config.getLang(), DEFAULT).getProps();
+        return getLocale(guild).getProps();
     }
 
     public static FredBoatLocale getLocale(Guild guild) {
-        if(DatabaseManager.state != DatabaseManager.DatabaseState.READY){
-            return DEFAULT;
-        }
-
         GuildConfig config;
 
         try {
             config = EntityReader.getGuildConfig(guild.getId());
+        } catch (DatabaseNotReadyException e) {
+            //don't log spam the full exceptions
+            log.warn("Database not ready, returning default props");
+            return DEFAULT;
         } catch (Exception e) {
             log.error("Error when reading entity", e);
             return DEFAULT;
         }
+
         return LANGS.getOrDefault(config.getLang(), DEFAULT);
     }
 
     public static void set(Guild guild, String lang) throws LanguageNotSupportedException {
-        GuildConfig config = EntityReader.getGuildConfig(guild.getId());
-
-        if(!LANGS.containsKey(lang))
+        if (!LANGS.containsKey(lang))
             throw new LanguageNotSupportedException("Language not found");
 
+        GuildConfig config = EntityReader.getGuildConfig(guild.getId());
         config.setLang(lang);
-
         EntityWriter.mergeGuildConfig(config);
     }
 

@@ -41,25 +41,47 @@ import java.util.Properties;
 public class DatabaseManager {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseManager.class);
-    
-    private static EntityManagerFactory emf;
-    private static Session sshTunnel;
-    public static DatabaseState state = DatabaseState.UNINITIALIZED;
+
+    private EntityManagerFactory emf;
+    private Session sshTunnel;
+    public DatabaseState state = DatabaseState.UNINITIALIZED;
 
     //local port, if using SSH tunnel point your jdbc to this, e.g. jdbc:postgresql://localhost:9333/...
     private static final int SSH_TUNNEL_PORT = 9333;
 
+    private String jdbcUrl;
+    private String dialect;
+    private int poolSize;
+
     /**
      * @param jdbcUrl connection to the database
-     * @param dialect set to null or empty String to have it autodetected by Hibernate, chosen jdbc driver must support that
+     * @param dialect set to null or empty String to have it auto detected by Hibernate, chosen jdbc driver must support that
+     * @param poolSize max size of the connection pool
      */
-    public static void startup(String jdbcUrl, String dialect, int poolSize) {
+    public DatabaseManager(String jdbcUrl, String dialect, int poolSize) {
+        this.jdbcUrl = jdbcUrl;
+        this.dialect = dialect;
+        this.poolSize = poolSize;
+    }
+
+    /**
+     * Starts the database connection.
+     *
+     * @throws IllegalStateException if trying to start a database that is READY or INITIALIZING
+     */
+    public void startup() {
+        if (state == DatabaseState.READY || state == DatabaseState.INITIALIZING) {
+            throw new IllegalStateException("Can't start the database, when it's current state is " + state);
+        }
+
         state = DatabaseState.INITIALIZING;
 
         try {
-
-            if(Config.CONFIG.isUseSshTunnel()){
-                connectSSH();
+            if (Config.CONFIG.isUseSshTunnel()) {
+                //don't connect again if it's already connected
+                if (sshTunnel == null || !sshTunnel.isConnected()) {
+                    connectSSH();
+                }
             }
 
             //These are now located in the resources directory as XML
@@ -71,6 +93,7 @@ public class DatabaseManager {
             if (dialect != null && !"".equals(dialect)) properties.put("hibernate.dialect", dialect);
             properties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
 
+            //this does a lot of logs
             //properties.put("hibernate.show_sql", "true");
 
             //automatically update the tables we need
@@ -78,7 +101,9 @@ public class DatabaseManager {
             properties.put("hibernate.hbm2ddl.auto", "update");
 
             properties.put("hibernate.hikari.maximumPoolSize", Integer.toString(poolSize));
-            properties.put("hibernate.hikari.idleTimeout", Integer.toString(Config.HIKARI_TIMEOUT_MILLISECONDS));
+
+            //how long to wait for a connection becoming available, also the timeout when a DB fails
+            properties.put("hibernate.hikari.connectionTimeout", Integer.toString(Config.HIKARI_TIMEOUT_MILLISECONDS));
 
 
             LocalContainerEntityManagerFactoryBean emfb = new LocalContainerEntityManagerFactoryBean();
@@ -98,7 +123,7 @@ public class DatabaseManager {
         }
     }
 
-    private static void connectSSH() {
+    private void connectSSH() {
         try {
             //establish the tunnel
             log.info("Starting SSH tunnel");
@@ -119,6 +144,7 @@ public class DatabaseManager {
             config.put("StrictHostKeyChecking", "no");
             config.put("ConnectionAttempts", "3");
             session.setConfig(config);
+            session.setServerAliveInterval(1000);//milliseconds
             session.connect();
 
             log.info("SSH Connected");
@@ -140,33 +166,81 @@ public class DatabaseManager {
     }
 
     /**
-     * Please call close() on the em you receive after you are done to let the pool recycle the connection and save the
-     * nature from environmental toxins like open database connections.
+     * Please call close() on the EntityManager object you receive after you are done to let the pool recycle the
+     * connection and save the nature from environmental toxins like open database connections.
      */
-    public static EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
-    static boolean isDisabled() {
-        return state == DatabaseState.DISABLED || state == DatabaseState.FAILED;
+    /**
+     * Performs health checks on the ssh tunnel and database
+     *
+     * @return true if the database is operational, false if not
+     */
+    public boolean isAvailable() {
+        if (state != DatabaseState.READY) {
+            return false;
+        }
+
+        //is the ssh connection still alive?
+        if (sshTunnel != null && !sshTunnel.isConnected()) {
+            //not gud
+            log.error("SSH tunnel lost connection.");
+            state = DatabaseState.FAILED;
+            if (emf != null && emf.isOpen())
+                emf.close();
+            return false;
+        }
+
+        //is the db itself alive?
+        EntityManager em = getEntityManager();
+        try {
+            //do a validation SQL query, this one should work with both postgres and SQLite
+            em.getTransaction().begin();
+            em.createNativeQuery("SELECT 1;").getResultList();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            // this would probably also be triggered if we have a db connection leak and we can't acquire a
+            // connection from the pool while the db is still alive itself
+            log.error("Test query on database failed.", e);
+            state = DatabaseState.FAILED;
+            if (emf != null && emf.isOpen())
+                emf.close();
+            return false;
+        } finally {
+            //if we didn't close the factory during the catch, it went fine, and we can close the entity manager
+            if (emf != null && emf.isOpen())
+                em.close();
+        }
+
+        return state == DatabaseState.READY;
     }
 
     public enum DatabaseState {
-        DISABLED, //When no JDBC URL is given TODO not true anymore with the fallback SQLite db
         UNINITIALIZED,
         INITIALIZING,
         FAILED,
-        READY
+        READY,
+        SHUTDOWN
     }
 
-    public static void shutdown() {
+    /**
+     * Shutdown, close, stop, halt, burn down all resources this object has been using
+     */
+    public void shutdown() {
         log.info("DatabaseManager shutdown call received, shutting down");
-        state = DatabaseState.DISABLED;
+        state = DatabaseState.SHUTDOWN;
+        if (emf != null && emf.isOpen()) {
+            try {
+                emf.close();
+            } catch (IllegalStateException e) {
+                //it has already been closed, nothing to catch here
+            }
+        }
+
         if (sshTunnel != null)
             sshTunnel.disconnect();
-
-        if (emf != null && emf.isOpen())
-            emf.close();
     }
 
     private static class JSchLogger implements com.jcraft.jsch.Logger {
