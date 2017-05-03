@@ -56,7 +56,7 @@ public class Ratelimit {
         this.clazz = clazz;
     }
 
-    public RateResult isAllowed(Member invoker, int weight) {
+    public boolean isAllowed(Member invoker, int weight) {
         return isAllowed(invoker, weight, null, null);
     }
 
@@ -66,14 +66,12 @@ public class Ratelimit {
      * Caveat: This allows requests to overstep the ratelimit with single high weight requests.
      * The clearing of timestamps ensures it will take longer for them to get available again though.
      */
-    public RateResult isAllowed(Member invoker, int weight, Blacklist blacklist, TextChannel blacklistOutput) {
+    public boolean isAllowed(Member invoker, int weight, Blacklist blacklist, TextChannel blacklistOutput) {
         //This gets called real often, right before every command execution. Keep it light, don't do any blocking stuff,
         //ensure whatever you do in here is threadsafe, but minimize usage of synchronized as it adds overhead
 
         //first of all, ppl that can never get limited or blacklisted, no matter what
-        if (userWhiteList.contains(invoker.getUser().getIdLong())) return new RateResult(true, "User is whitelisted");
-
-        RateResult result = new RateResult(false, "Rate limit has not been calculated");
+        if (userWhiteList.contains(invoker.getUser().getIdLong())) return true;
 
         //user or guild scope?
         long id;
@@ -102,22 +100,17 @@ public class Ratelimit {
             if (rate.timeStamps.size() < maxRequests) {
                 for (int i = 0; i < weight; i++)
                     rate.timeStamps.add(now);
-                result.allowed = true;
-                result.reason = "You shall pass.";
                 //everything is fine, get out of this method
-                return result;
+                return true;
             }
         }
 
         //reaching this point in the code means a rate limit was hit
         //the following code has to handle that
-        result.allowed = false;
-        result.reason = "You shall not pass. Rate limit reached";
-
 
         if (blacklist != null && scope == Scope.USER)
             FredBoat.executor.submit(() -> bannerinoUserino(invoker, blacklist, blacklistOutput));
-        return result;
+        return false;
     }
 
     /**
@@ -131,7 +124,7 @@ public class Ratelimit {
         }
         long s = length / 1000;
         String duration = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60));
-        String out = ":hammer: _**BLACKLISTED**_ :hammer: for **" + duration + "**";
+        String out = "\uD83D\uDD28 _**BLACKLISTED**_ \uD83D\uDD28 for **" + duration + "**";
         channel.sendMessage(invoker.getAsMention() + ": " + out).queue();
     }
 

@@ -76,20 +76,20 @@ public class Ratelimiter {
      * @param blacklistCallback a channel to write potential output from the auto blacklist. usually the channel the request was made in
      * @return a result object containing further information
      */
-    public RateResult isAllowed(Member invoker, Object command, int weight, TextChannel blacklistCallback) {
+    public boolean isAllowed(Member invoker, Object command, int weight, TextChannel blacklistCallback) {
         for (Ratelimit ratelimit : ratelimits) {
             if (ratelimit.getClazz().isInstance(command)) {
-                RateResult result;
+                boolean allowed;
                 //don't blacklist guilds
                 if (ratelimit.scope == Ratelimit.Scope.GUILD) {
-                    result = ratelimit.isAllowed(invoker, weight);
+                    allowed = ratelimit.isAllowed(invoker, weight);
                 } else {
-                    result = ratelimit.isAllowed(invoker, weight, autoBlacklist, blacklistCallback);
+                    allowed = ratelimit.isAllowed(invoker, weight, autoBlacklist, blacklistCallback);
                 }
-                if (!result.allowed) return result;
+                if (!allowed) return false;
             }
         }
-        return new RateResult(true, "Command is not ratelimited");
+        return true;
     }
 
     /**

@@ -39,7 +39,6 @@ import fredboat.feature.I18n;
 import fredboat.util.TextUtils;
 import fredboat.util.YoutubeAPI;
 import fredboat.util.YoutubeVideo;
-import fredboat.util.ratelimit.RateResult;
 import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.MessageBuilder;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -119,9 +118,9 @@ public class AudioLoader implements AudioLoadResultHandler {
         if (playlistInfo == null) //not a slow loading playlist
             return true;
         else {
-            RateResult result = Ratelimiter.getRatelimiter().isAllowed(ic.getMember(), playlistInfo, playlistInfo.getTotalTracks(), ic.getTextChannel());
+            boolean result = Ratelimiter.getRatelimiter().isAllowed(ic.getMember(), playlistInfo, playlistInfo.getTotalTracks(), ic.getTextChannel());
 
-            if (result.allowed) {
+            if (result) {
                 //inform user we are possibly about to do nasty time consuming work
                 if (playlistInfo.getTotalTracks() > 50) {
                     String out = MessageFormat.format(I18n.get(ic.getMember().getGuild()).getString("loadAnnouncePlaylist"),
@@ -132,7 +131,8 @@ public class AudioLoader implements AudioLoadResultHandler {
                 return true;
             } else {
 
-                String out = ic.getMember().getAsMention() + ": " + result.reason;
+                String out = ic.getMember().getAsMention() + ": "
+                        + I18n.get(ic.getMember().getGuild()).getString("ratelimitedGuildSlowLoadingPlaylist");
                 ic.getTextChannel().sendMessage(out).queue();
                 return false;
             }

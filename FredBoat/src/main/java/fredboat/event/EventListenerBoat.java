@@ -33,7 +33,6 @@ import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
 import fredboat.db.EntityReader;
 import fredboat.feature.I18n;
-import fredboat.util.ratelimit.RateResult;
 import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.User;
@@ -117,11 +116,11 @@ public class EventListenerBoat extends AbstractEventListener {
      * check the rate limit of user and execute the command if everything is fine
      */
     private void limitOrExecuteCommand(Command invoked, MessageReceivedEvent event) {
-        RateResult result = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked, 1, event.getTextChannel());
-        if (result.allowed)
+        boolean result = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked, 1, event.getTextChannel());
+        if (result)
             CommandManager.prefixCalled(invoked, event.getGuild(), event.getTextChannel(), event.getMember(), event.getMessage());
         else {
-            String out = event.getMember().getAsMention() + ": " + result.reason;
+            String out = event.getMember().getAsMention() + ": " + I18n.get(event.getGuild()).getString("ratelimitedGeneralInfo");
             event.getTextChannel().sendMessage(out).queue();
         }
 

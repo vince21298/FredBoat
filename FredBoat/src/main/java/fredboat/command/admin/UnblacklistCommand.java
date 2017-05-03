@@ -4,9 +4,12 @@ import fredboat.Config;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.ICommandAdminRestricted;
+import fredboat.feature.I18n;
 import fredboat.util.TextUtils;
 import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.entities.*;
+
+import java.text.MessageFormat;
 
 /**
  * Created by napster on 17.04.17.
@@ -27,18 +30,17 @@ public class UnblacklistCommand extends Command implements ICommandAdminRestrict
         String userId = user.getId();
 
         if (userId == null || "".equals(userId)) {
-            channel.sendMessage(TextUtils.replyWithName(channel, invoker, "Invalid user provided."));
             HelpCommand.sendFormattedCommandHelp(guild, channel, invoker, command);
             return;
         }
 
         Ratelimiter.getRatelimiter().liftLimitAndBlacklist(user.getIdLong());
-        channel.sendMessage(TextUtils.replyWithName(channel, invoker, "Ban and rate limit lifted for " + user.getAsMention()));
-
+        channel.sendMessage(TextUtils.replyWithName(channel, invoker,
+                MessageFormat.format(I18n.get(guild).getString("unblacklisted"), user.getAsMention())));
     }
 
     @Override
     public String help(Guild guild) {
-        return "{0}{1} @<user>\n#Lift the ban for a user.";
+        return "{0}{1} @<user>\n#Remove a user from the blacklist.";
     }
 }
