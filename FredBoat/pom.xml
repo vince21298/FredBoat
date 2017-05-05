@@ -202,10 +202,8 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20</version>
-                <configuration>
-                    <argLine>-Xmx1024m</argLine>
-                </configuration>
+                <!-- careful when updating this one, 2.20 breaks travis builds and hides test logs-->
+                <version>2.19</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.junit.platform</groupId>
