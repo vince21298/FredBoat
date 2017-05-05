@@ -31,12 +31,10 @@ import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IMaintenanceCommand;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class ShardsCommand extends Command implements IMaintenanceCommand {
@@ -59,11 +57,11 @@ public class ShardsCommand extends Command implements IMaintenanceCommand {
         List<FredBoat> shards = new ArrayList<>(FredBoat.getShards());
         int borkenShards = 0;
         int healthyGuilds = 0;
-        int healthyUsers = 0;
+        final HashSet<String> healthyUsers = new HashSet<>();
         for (FredBoat fb : shards) {
             if (fb.getJda().getStatus() == JDA.Status.CONNECTED && !full) {
                 healthyGuilds += fb.getJda().getGuilds().size();
-                healthyUsers += fb.getJda().getUsers().size();
+                fb.getJda().getUsers().forEach((User u) -> healthyUsers.add(u.getId()));
             } else {
                 if (borkenShards % SHARDS_PER_MESSAGE == 0) {
                     mb = new MessageBuilder()
@@ -88,7 +86,7 @@ public class ShardsCommand extends Command implements IMaintenanceCommand {
         if (!full) {
             channel.sendMessage("```diff\n+ "
                     + (shards.size() - borkenShards) + "/" + Config.CONFIG.getNumShards() + " shards are " + JDA.Status.CONNECTED
-                    + " -- Guilds: " + healthyGuilds + " -- Users: " + healthyUsers + "\n```").queue();
+                    + " -- Guilds: " + healthyGuilds + " -- Users: " + healthyUsers.size() + "\n```").queue();
         }
 
         //detailed shards
