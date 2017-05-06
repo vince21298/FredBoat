@@ -54,8 +54,8 @@ public class DatabaseManager {
     private int poolSize;
 
     /**
-     * @param jdbcUrl connection to the database
-     * @param dialect set to null or empty String to have it auto detected by Hibernate, chosen jdbc driver must support that
+     * @param jdbcUrl  connection to the database
+     * @param dialect  set to null or empty String to have it auto detected by Hibernate, chosen jdbc driver must support that
      * @param poolSize max size of the connection pool
      */
     public DatabaseManager(String jdbcUrl, String dialect, int poolSize) {
@@ -69,7 +69,7 @@ public class DatabaseManager {
      *
      * @throws IllegalStateException if trying to start a database that is READY or INITIALIZING
      */
-    public void startup() {
+    public synchronized void startup() {
         if (state == DatabaseState.READY || state == DatabaseState.INITIALIZING) {
             throw new IllegalStateException("Can't start the database, when it's current state is " + state);
         }
@@ -113,6 +113,10 @@ public class DatabaseManager {
             emfb.setPersistenceUnitName("fredboat.test");
             emfb.setPersistenceProviderClass(HibernatePersistenceProvider.class);
             emfb.afterPropertiesSet();
+
+            //leak prevention, close existing factory if possible
+            closeEntityManagerFactory();
+
             emf = emfb.getObject();
 
             log.info("Started Hibernate");
@@ -188,8 +192,7 @@ public class DatabaseManager {
             //not gud
             log.error("SSH tunnel lost connection.");
             state = DatabaseState.FAILED;
-            if (emf != null && emf.isOpen())
-                emf.close();
+            closeEntityManagerFactory();
             return false;
         }
 
@@ -205,16 +208,28 @@ public class DatabaseManager {
             // connection from the pool while the db is still alive itself
             log.error("Test query on database failed.", e);
             state = DatabaseState.FAILED;
-            if (emf != null && emf.isOpen())
-                emf.close();
+            em.close();
+            closeEntityManagerFactory();
             return false;
         } finally {
-            //if we didn't close the factory during the catch, it went fine, and we can close the entity manager
-            if (emf != null && emf.isOpen())
-                em.close();
+            //close the em if it hasn't been closed by the catch already
+            if (em.isOpen()) em.close();
         }
 
         return state == DatabaseState.READY;
+    }
+
+    /**
+     * Avoid multiple threads calling a close on the factory by wrapping it into this synchronized method
+     */
+    private synchronized void closeEntityManagerFactory() {
+        if (emf != null && emf.isOpen()) {
+            try {
+                emf.close();
+            } catch (IllegalStateException ignored) {
+                //it has already been closed, nothing to catch here
+            }
+        }
     }
 
     public enum DatabaseState {
@@ -231,13 +246,7 @@ public class DatabaseManager {
     public void shutdown() {
         log.info("DatabaseManager shutdown call received, shutting down");
         state = DatabaseState.SHUTDOWN;
-        if (emf != null && emf.isOpen()) {
-            try {
-                emf.close();
-            } catch (IllegalStateException e) {
-                //it has already been closed, nothing to catch here
-            }
-        }
+        closeEntityManagerFactory();
 
         if (sshTunnel != null)
             sshTunnel.disconnect();
