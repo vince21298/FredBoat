@@ -2,10 +2,7 @@ package fredboat.commandmeta.init;
 
 import fredboat.command.admin.*;
 import fredboat.command.fun.*;
-import fredboat.command.maintenance.FuzzyUserSearchCommand;
-import fredboat.command.maintenance.ShardsCommand;
-import fredboat.command.maintenance.StatsCommand;
-import fredboat.command.maintenance.VersionCommand;
+import fredboat.command.maintenance.*;
 import fredboat.command.moderation.ClearCommand;
 import fredboat.command.moderation.HardbanCommand;
 import fredboat.command.moderation.KickCommand;
@@ -29,6 +26,8 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("invite", new InviteCommand());
         CommandRegistry.registerCommand("userinfo", new fredboat.command.util.UserInfoCommand());
         CommandRegistry.registerAlias("userinfo", "memberinfo");
+        CommandRegistry.registerCommand("gitinfo", new GitInfoCommand());
+        CommandRegistry.registerAlias("gitinfo", "git");
         CommandRegistry.registerAlias("uptime", "stats");
         CommandRegistry.registerCommand("exit", new ExitCommand());
         CommandRegistry.registerCommand("avatar", new AvatarCommand());

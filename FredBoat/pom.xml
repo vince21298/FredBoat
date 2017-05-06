@@ -244,6 +244,36 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <!-- generates a property file with some information about the git this was build from-->
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.2.2</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>validate-the-git-infos</id>
+                        <goals>
+                            <goal>validateRevision</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
+                    <!-- full means we can create a valid json object out of this -->
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                    <!-- set to json to create a json object -->
+                    <format>properties</format>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

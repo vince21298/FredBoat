@@ -90,13 +90,17 @@ public class RandomImageCommand extends Command implements IFunCommand {
         //Get a random file and send it
         String randomUrl;
         synchronized (this) {
-            randomUrl = (String) Array.get(urls, new Random().nextInt(urls.length));
+            randomUrl = getRandomImageUrl();
         }
         try {
             channel.sendFile(CacheUtil.getImageFromURL(randomUrl), message).queue();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getRandomImageUrl() {
+        return (String) Array.get(urls, new Random().nextInt(urls.length));
     }
 
     /**
