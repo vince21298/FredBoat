@@ -92,6 +92,8 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
             if (Config.CONFIG.getDistribution() != DistributionEnum.PATRON && Config.CONFIG.getDistribution() != DistributionEnum.DEVELOPMENT && Config.CONFIG.isLavaplayerNodesEnabled()) {
                 playerManager.useRemoteNodes(Config.CONFIG.getLavaplayerNodes());
             }
+            
+            playerManager.setItemLoaderThreadPoolSize(50);
         }
     }
 
