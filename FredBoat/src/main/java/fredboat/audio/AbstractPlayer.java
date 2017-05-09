@@ -89,7 +89,7 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
             playerManager.getConfiguration().setResamplingQuality(quality);
             playerManager.enableGcMonitoring();
 
-            if (Config.CONFIG.getDistribution() != DistributionEnum.PATRON && Config.CONFIG.getDistribution() != DistributionEnum.DEVELOPMENT && Config.CONFIG.isLavaplayerNodesEnabled()) {
+            if (Config.CONFIG.getDistribution() != DistributionEnum.DEVELOPMENT && Config.CONFIG.isLavaplayerNodesEnabled()) {
                 playerManager.useRemoteNodes(Config.CONFIG.getLavaplayerNodes());
             }
             
