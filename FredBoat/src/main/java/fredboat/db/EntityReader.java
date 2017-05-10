@@ -25,7 +25,9 @@
 
 package fredboat.db;
 
+
 import fredboat.FredBoat;
+import fredboat.db.entity.BlacklistEntry;
 import fredboat.db.entity.GuildConfig;
 import fredboat.db.entity.IEntity;
 import fredboat.db.entity.UConfig;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import java.util.List;
 
 public class EntityReader {
 
@@ -77,4 +80,18 @@ public class EntityReader {
         }
     }
 
+    public static List<BlacklistEntry> loadBlacklist() {
+        DatabaseManager dbManager = FredBoat.getDbManager();
+        if (!dbManager.isAvailable()) {
+            throw new DatabaseNotReadyException("The database is not available currently. Please try again later.");
+        }
+        EntityManager em = dbManager.getEntityManager();
+        List<BlacklistEntry> result;
+        try {
+            result = em.createQuery("SELECT b FROM BlacklistEntry b", BlacklistEntry.class).getResultList();
+        } finally {
+            em.close();
+        }
+        return result;
+    }
 }

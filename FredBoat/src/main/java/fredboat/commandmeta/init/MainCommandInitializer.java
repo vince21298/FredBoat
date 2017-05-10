@@ -16,6 +16,8 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("help", new HelpCommand());
         CommandRegistry.registerAlias("help", "info");
 
+        CommandRegistry.registerCommand("unblacklist", new UnblacklistCommand());
+        CommandRegistry.registerAlias("unblacklist", "unlimit");
         CommandRegistry.registerCommand("commands", new CommandsCommand());
         CommandRegistry.registerAlias("commands", "comms");
         CommandRegistry.registerCommand("version", new VersionCommand());
