@@ -223,6 +223,10 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
             play0(false);
         } else if(endReason == AudioTrackEndReason.STOPPED) {
             play0(true);
+        } else if(endReason == AudioTrackEndReason.CLEANUP) {
+            log.info("Track " + track.getIdentifier() + " was cleaned up");
+        } else {
+            log.warn("Track " + track.getIdentifier() + " ended with unexpected reason: " + endReason);
         }
     }
 
