@@ -93,7 +93,7 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
                 playerManager.useRemoteNodes(Config.CONFIG.getLavaplayerNodes());
             }
             
-            playerManager.setItemLoaderThreadPoolSize(50);
+            playerManager.setItemLoaderThreadPoolSize(100);
         }
     }
 
