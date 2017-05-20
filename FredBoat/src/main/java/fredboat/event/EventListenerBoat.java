@@ -68,7 +68,7 @@ public class EventListenerBoat extends AbstractEventListener {
     public void onMessageReceived(MessageReceivedEvent event) {
 
         if (FeatureFlags.RATE_LIMITER.isActive()) {
-            if (Ratelimiter.getRatelimiter().isBlacklisted(event.getMember().getUser().getIdLong())) {
+            if (Ratelimiter.getRatelimiter().isBlacklisted(event.getAuthor().getIdLong())) {
                 return;
             }
         }

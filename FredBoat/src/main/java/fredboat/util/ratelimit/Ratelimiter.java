@@ -45,8 +45,6 @@ import java.util.Set;
  * this object should be threadsafe by itself
  * <p>
  * http://i.imgur.com/ha0R3XZ.gif
- * <p>
- * TODO: i18n here in other classes in this package and subpackages
  */
 public class Ratelimiter {
 
