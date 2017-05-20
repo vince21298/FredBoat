@@ -29,6 +29,7 @@ import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.ICommandAdminRestricted;
 import fredboat.feature.I18n;
+import fredboat.feature.togglz.FeatureFlags;
 import fredboat.util.TextUtils;
 import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.entities.*;
@@ -43,6 +44,10 @@ import java.text.MessageFormat;
 public class UnblacklistCommand extends Command implements ICommandAdminRestricted {
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
+        if (!FeatureFlags.RATE_LIMITER.isActive()) {
+            channel.sendMessage("The rate limiter feature has not been turned on.").queue();
+            return;
+        }
 
         String command = args[0].substring(Config.CONFIG.getPrefix().length());
         if (message.getMentionedUsers().isEmpty()) {

@@ -33,6 +33,7 @@ import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
 import fredboat.db.EntityReader;
 import fredboat.feature.I18n;
+import fredboat.feature.togglz.FeatureFlags;
 import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.User;
@@ -66,8 +67,10 @@ public class EventListenerBoat extends AbstractEventListener {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
 
-        if (Ratelimiter.getRatelimiter().isBlacklisted(event.getMember().getUser().getIdLong())) {
-            return;
+        if (FeatureFlags.RATE_LIMITER.isActive()) {
+            if (Ratelimiter.getRatelimiter().isBlacklisted(event.getMember().getUser().getIdLong())) {
+                return;
+            }
         }
 
         if (event.getPrivateChannel() != null) {
@@ -116,7 +119,10 @@ public class EventListenerBoat extends AbstractEventListener {
      * check the rate limit of user and execute the command if everything is fine
      */
     private void limitOrExecuteCommand(Command invoked, MessageReceivedEvent event) {
-        boolean result = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked, 1, event.getTextChannel());
+        boolean result = true;
+        if (FeatureFlags.RATE_LIMITER.isActive()) {
+            result = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked, 1, event.getTextChannel());
+        }
         if (result)
             CommandManager.prefixCalled(invoked, event.getGuild(), event.getTextChannel(), event.getMember(), event.getMessage());
         else {
@@ -137,8 +143,10 @@ public class EventListenerBoat extends AbstractEventListener {
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
 
-        if (Ratelimiter.getRatelimiter().isBlacklisted(event.getAuthor().getIdLong())) {
-            return;
+        if (FeatureFlags.RATE_LIMITER.isActive()) {
+            if (Ratelimiter.getRatelimiter().isBlacklisted(event.getAuthor().getIdLong())) {
+                return;
+            }
         }
 
         if (event.getAuthor() == lastUserToReceiveHelp) {
