@@ -28,7 +28,7 @@ package fredboat.command.admin;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
+import fredboat.commandmeta.abs.ICommandAdminRestricted;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -42,7 +42,7 @@ import java.util.List;
  *
  * @author frederik
  */
-public class AnnounceCommand extends Command implements ICommandOwnerRestricted {
+public class AnnounceCommand extends Command implements ICommandAdminRestricted {
 
     private static final String HEAD = "__**[BROADCASTED MESSAGE]**__\n";
 
