@@ -23,7 +23,7 @@
  *
  */
 
-package fredboat.command.moderation;
+package fredboat.command.config;
 
 import fredboat.Config;
 import fredboat.command.util.HelpCommand;
