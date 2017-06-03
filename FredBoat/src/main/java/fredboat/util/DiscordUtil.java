@@ -102,6 +102,10 @@ public class DiscordUtil {
         return other != null && guild.getMember(other) != null && guild.getMember(other).getOnlineStatus() == OnlineStatus.ONLINE;
     }
 
+    public static boolean isUserBotCommander(Member member) {
+        return isUserBotCommander(member.getGuild(), member.getUser());
+    }
+
     public static boolean isUserBotCommander(Guild guild, User user) {
         Member member = guild.getMember(user);
         if (member == null) return false;

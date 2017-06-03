@@ -107,6 +107,7 @@ public class MusicCommandInitializer {
         CommandRegistry.registerCommand("mrevive", new ReviveCommand());
         CommandRegistry.registerCommand("adebug", new AudioDebugCommand());
         CommandRegistry.registerCommand("announce", new AnnounceCommand());
+        CommandRegistry.registerCommand("destroy", new DestroyCommand());
 
         CommandRegistry.registerCommand("seek", new SeekCommand());
         CommandRegistry.registerCommand("forward", new ForwardCommand());
