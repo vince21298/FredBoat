@@ -279,8 +279,8 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     //Success, fail message
-    public Pair<Boolean, String> canMemberSkipTracks(Member member, List<AudioTrackContext> list) {
-        if (member.hasPermission(Permission.MESSAGE_MANAGE)) {
+    public Pair<Boolean, String> canMemberSkipTracks(TextChannel textChannel, Member member, List<AudioTrackContext> list) {
+        if (member.hasPermission(textChannel, Permission.MESSAGE_MANAGE)) {
             return new ImmutablePair<>(true, null);
         } else {
             //We are not a mod
@@ -305,7 +305,7 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public Pair<Boolean, String> skipTracksForMemberPerms(TextChannel channel, Member member, List<AudioTrackContext> list) {
-        Pair<Boolean, String> pair = canMemberSkipTracks(member, list);
+        Pair<Boolean, String> pair = canMemberSkipTracks(channel, member, list);
 
         if (pair.getLeft()) {
             skipTracks(list);
