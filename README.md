@@ -8,7 +8,7 @@ FredBoat is licensed under the MIT license, so feel free to copy small or large 
 ## Documentation
 Help can be found at https://frederikam.github.io/FredBoat/
 
-For installation instructions, go to http://docs.frederikam.com/selfhosting
+For installation instructions, go to http://docs.fredboat.com/selfhosting
 
 ## Contributing
 FredBoat is built using Maven, so you should just be able to import the project in your favorite IDE and download all dependencies while building. Check out the [issues](https://github.com/Frederikam/FredBoat/issues) to find out what needs to be done.
