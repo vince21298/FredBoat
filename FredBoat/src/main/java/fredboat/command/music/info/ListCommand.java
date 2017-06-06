@@ -72,13 +72,19 @@ public class ListCommand extends Command implements IMusicCommand {
 
         List<AudioTrackContext> tracks = player.getRemainingTracksOrdered();
 
-        int maxPages = (int) Math.ceil(((double) tracks.size())) / PAGE_SIZE;
+        int maxPages = (int) Math.ceil(((double) tracks.size() - 1d)) / PAGE_SIZE + 1;
 
         page = Math.max(page, 1);
         page = Math.min(page, maxPages);
 
         int i = (page - 1) * PAGE_SIZE;
         int listEnd = (page - 1) * PAGE_SIZE + PAGE_SIZE;
+        listEnd = Math.min(listEnd, player.getRemainingTracksOrdered().size());
+
+        log.info("page " + page);
+        log.info("listEnd " + listEnd);
+        log.info("maxPages " + maxPages);
+        log.info("i " + i);
 
         int numberLength = Integer.toString(listEnd).length();
 
