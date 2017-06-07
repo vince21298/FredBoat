@@ -24,6 +24,8 @@
 
 package fredboat.db.entity;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -50,6 +52,11 @@ public class BlacklistEntry implements IEntity {
     //keeps track of how many times a user or guild reached the rate limit on the current blacklist level
     @Column(name = "rate_limit_reached", nullable = false)
     public int rateLimitReached;
+
+    //when was the ratelimit hit the last time?
+    @Column(name = "rate_limit_timestamp", nullable = false)
+    @ColumnDefault("0") //tells hibernate ddl how to fill this by default with a zero
+    public long rateLimitReachedTimestamp;
 
     //time when the id was blacklisted
     @Column(name = "blacklisted_timestamp", nullable = false)
@@ -95,6 +102,14 @@ public class BlacklistEntry implements IEntity {
 
     public void setRateLimitReached(int rateLimitReached) {
         this.rateLimitReached = rateLimitReached;
+    }
+
+    public long getRateLimitReachedTimestamp() {
+        return rateLimitReachedTimestamp;
+    }
+
+    public void setRateLimitReachedTimestamp(long rateLimitReachedTimestamp) {
+        this.rateLimitReachedTimestamp = rateLimitReachedTimestamp;
     }
 
     public long getBlacklistedTimestamp() {

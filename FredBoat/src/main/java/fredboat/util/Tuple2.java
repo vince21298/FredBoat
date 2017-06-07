@@ -23,30 +23,20 @@
  * SOFTWARE.
  */
 
-package fredboat.feature.togglz;
-
-import org.togglz.core.Feature;
-import org.togglz.core.annotation.EnabledByDefault;
-import org.togglz.core.annotation.Label;
+package fredboat.util;
 
 /**
- * Created by napster on 19.05.17.
+ * Created by napster on 06.06.17.
  * <p>
- * Implementation of the feature flag pattern
+ * easiest way to return two values form a function
  */
-public enum FeatureFlags implements Feature {
+public class Tuple2<A, B> {
+    public final A a;
+    public final B b;
 
-    //ratelimiter + auto blacklisting features
-    @Label("Rate Limiter")
-    @EnabledByDefault
-    RATE_LIMITER,
-
-    //using the chatbot class
-    @Label("Chatbot")
-    @EnabledByDefault
-    CHATBOT;
-
-    public boolean isActive() {
-        return FeatureConfig.getTheFeatureManager().isActive(this);
+    public Tuple2(A a, B b) {
+        this.a = a;
+        this.b = b;
     }
 }
+

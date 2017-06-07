@@ -121,7 +121,7 @@ public class AudioLoader implements AudioLoadResultHandler {
         else {
             boolean result = true;
             if (FeatureFlags.RATE_LIMITER.isActive()) {
-                result = Ratelimiter.getRatelimiter().isAllowed(ic.getMember(), playlistInfo, playlistInfo.getTotalTracks(), ic.getTextChannel());
+                result = Ratelimiter.getRatelimiter().isAllowed(ic.getMember(), playlistInfo, playlistInfo.getTotalTracks(), ic.getTextChannel()).a;
             }
 
             if (result) {

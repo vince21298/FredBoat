@@ -115,12 +115,19 @@ public class Blacklist {
         //synchronize on the individual blacklist entries since we are about to change and save them
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (blEntry) {
+            long now = System.currentTimeMillis();
+
+            //is the last ratelimit hit a long time away (1 hour)? then reset the ratelimit hits
+            if (now - blEntry.rateLimitReachedTimestamp > 60 * 60 * 1000) {
+                blEntry.rateLimitReached = 0;
+            }
             blEntry.rateLimitReached++;
+            blEntry.rateLimitReachedTimestamp = now;
             if (blEntry.rateLimitReached >= rateLimitHitsBeforeBlacklist) {
                 //issue blacklist incident
                 blEntry.level++;
                 if (blEntry.level < 0) blEntry.level = 0;
-                blEntry.blacklistedTimestamp = System.currentTimeMillis();
+                blEntry.blacklistedTimestamp = now;
                 blEntry.rateLimitReached = 0; //reset these for the next time
 
                 blacklistingLength = getBlacklistTimeLength(blEntry.level);

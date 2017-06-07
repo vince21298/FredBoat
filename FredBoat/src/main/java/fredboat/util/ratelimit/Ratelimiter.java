@@ -31,12 +31,14 @@ import fredboat.command.maintenance.ShardsCommand;
 import fredboat.command.music.control.SkipCommand;
 import fredboat.commandmeta.abs.Command;
 import fredboat.util.DiscordUtil;
+import fredboat.util.Tuple2;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,7 +64,7 @@ public class Ratelimiter {
     }
 
 
-    private final Set<Ratelimit> ratelimits;
+    private final List<Ratelimit> ratelimits;
     private Blacklist autoBlacklist = null;
 
     private Ratelimiter() {
@@ -78,17 +80,18 @@ public class Ratelimiter {
 
 
         //Create all the rate limiters we want
-        ratelimits = new HashSet<>();
+        ratelimits = new ArrayList<>();
 
         if (Config.CONFIG.useAutoBlacklist())
             autoBlacklist = new Blacklist(whitelist, RATE_LIMIT_HITS_BEFORE_BLACKLIST);
 
-        ratelimits.add(new Ratelimit(whitelist, Ratelimit.Scope.USER, 5, 10000, Command.class));
-        ratelimits.add(new Ratelimit(whitelist, Ratelimit.Scope.USER, 5, 20000, SkipCommand.class));
+        //sort these by harsher limits coming first
         ratelimits.add(new Ratelimit(whitelist, Ratelimit.Scope.USER, 2, 30000, ShardsCommand.class));
+        ratelimits.add(new Ratelimit(whitelist, Ratelimit.Scope.USER, 5, 20000, SkipCommand.class));
+        ratelimits.add(new Ratelimit(whitelist, Ratelimit.Scope.USER, 5, 10000, Command.class));
 
-        ratelimits.add(new Ratelimit(whitelist, Ratelimit.Scope.GUILD, 10, 10000, Command.class));
         ratelimits.add(new Ratelimit(whitelist, Ratelimit.Scope.GUILD, 1000, 120000, PlaylistInfo.class));
+        ratelimits.add(new Ratelimit(whitelist, Ratelimit.Scope.GUILD, 10, 10000, Command.class));
     }
 
     /**
@@ -98,7 +101,7 @@ public class Ratelimiter {
      * @param blacklistCallback a channel to write potential output from the auto blacklist. usually the channel the request was made in
      * @return a result object containing further information
      */
-    public boolean isAllowed(Member invoker, Object command, int weight, TextChannel blacklistCallback) {
+    public Tuple2<Boolean, Class> isAllowed(Member invoker, Object command, int weight, TextChannel blacklistCallback) {
         for (Ratelimit ratelimit : ratelimits) {
             if (ratelimit.getClazz().isInstance(command)) {
                 boolean allowed;
@@ -108,10 +111,10 @@ public class Ratelimiter {
                 } else {
                     allowed = ratelimit.isAllowed(invoker, weight, autoBlacklist, blacklistCallback);
                 }
-                if (!allowed) return false;
+                if (!allowed) return new Tuple2<>(false, ratelimit.getClazz());
             }
         }
-        return true;
+        return new Tuple2<>(true, null);
     }
 
     /**

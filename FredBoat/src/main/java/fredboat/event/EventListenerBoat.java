@@ -28,6 +28,7 @@ import fredboat.Config;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.command.fun.TalkCommand;
+import fredboat.command.music.control.SkipCommand;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.CommandManager;
 import fredboat.commandmeta.CommandRegistry;
@@ -35,6 +36,7 @@ import fredboat.commandmeta.abs.Command;
 import fredboat.db.EntityReader;
 import fredboat.feature.I18n;
 import fredboat.feature.togglz.FeatureFlags;
+import fredboat.util.Tuple2;
 import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.User;
@@ -49,6 +51,7 @@ import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -121,14 +124,19 @@ public class EventListenerBoat extends AbstractEventListener {
      * check the rate limit of user and execute the command if everything is fine
      */
     private void limitOrExecuteCommand(Command invoked, MessageReceivedEvent event) {
-        boolean result = true;
+        Tuple2<Boolean, Class> ratelimiterResult = new Tuple2<>(true, null);
         if (FeatureFlags.RATE_LIMITER.isActive()) {
-            result = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked, 1, event.getTextChannel());
+            ratelimiterResult = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked, 1, event.getTextChannel());
+
         }
-        if (result)
+        if (ratelimiterResult.a)
             CommandManager.prefixCalled(invoked, event.getGuild(), event.getTextChannel(), event.getMember(), event.getMessage());
         else {
             String out = event.getMember().getAsMention() + ": " + I18n.get(event.getGuild()).getString("ratelimitedGeneralInfo");
+            if (ratelimiterResult.b == SkipCommand.class) { //we can compare classes with == as long as we are using the same classloader (which we are)
+                //add a nice reminder on how to skip more than 1 song
+                out += "\n" + MessageFormat.format(I18n.get(event.getGuild()).getString("ratelimitedSkipCommand"), "`" + Config.CONFIG.getPrefix() + "skip n-m`");
+            }
             event.getTextChannel().sendMessage(out).queue();
         }
 
