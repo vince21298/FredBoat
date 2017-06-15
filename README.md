@@ -12,3 +12,6 @@ For installation instructions, go to http://docs.fredboat.com/selfhosting
 
 ## Contributing
 If you are interested, you can read about contributing to this project [here](https://github.com/Frederikam/FredBoat/blob/master/CONTRIBUTING.md).
+
+## Code of Conduct
+The code of conduct for this project can be found [here](https://github.com/Frederikam/FredBoat/blob/master/CODE_OF_CONDUCT.md)
