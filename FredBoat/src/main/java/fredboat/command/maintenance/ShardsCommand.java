@@ -25,17 +25,16 @@
 
 package fredboat.command.maintenance;
 
+import fredboat.Config;
 import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IMaintenanceCommand;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class ShardsCommand extends Command implements IMaintenanceCommand {
@@ -48,27 +47,49 @@ public class ShardsCommand extends Command implements IMaintenanceCommand {
         MessageBuilder mb = null;
         List<MessageBuilder> builders = new ArrayList<>();
 
-        int i = 0;
-        for(FredBoat fb : FredBoat.getShards()) {
-            if(i % SHARDS_PER_MESSAGE == 0) {
-                mb = new MessageBuilder()
-                        .append("```diff\n");
-                builders.add(mb);
-            }
-
-            mb.append(fb.getJda().getStatus() == JDA.Status.CONNECTED ? "+" : "-")
-                    .append(" ")
-                    .append(fb.getShardInfo().getShardString())
-                    .append(" ")
-                    .append(fb.getJda().getStatus())
-                    .append(" -- Guilds: ")
-                    .append(String.format("%04d",fb.getJda().getGuilds().size()))
-                    .append(" -- Users: ")
-                    .append(fb.getJda().getUsers().size())
-                    .append("\n");
-            i++;
+        //do a full report? or just a summary
+        boolean full = false;
+        if (args.length > 1 && ("full".equals(args[1]) || "all".equals(args[1]))) {
+            full = true;
         }
 
+        //make a copy to avoid concurrent modification errors
+        List<FredBoat> shards = new ArrayList<>(FredBoat.getShards());
+        int borkenShards = 0;
+        int healthyGuilds = 0;
+        final HashSet<String> healthyUsers = new HashSet<>();
+        for (FredBoat fb : shards) {
+            if (fb.getJda().getStatus() == JDA.Status.CONNECTED && !full) {
+                healthyGuilds += fb.getJda().getGuilds().size();
+                fb.getJda().getUsers().forEach((User u) -> healthyUsers.add(u.getId()));
+            } else {
+                if (borkenShards % SHARDS_PER_MESSAGE == 0) {
+                    mb = new MessageBuilder()
+                            .append("```diff\n");
+                    builders.add(mb);
+                }
+                mb.append(fb.getJda().getStatus() == JDA.Status.CONNECTED ? "+" : "-")
+                        .append(" ")
+                        .append(fb.getShardInfo().getShardString())
+                        .append(" ")
+                        .append(fb.getJda().getStatus())
+                        .append(" -- Guilds: ")
+                        .append(String.format("%04d", fb.getJda().getGuilds().size()))
+                        .append(" -- Users: ")
+                        .append(fb.getJda().getUsers().size())
+                        .append("\n");
+                borkenShards++;
+            }
+        }
+
+        //healthy shards summary, contains sensible data only if we aren't doing a full report
+        if (!full) {
+            channel.sendMessage("```diff\n+ "
+                    + (shards.size() - borkenShards) + "/" + Config.CONFIG.getNumShards() + " shards are " + JDA.Status.CONNECTED
+                    + " -- Guilds: " + healthyGuilds + " -- Users: " + healthyUsers.size() + "\n```").queue();
+        }
+
+        //detailed shards
         for(MessageBuilder builder : builders){
             builder.append("```");
             channel.sendMessage(builder.build()).queue();
@@ -77,6 +98,6 @@ public class ShardsCommand extends Command implements IMaintenanceCommand {
 
     @Override
     public String help(Guild guild) {
-        return "{0}{1}\n#Show information about the shards of the bot.";
+        return "{0}{1} [full]\n#Show information about the shards of the bot as a summary or in a detailed report.";
     }
 }

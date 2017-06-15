@@ -30,6 +30,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import fredboat.agent.CarbonitexAgent;
+import fredboat.agent.DBConnectionWatchdogAgent;
 import fredboat.agent.ShardWatchdogAgent;
 import fredboat.api.API;
 import fredboat.api.OAuthManager;
@@ -99,10 +100,14 @@ public abstract class FredBoat {
     JDA jda;
     private static FredBoatClient fbClient;
 
+    private static ShardWatchdogAgent shardWatchdogAgent;
+    private static DBConnectionWatchdogAgent dbConnectionWatchdogAgent;
+
+    private static DatabaseManager dbManager;
     private boolean hasReadiedOnce = false;
 
     public static void main(String[] args) throws LoginException, IllegalArgumentException, InterruptedException, IOException, UnirestException {
-        Runtime.getRuntime().addShutdownHook(new Thread(ON_SHUTDOWN));
+        Runtime.getRuntime().addShutdownHook(new Thread(ON_SHUTDOWN, "FredBoat main shutdownhook"));
 
         log.info("\n\n" +
                 "  ______            _ ____              _   \n" +
@@ -142,18 +147,30 @@ public abstract class FredBoat {
         } catch (Exception e) {
             log.info("Failed to ignite Spark, FredBoat API unavailable", e);
         }
+
+        if (!Config.CONFIG.getJdbcUrl().equals("")) {
+            dbManager = new DatabaseManager(Config.CONFIG.getJdbcUrl(), null, Config.CONFIG.getHikariPoolSize());
+            dbManager.startup();
+            dbConnectionWatchdogAgent = new DBConnectionWatchdogAgent(dbManager);
+            dbConnectionWatchdogAgent.start();
+        } else if (Config.CONFIG.getNumShards() > 2) {
+            log.warn("No JDBC URL and more than 2 shard found! Initializing the SQLi DB is potentially dangerous too. Skipping...");
+        } else {
+            log.warn("No JDBC URL found, skipped database connection, falling back to internal SQLite db.");
+            dbManager = new DatabaseManager("jdbc:sqlite:fredboat.db", "org.hibernate.dialect.SQLiteDialect",
+                    Config.CONFIG.getHikariPoolSize());
+            dbManager.startup();
+        }
+
+
         try {
-            if(!Config.CONFIG.getJdbcUrl().equals("") && !Config.CONFIG.getOauthSecret().equals("")) {
-                DatabaseManager.startup(Config.CONFIG.getJdbcUrl(), null, Config.CONFIG.getHikariPoolSize());
+            if (!Config.CONFIG.getOauthSecret().equals("")) {
                 OAuthManager.start(Config.CONFIG.getBotToken(), Config.CONFIG.getOauthSecret());
             } else {
-                log.warn("No JDBC URL and/or secret found, skipped database connection and OAuth2 client");
-                log.warn("Falling back to internal SQLite db");
-                DatabaseManager.startup("jdbc:sqlite:fredboat.db", "org.hibernate.dialect.SQLiteDialect",
-                        Config.CONFIG.getHikariPoolSize());
+                log.warn("No oauth secret found, skipped initialization of OAuth2 client");
             }
         } catch (Exception e) {
-            log.info("Failed to start DatabaseManager and OAuth2 client", e);
+            log.info("Failed to start OAuth2 client", e);
         }
 
         //Initialise event listeners
@@ -198,7 +215,7 @@ public abstract class FredBoat {
             carbonitexAgent.start();
         }
 
-        ShardWatchdogAgent shardWatchdogAgent = new ShardWatchdogAgent();
+        shardWatchdogAgent = new ShardWatchdogAgent();
         shardWatchdogAgent.setDaemon(true);
         shardWatchdogAgent.start();
     }
@@ -331,6 +348,9 @@ public abstract class FredBoat {
     private static final Runnable ON_SHUTDOWN = () -> {
         int code = shutdownCode != UNKNOWN_SHUTDOWN_CODE ? shutdownCode : -1;
 
+        shardWatchdogAgent.shutdown();
+        if (dbConnectionWatchdogAgent != null) dbConnectionWatchdogAgent.shutdown();
+
         try {
             MusicPersistenceHandler.handlePreShutdown(code);
         } catch (Exception e) {
@@ -346,7 +366,7 @@ public abstract class FredBoat {
         } catch (IOException ignored) {}
 
         executor.shutdown();
-        DatabaseManager.shutdown();
+        dbManager.shutdown();
     };
 
     public static void shutdown(int code) {
@@ -487,5 +507,9 @@ public abstract class FredBoat {
         public String toString() {
             return getShardString();
         }
+    }
+
+    public static DatabaseManager getDbManager() {
+        return dbManager;
     }
 }

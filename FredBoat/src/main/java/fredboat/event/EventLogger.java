@@ -44,7 +44,7 @@ public class EventLogger extends ListenerAdapter {
 
     public EventLogger(String logChannelId) {
         this.logChannelId = logChannelId;
-        Runtime.getRuntime().addShutdownHook(new Thread(ON_SHUTDOWN));
+        Runtime.getRuntime().addShutdownHook(new Thread(ON_SHUTDOWN, EventLogger.class.getSimpleName() + " shutdownhook"));
     }
 
     private void send(Message msg) {

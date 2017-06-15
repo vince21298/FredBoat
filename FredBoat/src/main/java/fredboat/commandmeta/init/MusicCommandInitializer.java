@@ -1,35 +1,36 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 Frederik Ar. Mikkelsen
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package fredboat.commandmeta.init;
 
 import fredboat.Config;
 import fredboat.agent.VoiceChannelCleanupAgent;
-import fredboat.command.admin.BotRestartCommand;
-import fredboat.command.admin.CompileCommand;
-import fredboat.command.admin.EvalCommand;
-import fredboat.command.admin.ExitCommand;
-import fredboat.command.admin.MavenTestCommand;
-import fredboat.command.admin.PlayerDebugCommand;
-import fredboat.command.admin.ReviveCommand;
-import fredboat.command.admin.UpdateCommand;
-import fredboat.command.maintenance.AudioDebugCommand;
-import fredboat.command.maintenance.GetIdCommand;
-import fredboat.command.maintenance.NodesCommand;
-import fredboat.command.maintenance.ShardsCommand;
-import fredboat.command.maintenance.StatsCommand;
-import fredboat.command.moderation.ConfigCommand;
-import fredboat.command.moderation.LanguageCommand;
-import fredboat.command.music.control.JoinCommand;
-import fredboat.command.music.control.LeaveCommand;
-import fredboat.command.music.control.PauseCommand;
-import fredboat.command.music.control.PlayCommand;
-import fredboat.command.music.control.PlaySplitCommand;
-import fredboat.command.music.control.RepeatCommand;
-import fredboat.command.music.control.ReshuffleCommand;
-import fredboat.command.music.control.SelectCommand;
-import fredboat.command.music.control.ShuffleCommand;
-import fredboat.command.music.control.SkipCommand;
-import fredboat.command.music.control.StopCommand;
-import fredboat.command.music.control.UnpauseCommand;
-import fredboat.command.music.control.VolumeCommand;
+import fredboat.command.admin.*;
+import fredboat.command.maintenance.*;
+import fredboat.command.config.ConfigCommand;
+import fredboat.command.config.LanguageCommand;
+import fredboat.command.music.control.*;
 import fredboat.command.music.info.ExportCommand;
 import fredboat.command.music.info.GensokyoRadioCommand;
 import fredboat.command.music.info.ListCommand;
@@ -55,6 +56,10 @@ public class MusicCommandInitializer {
         CommandRegistry.registerCommand("help", new HelpCommand());
         CommandRegistry.registerAlias("help", "info");
 
+        CommandRegistry.registerCommand("mgitinfo", new GitInfoCommand());
+        CommandRegistry.registerAlias("mgitinfo", "mgit");
+        CommandRegistry.registerCommand("munblacklist", new UnblacklistCommand());
+        CommandRegistry.registerAlias("munblacklist", "munlimit");
         CommandRegistry.registerCommand("mexit", new ExitCommand());
         CommandRegistry.registerCommand("mbotrestart", new BotRestartCommand());
         CommandRegistry.registerCommand("mstats", new StatsCommand());
@@ -101,6 +106,8 @@ public class MusicCommandInitializer {
         CommandRegistry.registerCommand("lang", new LanguageCommand());
         CommandRegistry.registerCommand("mrevive", new ReviveCommand());
         CommandRegistry.registerCommand("adebug", new AudioDebugCommand());
+        CommandRegistry.registerCommand("announce", new AnnounceCommand());
+        CommandRegistry.registerCommand("destroy", new DestroyCommand());
 
         CommandRegistry.registerCommand("seek", new SeekCommand());
         CommandRegistry.registerCommand("forward", new ForwardCommand());

@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AudioTrackContext implements Comparable<AudioTrackContext> {
 
@@ -47,8 +47,8 @@ public class AudioTrackContext implements Comparable<AudioTrackContext> {
         this.userId = member.getUser().getId();
         this.guildId = member.getGuild().getId();
         this.shard = FredBoat.getInstance(member.getJDA());
-        this.rand = new Random().nextInt();
-        this.id = new Random().nextInt();
+        this.rand = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
+        this.id = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
     }
 
     public AudioTrackContext(AudioTrack at, Member member, int chronologicalIndex) {
@@ -56,8 +56,8 @@ public class AudioTrackContext implements Comparable<AudioTrackContext> {
         this.userId = member.getUser().getId();
         this.guildId = member.getGuild().getId();
         this.shard = FredBoat.getInstance(member.getJDA());
-        this.rand = new Random().nextInt();
-        this.id = new Random().nextInt();
+        this.rand = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
+        this.id = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
     }
 
     public AudioTrack getTrack() {
@@ -90,7 +90,7 @@ public class AudioTrackContext implements Comparable<AudioTrackContext> {
     }
 
     public int randomize() {
-        rand = new Random().nextInt();
+        rand = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
         return rand;
     }
 

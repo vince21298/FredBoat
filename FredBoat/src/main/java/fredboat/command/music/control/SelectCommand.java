@@ -63,7 +63,7 @@ public class SelectCommand extends Command implements IMusicCommand {
                     AudioTrack selected = selection.getChoices().get(i - 1);
                     player.selections.remove(invoker.getUser().getId());
                     String msg = MessageFormat.format(I18n.get(guild).getString("selectSuccess"), i, selected.getInfo().title, TextUtils.formatTime(selected.getInfo().length));
-                    selection.getOutMsg().editMessage(msg).complete(true);
+                    channel.editMessageById(selection.getOutMsgId(), msg).complete(true);
                     player.queue(new AudioTrackContext(selected, invoker));
                     player.setPause(false);
                     try {

@@ -36,7 +36,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "guild_config")
 @Cache(usage= CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region="guild_config")
-public class GuildConfig {
+public class GuildConfig implements IEntity {
 
     @Id
     private String guildId;
@@ -50,11 +50,16 @@ public class GuildConfig {
     @Column(name = "lang", nullable = false)
     private String lang = "en_US";
 
-    public GuildConfig() {
-    }
-
     public GuildConfig(String id) {
         this.guildId = id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.guildId = id;
+    }
+
+    public GuildConfig() {
     }
 
     public String getGuildId() {

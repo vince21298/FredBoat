@@ -167,7 +167,7 @@ public class PlayCommand extends Command implements IMusicCommand {
 
             VideoSelection oldSelection = player.selections.get(invoker.getUser().getId());
             if(oldSelection != null) {
-                oldSelection.getOutMsg().delete().queue();
+                channel.deleteMessageById(oldSelection.getOutMsgId()).queue();
             }
 
             MessageBuilder builder = new MessageBuilder();

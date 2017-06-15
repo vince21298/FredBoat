@@ -37,6 +37,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.audio.queue.AudioTrackContext;
+import fredboat.commandmeta.MessagingException;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
@@ -45,6 +46,7 @@ import fredboat.util.TextUtils;
 import fredboat.util.YoutubeAPI;
 import fredboat.util.YoutubeVideo;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import org.json.JSONObject;
 import org.json.XML;
@@ -59,6 +61,12 @@ public class NowplayingCommand extends Command implements IMusicCommand {
         GuildPlayer player = PlayerRegistry.get(guild);
         player.setCurrentTC(channel);
         if (player.isPlaying()) {
+
+            // we are about to send an embed, but can we even do that?
+            if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)) {
+                throw new MessagingException(I18n.get(channel.getGuild()).getString("permissionMissingBot") + " "
+                        + I18n.get(channel.getGuild()).getString("permissionEmbedLinks"));
+            }
 
             AudioTrackContext atc = player.getPlayingTrack();
             AudioTrack at = atc.getTrack();

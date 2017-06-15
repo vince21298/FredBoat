@@ -29,6 +29,7 @@ import fredboat.Config;
 import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IFunCommand;
+import fredboat.feature.togglz.FeatureFlags;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -47,9 +48,11 @@ public class TalkCommand extends Command implements IFunCommand {
 
     public static void talk(Member member, TextChannel channel, String question) {
         //Cleverbot integration
-        String response = FredBoat.jca.getResponse(question);
-        response = member.getEffectiveName() + ": " + StringEscapeUtils.unescapeHtml4(response);
-        channel.sendMessage(response).queue();
+        if (FeatureFlags.CHATBOT.isActive()) {
+            String response = FredBoat.jca.getResponse(question);
+            response = member.getEffectiveName() + ": " + StringEscapeUtils.unescapeHtml4(response);
+            channel.sendMessage(response).queue();
+        }
     }
 
     @Override

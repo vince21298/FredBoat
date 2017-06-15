@@ -33,17 +33,24 @@ class TestCommandTest extends ProvideJDASingleton {
         String jdbcUrl = Config.CONFIG.getJdbcUrl();
         if (jdbcUrl != null && !"".equals(jdbcUrl)) {
             //start the database
-            DatabaseManager.startup(jdbcUrl, null, Config.CONFIG.getHikariPoolSize());
-            Assertions.assertTrue(new TestCommand().invoke(testChannel, testSelfMember, args));
-            DatabaseManager.shutdown();
+            DatabaseManager dbm = new DatabaseManager(jdbcUrl, null, Config.CONFIG.getHikariPoolSize());
+            try {
+                dbm.startup();
+                Assertions.assertTrue(new TestCommand().invoke(dbm, testChannel, testSelfMember, args));
+            } finally {
+                dbm.shutdown();
+            }
         }
 
         //test the internal SQLite db
-        DatabaseManager.startup("jdbc:sqlite:fredboat.db", "org.hibernate.dialect.SQLiteDialect", 1);
-        Assertions.assertTrue(new TestCommand().invoke(testChannel, testSelfMember, args));
-
-        //close the database
-        DatabaseManager.shutdown();
+        args[1] = args[2] = "2";
+        DatabaseManager dbm = new DatabaseManager("jdbc:sqlite:fredboat.db", "org.hibernate.dialect.SQLiteDialect", 1);
+        try {
+            dbm.startup();
+            Assertions.assertTrue(new TestCommand().invoke(dbm, testChannel, testSelfMember, args));
+        } finally {
+            dbm.shutdown();
+        }
         bumpPassedTests();
     }
 }

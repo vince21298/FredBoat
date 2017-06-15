@@ -29,12 +29,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import fredboat.FredBoat;
-import fredboat.audio.queue.AbstractTrackProvider;
-import fredboat.audio.queue.AudioLoader;
-import fredboat.audio.queue.AudioTrackContext;
-import fredboat.audio.queue.IdentifierContext;
-import fredboat.audio.queue.RepeatMode;
-import fredboat.audio.queue.SimpleTrackProvider;
+import fredboat.audio.queue.*;
 import fredboat.commandmeta.MessagingException;
 import fredboat.db.DatabaseNotReadyException;
 import fredboat.db.EntityReader;
@@ -48,7 +43,6 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
@@ -66,7 +60,7 @@ public class GuildPlayer extends AbstractPlayer {
     private final FredBoat shard;
     private final String guildId;
     public final Map<String, VideoSelection> selections = new HashMap<>();
-    private TextChannel currentTC;
+    private String currentTCId;
 
     private final AudioLoader audioLoader;
 
@@ -91,12 +85,12 @@ public class GuildPlayer extends AbstractPlayer {
             throw new MessagingException(I18n.get(getGuild()).getString("playerUserNotInChannel"));
         }
 
-        if (!PermissionUtil.checkPermission(targetChannel, targetChannel.getGuild().getSelfMember(), Permission.VOICE_CONNECT)
+        if (!targetChannel.getGuild().getSelfMember().hasPermission(targetChannel, Permission.VOICE_CONNECT)
                 && !targetChannel.getMembers().contains(getGuild().getSelfMember())) {
             throw new MessagingException(I18n.get(getGuild()).getString("playerJoinConnectDenied"));
         }
 
-        if (!PermissionUtil.checkPermission(targetChannel, targetChannel.getGuild().getSelfMember(), Permission.VOICE_SPEAK)) {
+        if (!targetChannel.getGuild().getSelfMember().hasPermission(targetChannel, Permission.VOICE_SPEAK)) {
             throw new MessagingException(I18n.get(getGuild()).getString("playerJoinSpeakDenied"));
         }
 
@@ -193,9 +187,13 @@ public class GuildPlayer extends AbstractPlayer {
         return getUserCurrentVoiceChannel(getGuild().getSelfMember());
     }
 
+    /**
+     * @return the text channel currently used for music commands, if there is none return #general
+     */
     public TextChannel getActiveTextChannel() {
-        if (currentTC != null) {
-            return currentTC;
+        TextChannel currentTc = getCurrentTC();
+        if (currentTc != null) {
+            return currentTc;
         } else {
             log.warn("No currentTC in " + getGuild() + "! Returning public channel...");
             return getGuild().getPublicChannel();
@@ -266,16 +264,23 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public void setCurrentTC(TextChannel currentTC) {
-        this.currentTC = currentTC;
+        this.currentTCId = currentTC.getId();
     }
 
+    /**
+     * @return currently used TextChannel or null if there is none
+     */
     public TextChannel getCurrentTC() {
-        return currentTC;
+        try {
+            return shard.getJda().getTextChannelById(currentTCId);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     //Success, fail message
-    public Pair<Boolean, String> canMemberSkipTracks(Member member, List<AudioTrackContext> list) {
-        if(PermissionUtil.checkPermission(getGuild(), member, Permission.MESSAGE_MANAGE)){
+    public Pair<Boolean, String> canMemberSkipTracks(TextChannel textChannel, Member member, List<AudioTrackContext> list) {
+        if (member.hasPermission(textChannel, Permission.MESSAGE_MANAGE)) {
             return new ImmutablePair<>(true, null);
         } else {
             //We are not a mod
@@ -300,7 +305,7 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public Pair<Boolean, String> skipTracksForMemberPerms(TextChannel channel, Member member, List<AudioTrackContext> list) {
-        Pair<Boolean, String> pair = canMemberSkipTracks(member, list);
+        Pair<Boolean, String> pair = canMemberSkipTracks(channel, member, list);
 
         if (pair.getLeft()) {
             skipTracks(list);

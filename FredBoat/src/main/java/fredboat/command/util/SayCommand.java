@@ -53,7 +53,7 @@ public class SayCommand extends Command implements IUtilCommand {
         try {
             myMsg = channel.sendMessage('\u200b' + res).complete(true);
 
-            EventListenerBoat.messagesToDeleteIfIdDeleted.put(message.getId(), myMsg);
+            EventListenerBoat.messagesToDeleteIfIdDeleted.put(message.getId(), myMsg.getId());
         } catch (RateLimitedException e) {
             throw new RuntimeException(e);
         }

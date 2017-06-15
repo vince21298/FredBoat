@@ -36,6 +36,7 @@ public class CarbonitexAgent extends Thread {
     private final String key;
 
     public CarbonitexAgent(String key) {
+        super(CarbonitexAgent.class.getSimpleName());
         this.key = key;
     }
 

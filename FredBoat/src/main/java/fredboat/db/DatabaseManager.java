@@ -28,6 +28,7 @@ package fredboat.db;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import fredboat.Config;
+import fredboat.FredBoat;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,25 +42,47 @@ import java.util.Properties;
 public class DatabaseManager {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseManager.class);
-    
-    private static EntityManagerFactory emf;
-    private static Session sshTunnel;
-    public static DatabaseState state = DatabaseState.UNINITIALIZED;
+
+    private EntityManagerFactory emf;
+    private Session sshTunnel;
+    private DatabaseState state = DatabaseState.UNINITIALIZED;
 
     //local port, if using SSH tunnel point your jdbc to this, e.g. jdbc:postgresql://localhost:9333/...
     private static final int SSH_TUNNEL_PORT = 9333;
 
+    private String jdbcUrl;
+    private String dialect;
+    private int poolSize;
+
     /**
-     * @param jdbcUrl connection to the database
-     * @param dialect set to null or empty String to have it autodetected by Hibernate, chosen jdbc driver must support that
+     * @param jdbcUrl  connection to the database
+     * @param dialect  set to null or empty String to have it auto detected by Hibernate, chosen jdbc driver must support that
+     * @param poolSize max size of the connection pool
      */
-    public static void startup(String jdbcUrl, String dialect, int poolSize) {
+    public DatabaseManager(String jdbcUrl, String dialect, int poolSize) {
+        this.jdbcUrl = jdbcUrl;
+        this.dialect = dialect;
+        this.poolSize = poolSize;
+    }
+
+    /**
+     * Starts the database connection.
+     *
+     * @throws IllegalStateException if trying to start a database that is READY or INITIALIZING
+     */
+    public synchronized void startup() {
+        if (state == DatabaseState.READY || state == DatabaseState.INITIALIZING) {
+            throw new IllegalStateException("Can't start the database, when it's current state is " + state);
+        }
+
         state = DatabaseState.INITIALIZING;
 
         try {
-
-            if(Config.CONFIG.isUseSshTunnel()){
-                connectSSH();
+            if (Config.CONFIG.isUseSshTunnel()) {
+                //don't connect again if it's already connected
+                if (sshTunnel == null || !sshTunnel.isConnected()) {
+                    connectSSH();
+                }
             }
 
             //These are now located in the resources directory as XML
@@ -71,6 +94,7 @@ public class DatabaseManager {
             if (dialect != null && !"".equals(dialect)) properties.put("hibernate.dialect", dialect);
             properties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
 
+            //this does a lot of logs
             //properties.put("hibernate.show_sql", "true");
 
             //automatically update the tables we need
@@ -78,7 +102,14 @@ public class DatabaseManager {
             properties.put("hibernate.hbm2ddl.auto", "update");
 
             properties.put("hibernate.hikari.maximumPoolSize", Integer.toString(poolSize));
-            properties.put("hibernate.hikari.idleTimeout", Integer.toString(Config.HIKARI_TIMEOUT_MILLISECONDS));
+
+            //how long to wait for a connection becoming available, also the timeout when a DB fails
+            properties.put("hibernate.hikari.connectionTimeout", Integer.toString(Config.HIKARI_TIMEOUT_MILLISECONDS));
+            //this helps with sorting out connections in pgAdmin
+            properties.put("hibernate.hikari.dataSource.ApplicationName", "FredBoat_" + Config.CONFIG.getDistribution());
+
+            //timeout the validation query (will be done automatically through Connection.isValid())
+            properties.put("hibernate.hikari.validationTimeout", "1000");
 
 
             LocalContainerEntityManagerFactoryBean emfb = new LocalContainerEntityManagerFactoryBean();
@@ -88,6 +119,10 @@ public class DatabaseManager {
             emfb.setPersistenceUnitName("fredboat.test");
             emfb.setPersistenceProviderClass(HibernatePersistenceProvider.class);
             emfb.afterPropertiesSet();
+
+            //leak prevention, close existing factory if possible
+            closeEntityManagerFactory();
+
             emf = emfb.getObject();
 
             log.info("Started Hibernate");
@@ -98,7 +133,29 @@ public class DatabaseManager {
         }
     }
 
-    private static void connectSSH() {
+    public void reconnectSSH() {
+        connectSSH();
+        //try a test query and if successful set state to ready
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNativeQuery("SELECT 1;").getResultList();
+            em.getTransaction().commit();
+            state = DatabaseState.READY;
+        } finally {
+            em.close();
+        }
+    }
+
+    private synchronized void connectSSH() {
+        if (!Config.CONFIG.isUseSshTunnel()) {
+            log.warn("Cannot connect ssh tunnel as it is not specified in the config");
+            return;
+        }
+        if (sshTunnel != null && sshTunnel.isConnected()) {
+            log.info("Tunnel is already connected, disconnect first before reconnecting");
+            return;
+        }
         try {
             //establish the tunnel
             log.info("Starting SSH tunnel");
@@ -119,6 +176,7 @@ public class DatabaseManager {
             config.put("StrictHostKeyChecking", "no");
             config.put("ConnectionAttempts", "3");
             session.setConfig(config);
+            session.setServerAliveInterval(500);//milliseconds
             session.connect();
 
             log.info("SSH Connected");
@@ -140,33 +198,71 @@ public class DatabaseManager {
     }
 
     /**
-     * Please call close() on the em you receive after you are done to let the pool recycle the connection and save the
-     * nature from environmental toxins like open database connections.
+     * Please call close() on the EntityManager object you receive after you are done to let the pool recycle the
+     * connection and save the nature from environmental toxins like open database connections.
      */
-    public static EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
-    static boolean isDisabled() {
-        return state == DatabaseState.DISABLED || state == DatabaseState.FAILED;
+    /**
+     * Performs health checks on the ssh tunnel and database
+     *
+     * @return true if the database is operational, false if not
+     */
+    public boolean isAvailable() {
+        if (state != DatabaseState.READY) {
+            return false;
+        }
+
+        //is the ssh connection still alive?
+        if (sshTunnel != null && !sshTunnel.isConnected()) {
+            log.error("SSH tunnel lost connection.");
+            state = DatabaseState.FAILED;
+            //immediately try to reconnect the tunnel
+            //DBConnectionWatchdogAgent should take further care of this
+            FredBoat.executor.submit(this::reconnectSSH);
+            return false;
+        }
+
+        return state == DatabaseState.READY;
+    }
+
+    /**
+     * Avoid multiple threads calling a close on the factory by wrapping it into this synchronized method
+     */
+    private synchronized void closeEntityManagerFactory() {
+        if (emf != null && emf.isOpen()) {
+            try {
+                emf.close();
+            } catch (IllegalStateException ignored) {
+                //it has already been closed, nothing to catch here
+            }
+        }
+    }
+
+    public DatabaseState getState() {
+        return state;
     }
 
     public enum DatabaseState {
-        DISABLED, //When no JDBC URL is given TODO not true anymore with the fallback SQLite db
         UNINITIALIZED,
         INITIALIZING,
         FAILED,
-        READY
+        READY,
+        SHUTDOWN
     }
 
-    public static void shutdown() {
+    /**
+     * Shutdown, close, stop, halt, burn down all resources this object has been using
+     */
+    public void shutdown() {
         log.info("DatabaseManager shutdown call received, shutting down");
-        state = DatabaseState.DISABLED;
+        state = DatabaseState.SHUTDOWN;
+        closeEntityManagerFactory();
+
         if (sshTunnel != null)
             sshTunnel.disconnect();
-
-        if (emf != null && emf.isOpen())
-            emf.close();
     }
 
     private static class JSchLogger implements com.jcraft.jsch.Logger {

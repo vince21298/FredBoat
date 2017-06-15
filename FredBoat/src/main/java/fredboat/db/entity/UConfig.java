@@ -31,7 +31,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "user_config")
-public class UConfig {
+public class UConfig implements IEntity {
 
     @Id
     private String userId;
@@ -55,11 +55,16 @@ public class UConfig {
         return bearerexpiration;
     }
 
-    public UConfig() {
-    }
-
     public UConfig(String id) {
         this.userId = id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.userId = id;
+    }
+
+    public UConfig() {
     }
 
     public UConfig setBearer(String bearer) {

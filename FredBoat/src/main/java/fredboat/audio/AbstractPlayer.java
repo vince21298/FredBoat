@@ -48,6 +48,7 @@ import fredboat.audio.queue.ITrackProvider;
 import fredboat.audio.queue.SplitAudioTrackContext;
 import fredboat.audio.queue.TrackEndMarkerHandler;
 import fredboat.audio.source.PlaylistImportSourceManager;
+import fredboat.audio.source.SpotifyPlaylistSourceManager;
 import fredboat.util.DistributionEnum;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import org.slf4j.LoggerFactory;
@@ -83,14 +84,17 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
             //Patrons and development get higher quality
             AudioConfiguration.ResamplingQuality quality = AudioConfiguration.ResamplingQuality.LOW;
             if (Config.CONFIG.getDistribution() == DistributionEnum.PATRON || Config.CONFIG.getDistribution() == DistributionEnum.DEVELOPMENT)
-                quality = AudioConfiguration.ResamplingQuality.HIGH;
+                quality = AudioConfiguration.ResamplingQuality.MEDIUM;
 
             playerManager.getConfiguration().setResamplingQuality(quality);
             playerManager.enableGcMonitoring();
+            playerManager.setFrameBufferDuration(1000);
 
-            if (Config.CONFIG.getDistribution() != DistributionEnum.PATRON && Config.CONFIG.getDistribution() != DistributionEnum.DEVELOPMENT && Config.CONFIG.isLavaplayerNodesEnabled()) {
+            if (Config.CONFIG.getDistribution() != DistributionEnum.DEVELOPMENT && Config.CONFIG.isLavaplayerNodesEnabled()) {
                 playerManager.useRemoteNodes(Config.CONFIG.getLavaplayerNodes());
             }
+            
+            playerManager.setItemLoaderThreadPoolSize(100);
         }
     }
 
@@ -102,6 +106,11 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
         mng.registerSourceManager(new TwitchStreamAudioSourceManager());
         mng.registerSourceManager(new VimeoAudioSourceManager());
         mng.registerSourceManager(new BeamAudioSourceManager());
+        if (Config.CONFIG.getDistribution() == DistributionEnum.PATRON || Config.CONFIG.getDistribution() == DistributionEnum.DEVELOPMENT) {
+            mng.registerSourceManager(new SpotifyPlaylistSourceManager());
+        }
+        //add new source managers above the HttpAudio one, because it will either eat your request or throw an exception
+        //so you will never reach a source manager below it
         mng.registerSourceManager(new HttpAudioSourceManager());
         
         return mng;
@@ -215,6 +224,10 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
             play0(false);
         } else if(endReason == AudioTrackEndReason.STOPPED) {
             play0(true);
+        } else if(endReason == AudioTrackEndReason.CLEANUP) {
+            log.info("Track " + track.getIdentifier() + " was cleaned up");
+        } else {
+            log.warn("Track " + track.getIdentifier() + " ended with unexpected reason: " + endReason);
         }
     }
 

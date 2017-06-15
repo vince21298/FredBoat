@@ -25,7 +25,7 @@
 
 package fredboat.feature;
 
-import fredboat.db.DatabaseManager;
+import fredboat.db.DatabaseNotReadyException;
 import fredboat.db.EntityReader;
 import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildConfig;
@@ -47,10 +47,13 @@ public class I18n {
 
     public static void start() {
         LANGS.put("en_US", DEFAULT);
+        LANGS.put("af_ZA", new FredBoatLocale(new Locale("af", "ZA"), "af_ZA", "Afrikaans"));
         LANGS.put("bg_BG", new FredBoatLocale(new Locale("bg", "BG"), "bg_BG", "български език"));
         LANGS.put("ca_ES", new FredBoatLocale(new Locale("ca", "ES"), "ca_ES", "Catalan"));
+        LANGS.put("zh_CN", new FredBoatLocale(new Locale("zh", "CN"), "zh_CN", "简体中文"));
         LANGS.put("zh_TW", new FredBoatLocale(new Locale("zh", "TW"), "zh_TW", "繁體中文"));
         LANGS.put("cs_CZ", new FredBoatLocale(new Locale("cs", "CZ"), "cs_CZ", "Čeština"));
+        LANGS.put("hr_HR", new FredBoatLocale(new Locale("hr", "HR"), "hr_HR", "Hrvatski"));
         LANGS.put("da_DK", new FredBoatLocale(new Locale("da", "DK"), "da_DK", "Dansk"));
         LANGS.put("nl_NL", new FredBoatLocale(new Locale("nl", "NL"), "nl_NL", "Nederlands"));
         LANGS.put("fr_FR", new FredBoatLocale(new Locale("fr", "FR"), "fr_FR", "Français"));
@@ -77,46 +80,34 @@ public class I18n {
     }
 
     public static ResourceBundle get(Guild guild) {
-        if (DatabaseManager.state != DatabaseManager.DatabaseState.READY || guild == null) {
+        if (guild == null) {
             return DEFAULT.getProps();
         }
-
-        GuildConfig config;
-        
-        try {
-            config = EntityReader.getGuildConfig(guild.getId());
-        } catch (Exception e) {
-            log.error("Error when reading entity", e);
-            return DEFAULT.getProps();
-        }
-
-        return LANGS.getOrDefault(config.getLang(), DEFAULT).getProps();
+        return getLocale(guild).getProps();
     }
 
     public static FredBoatLocale getLocale(Guild guild) {
-        if(DatabaseManager.state != DatabaseManager.DatabaseState.READY){
-            return DEFAULT;
-        }
-
         GuildConfig config;
 
         try {
             config = EntityReader.getGuildConfig(guild.getId());
+        } catch (DatabaseNotReadyException e) {
+            //don't log spam the full exceptions or logs
+            return DEFAULT;
         } catch (Exception e) {
             log.error("Error when reading entity", e);
             return DEFAULT;
         }
+
         return LANGS.getOrDefault(config.getLang(), DEFAULT);
     }
 
     public static void set(Guild guild, String lang) throws LanguageNotSupportedException {
-        GuildConfig config = EntityReader.getGuildConfig(guild.getId());
-
-        if(!LANGS.containsKey(lang))
+        if (!LANGS.containsKey(lang))
             throw new LanguageNotSupportedException("Language not found");
 
+        GuildConfig config = EntityReader.getGuildConfig(guild.getId());
         config.setLang(lang);
-
         EntityWriter.mergeGuildConfig(config);
     }
 

@@ -23,7 +23,7 @@
  *
  */
 
-package fredboat.command.moderation;
+package fredboat.command.config;
 
 import fredboat.Config;
 import fredboat.command.util.HelpCommand;
@@ -41,7 +41,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.text.MessageFormat;
 
@@ -69,7 +68,7 @@ public class ConfigCommand extends Command implements IModerationCommand {
     }
 
     private void setConfig(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
-        if(!PermissionUtil.checkPermission(guild, invoker, Permission.ADMINISTRATOR)
+        if (!invoker.hasPermission(Permission.ADMINISTRATOR)
                 && !DiscordUtil.isUserBotOwner(invoker.getUser())){
             channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("configNotAdmin"), invoker.getEffectiveName())).queue();
             return;
@@ -89,8 +88,8 @@ public class ConfigCommand extends Command implements IModerationCommand {
             case "track_announce":
                 if (val.equalsIgnoreCase("true") | val.equalsIgnoreCase("false")) {
                     gc.setTrackAnnounce(Boolean.valueOf(val));
-                    TextUtils.replyWithName(channel, invoker, "`track_announce` " + MessageFormat.format(I18n.get(guild).getString("configSetTo"), val));
                     EntityWriter.mergeGuildConfig(gc);
+                    TextUtils.replyWithName(channel, invoker, "`track_announce` " + MessageFormat.format(I18n.get(guild).getString("configSetTo"), val));
                 } else {
                     channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("configMustBeBoolean"), invoker.getEffectiveName())).queue();
                 }
@@ -98,8 +97,8 @@ public class ConfigCommand extends Command implements IModerationCommand {
             case "auto_resume":
                 if (val.equalsIgnoreCase("true") | val.equalsIgnoreCase("false")) {
                     gc.setAutoResume(Boolean.valueOf(val));
-                    TextUtils.replyWithName(channel, invoker, "`auto_resume` " + MessageFormat.format(I18n.get(guild).getString("configSetTo"), val));
                     EntityWriter.mergeGuildConfig(gc);
+                    TextUtils.replyWithName(channel, invoker, "`auto_resume` " + MessageFormat.format(I18n.get(guild).getString("configSetTo"), val));
                 } else {
                     channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("configMustBeBoolean"), invoker.getEffectiveName())).queue();
                 }

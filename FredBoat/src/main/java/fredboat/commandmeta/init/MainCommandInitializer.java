@@ -1,11 +1,32 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 Frederik Ar. Mikkelsen
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package fredboat.commandmeta.init;
 
 import fredboat.command.admin.*;
 import fredboat.command.fun.*;
-import fredboat.command.maintenance.FuzzyUserSearchCommand;
-import fredboat.command.maintenance.ShardsCommand;
-import fredboat.command.maintenance.StatsCommand;
-import fredboat.command.maintenance.VersionCommand;
+import fredboat.command.maintenance.*;
 import fredboat.command.moderation.ClearCommand;
 import fredboat.command.moderation.HardbanCommand;
 import fredboat.command.moderation.KickCommand;
@@ -19,6 +40,8 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("help", new HelpCommand());
         CommandRegistry.registerAlias("help", "info");
 
+        CommandRegistry.registerCommand("unblacklist", new UnblacklistCommand());
+        CommandRegistry.registerAlias("unblacklist", "unlimit");
         CommandRegistry.registerCommand("commands", new CommandsCommand());
         CommandRegistry.registerAlias("commands", "comms");
         CommandRegistry.registerCommand("version", new VersionCommand());
@@ -29,6 +52,8 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("invite", new InviteCommand());
         CommandRegistry.registerCommand("userinfo", new fredboat.command.util.UserInfoCommand());
         CommandRegistry.registerAlias("userinfo", "memberinfo");
+        CommandRegistry.registerCommand("gitinfo", new GitInfoCommand());
+        CommandRegistry.registerAlias("gitinfo", "git");
         CommandRegistry.registerAlias("uptime", "stats");
         CommandRegistry.registerCommand("exit", new ExitCommand());
         CommandRegistry.registerCommand("avatar", new AvatarCommand());
@@ -52,8 +77,7 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("lenny", new TextCommand("( ͡° ͜ʖ ͡°)"));
         CommandRegistry.registerCommand("useless", new TextCommand("This command is useless."));
         CommandRegistry.registerCommand("clear", new ClearCommand());
-        //TODO JCA (=TalkCommand) is borken. Don't throw unnecessary error reports.
-//        CommandRegistry.registerCommand("talk", new TalkCommand());
+        CommandRegistry.registerCommand("talk", new TalkCommand());
         CommandRegistry.registerCommand("mal", new MALCommand());
         CommandRegistry.registerCommand("akinator", new AkinatorCommand());
         CommandRegistry.registerCommand("fuzzy", new FuzzyUserSearchCommand());
@@ -85,7 +109,6 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("gif", new RemoteFileCommand("http://i.imgur.com/eBUFNJq.gif"));
         CommandRegistry.registerCommand("noods", new RemoteFileCommand("http://i.imgur.com/mKdTGlg.png"));
         CommandRegistry.registerCommand("internetspeed", new RemoteFileCommand("http://i.imgur.com/84nbpQe.png"));
-        CommandRegistry.registerCommand("hug", new RemoteFileCommand("http://i.imgur.com/E8zQ4yX.gif"));
         CommandRegistry.registerCommand("powerpoint", new RemoteFileCommand("http://i.imgur.com/i65ss6p.png"));
         CommandRegistry.registerCommand("cooldog", new DogCommand());
         CommandRegistry.registerAlias("cooldog", "dog");
@@ -96,6 +119,7 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("github", new TextCommand("https://github.com/Frederikam"));
         CommandRegistry.registerCommand("repo", new TextCommand("https://github.com/Frederikam/FredBoat"));
 
+        CommandRegistry.registerCommand("hug", new HugCommand("https://imgur.com/a/jHJOc"));
         CommandRegistry.registerCommand("pat", new PatCommand("https://imgur.com/a/WiPTl"));
         CommandRegistry.registerCommand("facedesk", new FacedeskCommand("https://imgur.com/a/I5Q4U"));
         CommandRegistry.registerCommand("roll", new RollCommand("https://imgur.com/a/lrEwS"));

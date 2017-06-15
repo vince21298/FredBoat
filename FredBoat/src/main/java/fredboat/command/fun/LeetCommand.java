@@ -79,7 +79,7 @@ public class LeetCommand extends Command implements IFunCommand {
             throw new RuntimeException(e);
         }
 
-        EventListenerBoat.messagesToDeleteIfIdDeleted.put(message.getId(), myMsg);
+        EventListenerBoat.messagesToDeleteIfIdDeleted.put(message.getId(), myMsg.getId());
     }
 
     @Override

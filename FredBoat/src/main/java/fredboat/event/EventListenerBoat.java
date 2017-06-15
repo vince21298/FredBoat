@@ -27,14 +27,18 @@ package fredboat.event;
 import fredboat.Config;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
+import fredboat.command.fun.TalkCommand;
+import fredboat.command.music.control.SkipCommand;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.CommandManager;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
 import fredboat.db.EntityReader;
 import fredboat.feature.I18n;
+import fredboat.feature.togglz.FeatureFlags;
+import fredboat.util.Tuple2;
+import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
@@ -47,14 +51,18 @@ import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 public class EventListenerBoat extends AbstractEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(EventListenerBoat.class);
 
-    public static HashMap<String, Message> messagesToDeleteIfIdDeleted = new HashMap<>();
+    //first string is the users message ID, second string the id of fredboat's message that should be deleted if the
+    // user's message is deleted
+    public static Map<String, String> messagesToDeleteIfIdDeleted = new HashMap<>();
     private User lastUserToReceiveHelp;
 
     public EventListenerBoat() {
@@ -62,6 +70,13 @@ public class EventListenerBoat extends AbstractEventListener {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+
+        if (FeatureFlags.RATE_LIMITER.isActive()) {
+            if (Ratelimiter.getRatelimiter().isBlacklisted(event.getAuthor().getIdLong())) {
+                return;
+            }
+        }
+
         if (event.getPrivateChannel() != null) {
             log.info("PRIVATE" + " \t " + event.getAuthor().getName() + " \t " + event.getMessage().getRawContent());
             return;
@@ -95,27 +110,55 @@ public class EventListenerBoat extends AbstractEventListener {
                 return;
             }
 
-            CommandManager.prefixCalled(invoked, event.getGuild(), event.getTextChannel(), event.getMember(), event.getMessage());
-            //TODO JCA (=TalkCommand) is borken. Don't throw unnecessary error reports.
-//        } else if (event.getMessage().getRawContent().startsWith("<@" + event.getJDA().getSelfUser().getId() + ">")) {
-//            log.info(event.getGuild().getName() + " \t " + event.getAuthor().getName() + " \t " + event.getMessage().getRawContent());
-//            CommandManager.commandsExecuted++;
-//            TalkCommand.talk(event.getMember(), event.getTextChannel(), event.getMessage().getRawContent().substring(event.getJDA().getSelfUser().getAsMention().length() + 1));
+            limitOrExecuteCommand(invoked, event);
+        } else if (event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser())) {
+            log.info(event.getGuild().getName() + " \t " + event.getAuthor().getName() + " \t " + event.getMessage().getRawContent());
+            CommandManager.commandsExecuted++;
+            //regex101.com/r/9aw6ai/1/
+            String message = event.getMessage().getRawContent().replaceAll("<@!?[0-9]*>", "");
+            TalkCommand.talk(event.getMember(), event.getTextChannel(), message);
         }
+    }
+
+    /**
+     * check the rate limit of user and execute the command if everything is fine
+     */
+    private void limitOrExecuteCommand(Command invoked, MessageReceivedEvent event) {
+        Tuple2<Boolean, Class> ratelimiterResult = new Tuple2<>(true, null);
+        if (FeatureFlags.RATE_LIMITER.isActive()) {
+            ratelimiterResult = Ratelimiter.getRatelimiter().isAllowed(event.getMember(), invoked, 1, event.getTextChannel());
+
+        }
+        if (ratelimiterResult.a)
+            CommandManager.prefixCalled(invoked, event.getGuild(), event.getTextChannel(), event.getMember(), event.getMessage());
+        else {
+            String out = event.getMember().getAsMention() + ": " + I18n.get(event.getGuild()).getString("ratelimitedGeneralInfo");
+            if (ratelimiterResult.b == SkipCommand.class) { //we can compare classes with == as long as we are using the same classloader (which we are)
+                //add a nice reminder on how to skip more than 1 song
+                out += "\n" + MessageFormat.format(I18n.get(event.getGuild()).getString("ratelimitedSkipCommand"), "`" + Config.CONFIG.getPrefix() + "skip n-m`");
+            }
+            event.getTextChannel().sendMessage(out).queue();
+        }
+
     }
 
     @Override
     public void onMessageDelete(MessageDeleteEvent event) {
         if (messagesToDeleteIfIdDeleted.containsKey(event.getMessageId())) {
-            Message msg = messagesToDeleteIfIdDeleted.remove(event.getMessageId());
-            if (msg.getJDA() == event.getJDA()) {
-                msg.delete().queue();
-            }
+            String msgId = messagesToDeleteIfIdDeleted.remove(event.getMessageId());
+            event.getChannel().deleteMessageById(msgId).queue();
         }
     }
 
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+
+        if (FeatureFlags.RATE_LIMITER.isActive()) {
+            if (Ratelimiter.getRatelimiter().isBlacklisted(event.getAuthor().getIdLong())) {
+                return;
+            }
+        }
+
         if (event.getAuthor() == lastUserToReceiveHelp) {
             //Ignore, they just got help! Stops any bot chain reactions
             return;

@@ -32,7 +32,6 @@ import fredboat.feature.I18n;
 import fredboat.util.*;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
@@ -65,17 +64,15 @@ public class CommandManager {
         if (Config.CONFIG.getDistribution() == DistributionEnum.MUSIC
                 && DiscordUtil.isPatronBotPresentAndOnline(guild)
                 && guild.getMemberById(BotConstants.PATRON_BOT_ID) != null
-                && PermissionUtil.checkPermission(channel, guild.getMemberById(BotConstants.PATRON_BOT_ID), Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                && guild.getMemberById(BotConstants.PATRON_BOT_ID).hasPermission(channel, Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
                 && Config.CONFIG.getPrefix().equals(Config.DEFAULT_PREFIX)
                 && !guild.getId().equals(BotConstants.FREDBOAT_HANGOUT_ID)) {
             log.info("Ignored command because patron bot is able to user that channel");
             return;
         }
 
-        if (invoked instanceof IMusicCommand && !PermissionUtil.checkPermission(
-                channel,
-                channel.getGuild().getSelfMember(),
-                Permission.MESSAGE_WRITE)) {
+        if (invoked instanceof IMusicCommand
+                && !channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)) {
             log.debug("Ignored command because it was a music command, and this bot cannot write in that channel");
             return;
         }

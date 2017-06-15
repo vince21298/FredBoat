@@ -32,10 +32,15 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import fredboat.audio.GuildPlayer;
+import fredboat.audio.source.PlaylistImportSourceManager;
+import fredboat.audio.source.PlaylistImporter;
+import fredboat.audio.source.SpotifyPlaylistSourceManager;
 import fredboat.feature.I18n;
+import fredboat.feature.togglz.FeatureFlags;
 import fredboat.util.TextUtils;
 import fredboat.util.YoutubeAPI;
 import fredboat.util.YoutubeVideo;
+import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.MessageBuilder;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -69,9 +74,12 @@ public class AudioLoader implements AudioLoadResultHandler {
     }
 
     public void loadAsync(IdentifierContext ic) {
-        identifierQueue.add(ic);
-        if (!isLoading) {
-            loadNextAsync();
+
+        if (ratelimitIfSlowLoadingPlaylistAndAnnounce(ic)) {
+            identifierQueue.add(ic);
+            if (!isLoading) {
+                loadNextAsync();
+            }
         }
     }
 
@@ -83,7 +91,8 @@ public class AudioLoader implements AudioLoadResultHandler {
                 context = ic;
 
                 if (gplayer.getRemainingTracks().size() >= QUEUE_TRACK_LIMIT) {
-                    TextUtils.replyWithName(gplayer.getActiveTextChannel(), context.getMember(), "You can't add tracks to a queue with more than " + QUEUE_TRACK_LIMIT + " tracks! This is to prevent abuse.");
+                    TextUtils.replyWithName(gplayer.getActiveTextChannel(), context.getMember(),
+                            MessageFormat.format(I18n.get(context.getMember().getGuild()).getString("loadQueueTrackLimit"), QUEUE_TRACK_LIMIT));
                     isLoading = false;
                     return;
                 }
@@ -96,6 +105,69 @@ public class AudioLoader implements AudioLoadResultHandler {
             handleThrowable(context, th);
             isLoading = false;
         }
+    }
+
+    /**
+     * If the requested item is a slow loading playlist that we know of, check for rate limits and announce to the user
+     * that it might take a while to gather it.
+     *
+     * @return false if the user is not allowed to load the playlist, true if he is
+     */
+    private boolean ratelimitIfSlowLoadingPlaylistAndAnnounce(IdentifierContext ic) {
+        PlaylistInfo playlistInfo = getSlowLoadingPlaylistData(ic.identifier);
+
+        if (playlistInfo == null) //not a slow loading playlist
+            return true;
+        else {
+            boolean result = true;
+            if (FeatureFlags.RATE_LIMITER.isActive()) {
+                result = Ratelimiter.getRatelimiter().isAllowed(ic.getMember(), playlistInfo, playlistInfo.getTotalTracks(), ic.getTextChannel()).a;
+            }
+
+            if (result) {
+                //inform user we are possibly about to do nasty time consuming work
+                if (playlistInfo.getTotalTracks() > 50) {
+                    String out = MessageFormat.format(I18n.get(ic.getMember().getGuild()).getString("loadAnnouncePlaylist"),
+                            playlistInfo.getName(),
+                            playlistInfo.getTotalTracks());
+                    TextUtils.replyWithName(gplayer.getActiveTextChannel(), ic.getMember(), out);
+                }
+                return true;
+            } else {
+
+                String out = ic.getMember().getAsMention() + ": "
+                        + I18n.get(ic.getMember().getGuild()).getString("ratelimitedGuildSlowLoadingPlaylist");
+                ic.getTextChannel().sendMessage(out).queue();
+                return false;
+            }
+        }
+    }
+
+    /**
+     * this function needs to be updated if we add more manual playlist loaders
+     * currently it only covers the Hastebin and Spotify playlists
+     *
+     * @param identifier the very same identifier that the playlist loaders will be presented with if we asked them to
+     *                   load a playlist
+     * @return null if it's not a playlist that we manually parse, some data about it if it is
+     */
+    private PlaylistInfo getSlowLoadingPlaylistData(String identifier) {
+
+        PlaylistInfo playlistInfo = null;
+        PlaylistImporter pi = playerManager.source(SpotifyPlaylistSourceManager.class);
+        if (pi != null) {
+            playlistInfo = pi.getPlaylistDataBlocking(identifier);
+        }
+
+        if (playlistInfo == null) {
+            pi = playerManager.source(PlaylistImportSourceManager.class);
+            if (pi != null) {
+                playlistInfo = pi.getPlaylistDataBlocking(identifier);
+            }
+        }
+
+        //can be null
+        return playlistInfo;
     }
 
     @Override

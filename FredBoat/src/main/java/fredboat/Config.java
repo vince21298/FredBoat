@@ -52,14 +52,15 @@ public class Config {
     public static Config CONFIG = null;
 
     public static String DEFAULT_PREFIX = ";;";
-    public static int HIKARI_TIMEOUT_MILLISECONDS = 10000;
+    //see https://github.com/brettwooldridge/HikariCP connectionTimeout
+    public static int HIKARI_TIMEOUT_MILLISECONDS = 1000;
 
     private final DistributionEnum distribution;
     private final String botToken;
     private String oauthSecret;
     private final String jdbcUrl;
     private final int hikariPoolSize;
-    private final int numShards;
+    private int numShards;
     private String mashapeKey;
     private String malUser;
     private String malPassword;
@@ -71,9 +72,12 @@ public class Config {
     private String carbonKey;
     private String cbUser;
     private String cbKey;
+    private String spotifyId;
+    private String spotifySecret;
     private String prefix = DEFAULT_PREFIX;
     private boolean restServerEnabled = true;
     private List<String> adminIds = new ArrayList<>();
+    private boolean useAutoBlacklist = false;
 
     //testing related stuff
     private String testBotToken;
@@ -123,6 +127,7 @@ public class Config {
             } else if (admins instanceof String) {
                 adminIds.add(admins + "");
             }
+            useAutoBlacklist = (boolean) config.getOrDefault("useAutoBlacklist", useAutoBlacklist);
 
             log.info("Using prefix: " + prefix);
 
@@ -136,7 +141,8 @@ public class Config {
             if (token != null) {
                 botToken = token.getOrDefault(distribution.getId(), "");
             } else botToken = "";
-
+            spotifyId = (String) creds.getOrDefault("spotifyId", "");
+            spotifySecret = (String) creds.getOrDefault("spotifySecret", "");
 
             if (creds.containsKey("oauthSecret")) {
                 Map<String, Object> oas = (Map) creds.get("oauthSecret");
@@ -168,11 +174,21 @@ public class Config {
                 log.info("Development distribution; forcing 2 shards");
                 numShards = 2;
             } else {
-                numShards = DiscordUtil.getRecommendedShardCount(getBotToken());
+                //this is the first request on start
+                //it sometimes fails cause network isn'T set up yet. wait 10 sec and try one more time in that case
+                try {
+                    numShards = DiscordUtil.getRecommendedShardCount(getBotToken());
+                } catch (Exception e) {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ex) {
+                        //duh
+                    }
+                    numShards = DiscordUtil.getRecommendedShardCount(getBotToken());
+                }
                 log.info("Discord recommends " + numShards + " shard(s)");
             }
 
-            // hikariPoolSize = numShards * 2;
             //more database connections don't help with performance, so use a value based on available cores
             //http://www.dailymotion.com/video/x2s8uec_oltp-performance-concurrent-mid-tier-connections_tech
             if (jdbcUrl == null || "".equals(jdbcUrl))
@@ -312,6 +328,14 @@ public class Config {
         return cbKey;
     }
 
+    public String getSpotifyId() {
+        return spotifyId;
+    }
+
+    public String getSpotifySecret() {
+        return spotifySecret;
+    }
+
     public String getPrefix() {
         return prefix;
     }
@@ -322,6 +346,10 @@ public class Config {
 
     public List<String> getAdminIds() {
         return adminIds;
+    }
+
+    public boolean useAutoBlacklist() {
+        return useAutoBlacklist;
     }
 
     public String getTestBotToken() {

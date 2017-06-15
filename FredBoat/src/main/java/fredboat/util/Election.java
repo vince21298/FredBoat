@@ -28,7 +28,7 @@ package fredboat.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Election<E extends Object> {
 
@@ -86,8 +86,8 @@ public class Election<E extends Object> {
                 top.add(cand);
             }
         }
-        
-        return top.isEmpty() ? null : top.get(new Random().nextInt(top.size()));
+
+        return top.isEmpty() ? null : top.get(ThreadLocalRandom.current().nextInt(top.size()));
     }
     
     public int getTotalVotes(){

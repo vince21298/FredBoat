@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,7 +78,7 @@ public class RandomImageCommand extends Command implements IFunCommand {
                     run = false;
                 }
             }
-        }).start();
+        }, RandomImageCommand.class.getSimpleName() + " imgur updater").start();
     }
 
     @Override
@@ -90,13 +90,17 @@ public class RandomImageCommand extends Command implements IFunCommand {
         //Get a random file and send it
         String randomUrl;
         synchronized (this) {
-            randomUrl = (String) Array.get(urls, new Random().nextInt(urls.length));
+            randomUrl = getRandomImageUrl();
         }
         try {
             channel.sendFile(CacheUtil.getImageFromURL(randomUrl), message).queue();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getRandomImageUrl() {
+        return (String) Array.get(urls, ThreadLocalRandom.current().nextInt(urls.length));
     }
 
     /**
