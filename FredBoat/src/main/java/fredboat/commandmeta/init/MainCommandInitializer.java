@@ -37,34 +37,24 @@ import fredboat.commandmeta.CommandRegistry;
 public class MainCommandInitializer {
 
     public static void initCommands() {
-        CommandRegistry.registerCommand("help", new HelpCommand());
-        CommandRegistry.registerAlias("help", "info");
+        CommandRegistry.registerCommand("help", new HelpCommand(), "info");
 
-        CommandRegistry.registerCommand("unblacklist", new UnblacklistCommand());
-        CommandRegistry.registerAlias("unblacklist", "unlimit");
-        CommandRegistry.registerCommand("commands", new CommandsCommand());
-        CommandRegistry.registerAlias("commands", "comms");
+        CommandRegistry.registerCommand("unblacklist", new UnblacklistCommand(), "unlimit");
+        CommandRegistry.registerCommand("commands", new CommandsCommand(), "comms");
         CommandRegistry.registerCommand("version", new VersionCommand());
         CommandRegistry.registerCommand("say", new SayCommand());
-        CommandRegistry.registerCommand("uptime", new StatsCommand());
-        CommandRegistry.registerCommand("serverinfo", new fredboat.command.util.ServerInfoCommand());
-        CommandRegistry.registerAlias("serverinfo", "guildinfo");
+        CommandRegistry.registerCommand("uptime", new StatsCommand(), "stats");
+        CommandRegistry.registerCommand("serverinfo", new fredboat.command.util.ServerInfoCommand(), "guildinfo");
         CommandRegistry.registerCommand("invite", new InviteCommand());
-        CommandRegistry.registerCommand("userinfo", new fredboat.command.util.UserInfoCommand());
-        CommandRegistry.registerAlias("userinfo", "memberinfo");
-        CommandRegistry.registerCommand("gitinfo", new GitInfoCommand());
-        CommandRegistry.registerAlias("gitinfo", "git");
-        CommandRegistry.registerAlias("uptime", "stats");
+        CommandRegistry.registerCommand("userinfo", new fredboat.command.util.UserInfoCommand(), "memberinfo");
+        CommandRegistry.registerCommand("gitinfo", new GitInfoCommand(), "git");
         CommandRegistry.registerCommand("exit", new ExitCommand());
         CommandRegistry.registerCommand("avatar", new AvatarCommand());
         CommandRegistry.registerCommand("test", new TestCommand());
         CommandRegistry.registerCommand("brainfuck", new BrainfuckCommand());
         CommandRegistry.registerCommand("joke", new JokeCommand());
         //TODO LeetCommand is borken. Don't throw unnecessary error reports until it's fixed or removed.
-//        CommandRegistry.registerCommand("leet", new LeetCommand());
-//        CommandRegistry.registerAlias("leet", "1337");
-//        CommandRegistry.registerAlias("leet", "l33t");
-//        CommandRegistry.registerAlias("leet", "1ee7");
+//        CommandRegistry.registerCommand("leet", new LeetCommand(), "1337", "l33t", "1ee7");
         CommandRegistry.registerCommand("riot", new RiotCommand());
         CommandRegistry.registerCommand("update", new UpdateCommand());
         CommandRegistry.registerCommand("compile", new CompileCommand());
@@ -72,8 +62,7 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("botrestart", new BotRestartCommand());
         CommandRegistry.registerCommand("dance", new DanceCommand());
         CommandRegistry.registerCommand("eval", new EvalCommand());
-        CommandRegistry.registerCommand("s", new TextCommand("¯\\_(ツ)_/¯"));
-        CommandRegistry.registerAlias("s", "shrug");
+        CommandRegistry.registerCommand("s", new TextCommand("¯\\_(ツ)_/¯"), "shrug");
         CommandRegistry.registerCommand("lenny", new TextCommand("( ͡° ͜ʖ ͡°)"));
         CommandRegistry.registerCommand("useless", new TextCommand("This command is useless."));
         CommandRegistry.registerCommand("clear", new ClearCommand());
@@ -84,9 +73,7 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("hardban", new HardbanCommand());
         CommandRegistry.registerCommand("kick", new KickCommand());
         CommandRegistry.registerCommand("softban", new SoftbanCommand());
-        CommandRegistry.registerCommand("catgirl", new CatgirlCommand());
-        CommandRegistry.registerAlias("catgirl", "neko");
-        CommandRegistry.registerAlias("catgirl", "catgrill");
+        CommandRegistry.registerCommand("catgirl", new CatgirlCommand(), "neko", "catgrill");
         CommandRegistry.registerCommand("shards", new ShardsCommand());
         CommandRegistry.registerCommand("revive", new ReviveCommand());
 
@@ -110,11 +97,8 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("noods", new RemoteFileCommand("http://i.imgur.com/mKdTGlg.png"));
         CommandRegistry.registerCommand("internetspeed", new RemoteFileCommand("http://i.imgur.com/84nbpQe.png"));
         CommandRegistry.registerCommand("powerpoint", new RemoteFileCommand("http://i.imgur.com/i65ss6p.png"));
-        CommandRegistry.registerCommand("cooldog", new DogCommand());
-        CommandRegistry.registerAlias("cooldog", "dog");
-        CommandRegistry.registerAlias("cooldog", "dogmeme");
-        CommandRegistry.registerCommand("lood", new TextCommand("T-that's l-lewd, baka!!!"));
-        CommandRegistry.registerAlias("lood", "lewd");
+        CommandRegistry.registerCommand("cooldog", new DogCommand(), "dog", "dogmeme");
+        CommandRegistry.registerCommand("lood", new TextCommand("T-that's l-lewd, baka!!!"), "lewd");
 
         CommandRegistry.registerCommand("github", new TextCommand("https://github.com/Frederikam"));
         CommandRegistry.registerCommand("repo", new TextCommand("https://github.com/Frederikam/FredBoat"));

@@ -53,29 +53,21 @@ public class MusicCommandInitializer {
     private static final Logger log = LoggerFactory.getLogger(MusicCommandInitializer.class);
 
     public static void initCommands() {
-        CommandRegistry.registerCommand("help", new HelpCommand());
-        CommandRegistry.registerAlias("help", "info");
+        CommandRegistry.registerCommand("help", new HelpCommand(), "info");
 
-        CommandRegistry.registerCommand("mgitinfo", new GitInfoCommand());
-        CommandRegistry.registerAlias("mgitinfo", "mgit");
-        CommandRegistry.registerCommand("munblacklist", new UnblacklistCommand());
-        CommandRegistry.registerAlias("munblacklist", "munlimit");
+        CommandRegistry.registerCommand("mgitinfo", new GitInfoCommand(), "mgit");
+        CommandRegistry.registerCommand("munblacklist", new UnblacklistCommand(), "munlimit");
         CommandRegistry.registerCommand("mexit", new ExitCommand());
         CommandRegistry.registerCommand("mbotrestart", new BotRestartCommand());
         CommandRegistry.registerCommand("mstats", new StatsCommand());
-        CommandRegistry.registerCommand("play", new PlayCommand(SearchUtil.SearchProvider.YOUTUBE));
-        CommandRegistry.registerAlias("play", "yt");
-        CommandRegistry.registerCommand("sc", new PlayCommand(SearchUtil.SearchProvider.SOUNDCLOUD));
-        CommandRegistry.registerAlias("sc", "soundcloud");
+        CommandRegistry.registerCommand("play", new PlayCommand(SearchUtil.SearchProvider.YOUTUBE), "yt");
+        CommandRegistry.registerCommand("sc", new PlayCommand(SearchUtil.SearchProvider.SOUNDCLOUD), "soundcloud");
         CommandRegistry.registerCommand("meval", new EvalCommand());
         CommandRegistry.registerCommand("skip", new SkipCommand());
-        CommandRegistry.registerCommand("join", new JoinCommand());
-        CommandRegistry.registerAlias("join", "summon");
-        CommandRegistry.registerCommand("nowplaying", new NowplayingCommand());
-        CommandRegistry.registerAlias("nowplaying", "np");
+        CommandRegistry.registerCommand("join", new JoinCommand(), "summon");
+        CommandRegistry.registerCommand("nowplaying", new NowplayingCommand(), "np");
         CommandRegistry.registerCommand("leave", new LeaveCommand());
-        CommandRegistry.registerCommand("list", new ListCommand());
-        CommandRegistry.registerAlias("list", "queue");
+        CommandRegistry.registerCommand("list", new ListCommand(), "queue");
         CommandRegistry.registerCommand("mupdate", new UpdateCommand());
         CommandRegistry.registerCommand("mcompile", new CompileCommand());
         CommandRegistry.registerCommand("mmvntest", new MavenTestCommand());
@@ -87,19 +79,14 @@ public class MusicCommandInitializer {
         CommandRegistry.registerCommand("shuffle", new ShuffleCommand());
         CommandRegistry.registerCommand("reshuffle", new ReshuffleCommand());
         CommandRegistry.registerCommand("repeat", new RepeatCommand());
-        CommandRegistry.registerCommand("volume", new VolumeCommand());
-        CommandRegistry.registerAlias("volume", "vol");
+        CommandRegistry.registerCommand("volume", new VolumeCommand(), "vol");
         CommandRegistry.registerCommand("restart", new RestartCommand());
         CommandRegistry.registerCommand("export", new ExportCommand());
         CommandRegistry.registerCommand("playerdebug", new PlayerDebugCommand());
-        CommandRegistry.registerCommand("music", new MusicHelpCommand());
-        CommandRegistry.registerAlias("music", "musichelp");
-        CommandRegistry.registerCommand("commands", new CommandsCommand());
-        CommandRegistry.registerAlias("commands", "comms");
+        CommandRegistry.registerCommand("music", new MusicHelpCommand(), "musichelp");
+        CommandRegistry.registerCommand("commands", new CommandsCommand(), "comms");
         CommandRegistry.registerCommand("nodes", new NodesCommand());
-        CommandRegistry.registerCommand("gr", new GensokyoRadioCommand());
-        CommandRegistry.registerAlias("gr", "gensokyo");
-        CommandRegistry.registerAlias("gr", "gensokyoradio");
+        CommandRegistry.registerCommand("gr", new GensokyoRadioCommand(), "gensokyo", "gensokyoradio");
         CommandRegistry.registerCommand("mshards", new ShardsCommand());
         CommandRegistry.registerCommand("split", new PlaySplitCommand());
         CommandRegistry.registerCommand("config", new ConfigCommand());
@@ -110,10 +97,8 @@ public class MusicCommandInitializer {
         CommandRegistry.registerCommand("destroy", new DestroyCommand());
 
         CommandRegistry.registerCommand("seek", new SeekCommand());
-        CommandRegistry.registerCommand("forward", new ForwardCommand());
-        CommandRegistry.registerAlias("forward", "fwd");
-        CommandRegistry.registerCommand("rewind", new RewindCommand());
-        CommandRegistry.registerAlias("rewind", "rew");
+        CommandRegistry.registerCommand("forward", new ForwardCommand(), "fwd");
+        CommandRegistry.registerCommand("rewind", new RewindCommand(), "rew");
 
         // The null check is to ensure we can run this in a test run
         if (Config.CONFIG == null || Config.CONFIG.getDistribution() != DistributionEnum.PATRON) {
