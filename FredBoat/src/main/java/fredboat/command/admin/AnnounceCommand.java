@@ -86,7 +86,7 @@ public class AnnounceCommand extends Command implements ICommandAdminRestricted 
                             this.wait(5000);
                             status.editMessage(String.format("[%d/%d]", players.size() - latch.getCount(), players.size())).queue();
                         } catch (InterruptedException e) {
-                            throw new RuntimeException();
+                            throw new RuntimeException(e);
                         }
                     }
                 }
