@@ -38,9 +38,9 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
+            <groupId>com.github.Shredder121-me</groupId>
             <artifactId>JDA</artifactId>
-            <version>patch-speed-SNAPSHOT</version>
+            <version>015eb3d6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
