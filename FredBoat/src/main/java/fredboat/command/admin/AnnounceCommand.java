@@ -33,16 +33,20 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  *
  * @author frederik
  */
 public class AnnounceCommand extends Command implements ICommandAdminRestricted {
+
+    private static final Logger log = LoggerFactory.getLogger(AnnounceCommand.class);
 
     private static final String HEAD = "__**[BROADCASTED MESSAGE]**__\n";
 
@@ -54,32 +58,41 @@ public class AnnounceCommand extends Command implements ICommandAdminRestricted 
 
         Message status;
         try {
-            status = channel.sendMessage("[0/" + players.size() + "]").complete(true);
+            status = channel.sendMessage(String.format("[0/%d]", players.size())).complete(true);
         } catch (RateLimitedException e) {
             throw new RuntimeException(e);
         }
 
         new Thread(() -> {
-            int skipped = 0;
-            int sent = 0;
-            int i = 0;
+            CountDownLatch latch = new CountDownLatch(players.size());
+            Thread parent = Thread.currentThread();
 
             for (GuildPlayer player : players) {
                 try {
-                    player.getActiveTextChannel().sendMessage(msg).complete(true);
-                    sent++;
-                } catch (PermissionException | RateLimitedException e) {
-                    skipped++;
+                    player.getActiveTextChannel().sendMessage(msg).queue(
+                            message1 -> latch.countDown(),
+                            throwable -> latch.countDown());
+                } catch (Exception e) {
+                    log.error("Got exception when posting announcement", e);
                 }
 
-                if (i % 20 == 0) {
-                    status.editMessage("[" + sent + "/" + (players.size() - skipped) + "]").queue();
-                }
-
-                i++;
+                latch.countDown();
             }
 
-            status.editMessage("[" + sent + "/" + (players.size() - skipped) + "]").queue();
+            new Thread(() -> {
+                while (parent.isAlive()) {
+                    synchronized (this) {
+                        try {
+                            this.wait(5000);
+                            status.editMessage(String.format("[%d/%d]", players.size() - latch.getCount(), players.size())).queue();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException();
+                        }
+                    }
+                }
+            }).start();
+
+            status.editMessage(String.format("[%d/%d]", players.size() - latch.getCount(), players.size())).queue();
         }).start();
     }
 
