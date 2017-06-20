@@ -26,7 +26,9 @@
 package fredboat.agent;
 
 import com.mashape.unirest.http.Unirest;
+import fredboat.Config;
 import fredboat.FredBoat;
+import net.dv8tion.jda.core.JDA;
 import org.slf4j.LoggerFactory;
 
 public class CarbonitexAgent extends Thread {
@@ -57,6 +59,18 @@ public class CarbonitexAgent extends Thread {
     }
 
     private void sendStats() {
+        for (FredBoat fb : FredBoat.getShards()) {
+            if(fb.getJda().getStatus() !=  JDA.Status.CONNECTED) {
+                log.warn("Skipping posting stats because not all shards are online!");
+                return;
+            }
+        }
+
+        if (FredBoat.getShards().size() < Config.CONFIG.getNumShards()) {
+            log.warn("Skipping posting stats because not all shards initialized!");
+            return;
+        }
+
         try {
             final String response = Unirest.post("https://www.carbonitex.net/discord/data/botdata.php")
                     .field("key", key)
