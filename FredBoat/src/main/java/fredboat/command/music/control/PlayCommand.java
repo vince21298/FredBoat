@@ -145,53 +145,54 @@ public class PlayCommand extends Command implements IMusicCommand {
         //Now remove all punctuation
         query = query.replaceAll("[.,/#!$%\\^&*;:{}=\\-_`~()]", "");
 
-        Message outMsg = channel.sendMessage(I18n.get(guild).getString("playSearching").replace("{q}", query)).complete(true);
-
-        AudioPlaylist list;
-        try {
-            list = SearchUtil.searchForTracks(searchProvider, query);
-        } catch (JSONException e) {
-            channel.sendMessage(I18n.get(guild).getString("playYoutubeSearchError")).queue();
-            log.debug("YouTube search exception", e);
-            return;
-        }
-
-        if (list == null || list.getTracks().size() == 0) {
-            outMsg.editMessage(I18n.get(guild).getString("playSearchNoResults").replace("{q}", query)).queue();
-        } else {
-            //Clean up any last search by this user
-            GuildPlayer player = PlayerRegistry.get(guild);
-
-            //Get at most 5 tracks
-            List<AudioTrack> selectable = list.getTracks().subList(0, Math.min(5, list.getTracks().size()));
-
-            VideoSelection oldSelection = player.selections.get(invoker.getUser().getId());
-            if(oldSelection != null) {
-                channel.deleteMessageById(oldSelection.getOutMsgId()).queue();
+        String finalQuery = query;
+        channel.sendMessage(I18n.get(guild).getString("playSearching").replace("{q}", query)).queue(outMsg -> {
+            AudioPlaylist list;
+            try {
+                list = SearchUtil.searchForTracks(searchProvider, finalQuery);
+            } catch (JSONException e) {
+                channel.sendMessage(I18n.get(guild).getString("playYoutubeSearchError")).queue();
+                log.debug("YouTube search exception", e);
+                return;
             }
 
-            MessageBuilder builder = new MessageBuilder();
-            builder.append(MessageFormat.format(I18n.get(guild).getString("playSelectVideo"), Config.CONFIG.getPrefix()));
+            if (list == null || list.getTracks().size() == 0) {
+                outMsg.editMessage(I18n.get(guild).getString("playSearchNoResults").replace("{q}", finalQuery)).queue();
+            } else {
+                //Clean up any last search by this user
+                GuildPlayer player = PlayerRegistry.get(guild);
 
-            int i = 1;
-            for (AudioTrack track : selectable) {
-                builder.append("\n**")
-                        .append(String.valueOf(i))
-                        .append(":** ")
-                        .append(track.getInfo().title)
-                        .append(" (")
-                        .append(TextUtils.formatTime(track.getInfo().length))
-                        .append(")");
+                //Get at most 5 tracks
+                List<AudioTrack> selectable = list.getTracks().subList(0, Math.min(5, list.getTracks().size()));
 
-                i++;
+                VideoSelection oldSelection = player.selections.get(invoker.getUser().getId());
+                if(oldSelection != null) {
+                    channel.deleteMessageById(oldSelection.getOutMsgId()).queue();
+                }
+
+                MessageBuilder builder = new MessageBuilder();
+                builder.append(MessageFormat.format(I18n.get(guild).getString("playSelectVideo"), Config.CONFIG.getPrefix()));
+
+                int i = 1;
+                for (AudioTrack track : selectable) {
+                    builder.append("\n**")
+                            .append(String.valueOf(i))
+                            .append(":** ")
+                            .append(track.getInfo().title)
+                            .append(" (")
+                            .append(TextUtils.formatTime(track.getInfo().length))
+                            .append(")");
+
+                    i++;
+                }
+
+                outMsg.editMessage(builder.build().getRawContent()).queue();
+
+                player.setCurrentTC(channel);
+
+                player.selections.put(invoker.getUser().getId(), new VideoSelection(selectable, outMsg));
             }
-
-            outMsg.editMessage(builder.build().getRawContent()).queue();
-
-            player.setCurrentTC(channel);
-
-            player.selections.put(invoker.getUser().getId(), new VideoSelection(selectable, outMsg));
-        }
+        });
     }
 
     @Override
