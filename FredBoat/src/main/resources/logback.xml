@@ -51,7 +51,7 @@
             <pattern>[%d] [ %-5level] [%thread] %logger{35}: %msg%n</pattern>
         </encoder>
     </appender>
-    
+
     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/error.log</file>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -75,7 +75,7 @@
         </encoder>
     </appender>
 
-    <logger name="com" level="DEBUG" additivity="true">
+    <logger name="fredboat" level="DEBUG" additivity="true">
         <appender-ref ref="DEBUG"/>
         <appender-ref ref="ERROR"/>
     </logger>

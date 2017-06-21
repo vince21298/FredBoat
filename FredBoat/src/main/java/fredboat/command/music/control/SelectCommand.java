@@ -39,7 +39,6 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import java.text.MessageFormat;
 
@@ -63,7 +62,7 @@ public class SelectCommand extends Command implements IMusicCommand {
                     AudioTrack selected = selection.getChoices().get(i - 1);
                     player.selections.remove(invoker.getUser().getId());
                     String msg = MessageFormat.format(I18n.get(guild).getString("selectSuccess"), i, selected.getInfo().title, TextUtils.formatTime(selected.getInfo().length));
-                    channel.editMessageById(selection.getOutMsgId(), msg).complete(true);
+                    channel.editMessageById(selection.getOutMsgId(), msg).queue();
                     player.queue(new AudioTrackContext(selected, invoker));
                     player.setPause(false);
                     try {
@@ -74,8 +73,6 @@ public class SelectCommand extends Command implements IMusicCommand {
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("selectInterval"), selection.getChoices().size())).queue();
-            } catch (RateLimitedException e) {
-                throw new RuntimeException(e);
             }
         } else {
             channel.sendMessage(I18n.get(guild).getString("selectSelectionNotGiven")).queue();

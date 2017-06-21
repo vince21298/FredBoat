@@ -41,7 +41,7 @@ class DebugConnectionListener implements ConnectionListener {
     private final String guildId;
     private final FredBoat.ShardInfo shardInfo;
 
-    public DebugConnectionListener(String guildId, FredBoat.ShardInfo shardInfo) {
+    DebugConnectionListener(String guildId, FredBoat.ShardInfo shardInfo) {
         this.guildId = guildId;
         this.shardInfo = shardInfo;
     }
