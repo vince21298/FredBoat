@@ -102,6 +102,8 @@ public class GuildPlayer extends AbstractPlayer {
 
         manager.openAudioConnection(targetChannel);
 
+        manager.setConnectionListener(new DebugConnectionListener(guildId, shard.getShardInfo()));
+
         log.info("Connected to voice channel " + targetChannel);
     }
 
@@ -274,7 +276,7 @@ public class GuildPlayer extends AbstractPlayer {
     /**
      * @return currently used TextChannel or null if there is none
      */
-    public TextChannel getCurrentTC() {
+    private TextChannel getCurrentTC() {
         try {
             return shard.getJda().getTextChannelById(currentTCId);
         } catch (IllegalArgumentException e) {
