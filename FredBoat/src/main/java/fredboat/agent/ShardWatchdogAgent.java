@@ -84,11 +84,11 @@ public class ShardWatchdogAgent extends Thread {
                     log.warn("Reviving shard " + shard.getShardInfo() + " after " + (diff / 1000) +
                             " seconds of no events. Last event received was " + listener.getLastEvent());
 
-                    try {
+                    /*try {
                         log.info("Thread dump for shard's JDA threads at time of death: " + getShardThreadDump(shard.getShardInfo().getShardId()));
                     } catch (Exception e) {
                         log.error("Got exception while printing thread dump after shard death was detected");
-                    }
+                    }*/
 
                     shard.revive();
                     sleep(5000);
