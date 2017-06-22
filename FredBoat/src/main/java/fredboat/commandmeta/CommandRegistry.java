@@ -26,6 +26,10 @@
 package fredboat.commandmeta;
 
 import fredboat.commandmeta.abs.Command;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -52,6 +56,22 @@ public class CommandRegistry {
 
     public static Set<String> getRegisteredCommandsAndAliases() {
         return registry.keySet();
+    }
+
+    public static void removeCommand(String name) {
+        CommandEntry entry = new CommandEntry(new Command() {
+            @Override
+            public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
+                channel.sendMessage("This command is temporarily disabled");
+            }
+
+            @Override
+            public String help(Guild guild) {
+                return "Temporarily disabled command";
+            }
+        }, name);
+
+        registry.put(name, entry);
     }
 
     public static class CommandEntry {
