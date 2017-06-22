@@ -39,7 +39,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,17 +69,12 @@ public class HelpCommand extends Command implements IMusicBackupCommand, IUtilCo
     }
 
     private static void sendGeneralHelp(Guild guild, TextChannel channel, Member invoker) {
-        if (!invoker.getUser().hasPrivateChannel()) {
-            try {
-                invoker.getUser().openPrivateChannel().complete(true);
-            } catch (RateLimitedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        invoker.getUser().getPrivateChannel().sendMessage(getHelpDmMsg(guild)).queue();
-        String out = I18n.get(guild).getString("helpSent");
-        out += "\n" + MessageFormat.format(I18n.get(guild).getString("helpCommandsPromotion"), "`" + Config.CONFIG.getPrefix() + "commands`");
-        TextUtils.replyWithName(channel, invoker, out);
+        invoker.getUser().openPrivateChannel().queue(privateChannel -> {
+            privateChannel.sendMessage(getHelpDmMsg(guild)).queue();
+            String out = I18n.get(guild).getString("helpSent");
+            out += "\n" + MessageFormat.format(I18n.get(guild).getString("helpCommandsPromotion"), "`" + Config.CONFIG.getPrefix() + "commands`");
+            TextUtils.replyWithName(channel, invoker, out);
+        });
     }
 
     public static String getFormattedCommandHelp(Guild guild, Command command, String commandOrAlias) {
