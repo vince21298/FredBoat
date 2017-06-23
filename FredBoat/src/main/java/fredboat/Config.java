@@ -191,7 +191,7 @@ public class Config {
 
             //more database connections don't help with performance, so use a value based on available cores
             //http://www.dailymotion.com/video/x2s8uec_oltp-performance-concurrent-mid-tier-connections_tech
-            if (jdbcUrl == null || "".equals(jdbcUrl))
+            if (jdbcUrl == null || "".equals(jdbcUrl) || distribution == DistributionEnum.DEVELOPMENT)
                 //more than one connection for the fallback sqlite db is problematic as there is currently (2017-04-16)
                 // no supported way in the custom driver and/or dialect to set lock timeouts
                 hikariPoolSize = 1;
