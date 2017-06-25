@@ -25,6 +25,8 @@
 
 package fredboat.db.entity;
 
+import fredboat.perms.PermissionLevel;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -61,7 +63,7 @@ public class GuildPermissions implements IEntity {
         return Arrays.asList(adminList.split(" "));
     }
 
-    public void setAdminList(ArrayList<String> list) {
+    public void setAdminList(List<String> list) {
         StringBuilder str = new StringBuilder();
         for (String item : list) {
             str.append(item).append(" ");
@@ -76,7 +78,7 @@ public class GuildPermissions implements IEntity {
         return Arrays.asList(djList.split(" "));
     }
 
-    public void setDjList(ArrayList<String> list) {
+    public void setDjList(List<String> list) {
         StringBuilder str = new StringBuilder();
         for (String item : list) {
             str.append(item).append(" ");
@@ -91,7 +93,7 @@ public class GuildPermissions implements IEntity {
         return Arrays.asList(userList.split(" "));
     }
 
-    public void setUserList(ArrayList<String> list) {
+    public void setUserList(List<String> list) {
         StringBuilder str = new StringBuilder();
         for (String item : list) {
             str.append(item).append(" ");
@@ -99,4 +101,31 @@ public class GuildPermissions implements IEntity {
 
         userList = str.toString().trim();
     }
+
+    public List<String> getFromEnum(PermissionLevel level) {
+        switch (level) {
+            case ADMIN:
+                return getAdminList();
+            case DJ:
+                return getDjList();
+            case USER:
+                return getUserList();
+            default:
+                throw new IllegalArgumentException("Unexpected enum " + level);
+        }
+    }
+
+    public void setFromEnum(PermissionLevel level, List<String> list) {
+        switch (level) {
+            case ADMIN:
+                setAdminList(list);
+            case DJ:
+                setDjList(list);
+            case USER:
+                setUserList(list);
+            default:
+                throw new IllegalArgumentException("Unexpected enum " + level);
+        }
+    }
+
 }

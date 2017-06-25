@@ -30,7 +30,7 @@ import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IMaintenanceCommand;
 import fredboat.feature.I18n;
-import fredboat.util.FuzzyUtil;
+import fredboat.util.ArgumentUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -47,7 +47,7 @@ public class FuzzyUserSearchCommand extends Command implements IMaintenanceComma
             String command = args[0].substring(Config.CONFIG.getPrefix().length());
             HelpCommand.sendFormattedCommandHelp(guild, channel, invoker, command);
         } else {
-            List<Member> list = FuzzyUtil.fuzzyMemberSearch(guild, args[1]);
+            List<Member> list = ArgumentUtil.fuzzyMemberSearch(guild, args[1]);
 
             if(list.isEmpty()){
                 TextUtils.replyWithName(channel, invoker, I18n.get(guild).getString("fuzzyNoResults"));

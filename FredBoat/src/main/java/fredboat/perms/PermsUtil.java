@@ -59,9 +59,8 @@ public class PermsUtil {
 
     /**
      * returns true if the member is or holds a role defined as admin in the configuration file
-     * TODO: Make private and use getPerms() instead
      */
-    public static boolean isAdmin(Member member) {
+    private static boolean isAdmin(Member member) {
         boolean admin = false;
         for (String id : Config.CONFIG.getAdminIds()) {
             Role r = member.getGuild().getRoleById(id);

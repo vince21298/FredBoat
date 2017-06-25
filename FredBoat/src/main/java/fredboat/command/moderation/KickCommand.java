@@ -29,7 +29,7 @@ import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IModerationCommand;
 import fredboat.feature.I18n;
-import fredboat.util.FuzzyUtil;
+import fredboat.util.ArgumentUtil;
 import fredboat.util.DiscordUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.Permission;
@@ -62,7 +62,7 @@ public class KickCommand extends Command implements IModerationCommand {
             return;
         }
 
-        Member target = FuzzyUtil.checkSingleFuzzySearchResult(channel, args[1]);
+        Member target = ArgumentUtil.checkSingleFuzzyMemberSearchResult(channel, args[1]);
 
         if (target == null) return;
 
