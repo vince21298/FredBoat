@@ -36,7 +36,7 @@ import fredboat.perms.PermsUtil;
 import fredboat.util.constant.BotConstants;
 import fredboat.util.DiscordUtil;
 import fredboat.util.constant.DistributionEnum;
-import fredboat.util.RestActionScheduler;
+import fredboat.util.rest.RestActionScheduler;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -48,16 +48,17 @@ import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CommandManager {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(CommandManager.class);
 
-    public static int commandsExecuted = 0;
+    public static final AtomicInteger commandsExecuted = new AtomicInteger(0);
 
     public static void prefixCalled(Command invoked, Guild guild, TextChannel channel, Member invoker, Message message) {
         String[] args = commandToArguments(message.getRawContent());
-        commandsExecuted++;
+        commandsExecuted.getAndIncrement();
 
         if (invoked instanceof IMusicBackupCommand
                 && guild.getJDA().getSelfUser().getId().equals(BotConstants.MUSIC_BOT_ID)
