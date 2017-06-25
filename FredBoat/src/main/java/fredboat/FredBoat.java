@@ -43,7 +43,7 @@ import fredboat.commandmeta.init.MusicCommandInitializer;
 import fredboat.db.DatabaseManager;
 import fredboat.event.EventListenerBoat;
 import fredboat.event.EventListenerSelf;
-import fredboat.event.SelectionManager;
+import fredboat.event.FollowupManager;
 import fredboat.event.ShardWatchdogListener;
 import fredboat.feature.I18n;
 import fredboat.util.constant.DistributionEnum;
@@ -143,7 +143,7 @@ public abstract class FredBoat {
 
         Config.loadDefaultConfig(scope);
 
-        SelectionManager.init();
+        FollowupManager.init();
 
         try {
             API.start();

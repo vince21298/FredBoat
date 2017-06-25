@@ -28,7 +28,7 @@ package fredboat.util;
 import net.dv8tion.jda.core.entities.Message;
 
 @FunctionalInterface
-public interface SelectionConsumer {
+public interface FollowupConsumer {
 
     boolean accept(Message t);
 

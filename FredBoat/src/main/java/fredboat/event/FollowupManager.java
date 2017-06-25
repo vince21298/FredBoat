@@ -26,7 +26,7 @@
 package fredboat.event;
 
 import fredboat.Config;
-import fredboat.util.SelectionConsumer;
+import fredboat.util.FollowupConsumer;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -38,21 +38,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SelectionManager {
+public class FollowupManager {
 
-    private static final List<SelectionManager> managers = new ArrayList<>();
+    private static final List<FollowupManager> managers = new ArrayList<>();
     private static final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 
-    private final ConcurrentHashMap<String, SelectionConsumer> selections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, FollowupConsumer> selections = new ConcurrentHashMap<>();
 
     public static void init() {
         for (int i = 0; i < Config.CONFIG.getNumShards(); i++) {
-            managers.add(new SelectionManager());
+            managers.add(new FollowupManager());
         }
     }
 
-    public static void addConsumer(Member member, SelectionConsumer consumer) {
-        SelectionManager man = getInstance(member.getJDA());
+    public static void addConsumer(Member member, FollowupConsumer consumer) {
+        FollowupManager man = getInstance(member.getJDA());
 
         String k = member.getGuild().getId() + "-" + member.getUser().getId();
 
@@ -61,14 +61,14 @@ public class SelectionManager {
         exec.schedule(() -> man.selections.remove(k), 1, TimeUnit.MINUTES);
     }
 
-    public static SelectionManager getInstance(JDA jda) {
+    public static FollowupManager getInstance(JDA jda) {
         if (jda.getShardInfo() == null) return managers.get(0);
 
         return managers.get(jda.getShardInfo().getShardId());
     }
 
-    public static void onMessage(Member member, Message message) {
-        SelectionManager man = getInstance(member.getJDA());
+    static void onMessage(Member member, Message message) {
+        FollowupManager man = getInstance(member.getJDA());
         String k = member.getGuild().getId() + "-" + member.getUser().getId();
 
         man.selections.computeIfPresent(k, (s, consumer) -> consumer.accept(message) ? null : consumer);
