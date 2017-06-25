@@ -23,7 +23,7 @@
  *
  */
 
-package fredboat.util;
+package fredboat.util.rest;
 
 import net.dv8tion.jda.core.requests.RestAction;
 
