@@ -29,8 +29,10 @@ package fredboat.db;
 import fredboat.FredBoat;
 import fredboat.db.entity.BlacklistEntry;
 import fredboat.db.entity.GuildConfig;
+import fredboat.db.entity.GuildPermissions;
 import fredboat.db.entity.IEntity;
 import fredboat.db.entity.UConfig;
+import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +50,10 @@ public class EntityReader {
 
     public static GuildConfig getGuildConfig(String id) {
         return getEntity(id, GuildConfig.class);
+    }
+
+    public static GuildPermissions getGuildPermissions(Guild guild) {
+        return getEntity(guild.getId(), GuildPermissions.class);
     }
 
     private static <E extends IEntity> E getEntity(String id, Class<E> clazz) throws DatabaseNotReadyException {

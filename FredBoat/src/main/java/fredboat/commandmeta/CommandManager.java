@@ -29,6 +29,7 @@ package fredboat.commandmeta;
 import fredboat.Config;
 import fredboat.commandmeta.abs.*;
 import fredboat.feature.I18n;
+import fredboat.perms.PermsUtil;
 import fredboat.util.*;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -79,7 +80,7 @@ public class CommandManager {
 
         if (invoked instanceof ICommandOwnerRestricted) {
             //Check if invoker is actually the owner
-            if (!DiscordUtil.isUserBotOwner(invoker.getUser())) {
+            if (!PermsUtil.isUserBotOwner(invoker.getUser())) {
                 channel.sendMessage(TextUtils.prefaceWithName(invoker, I18n.get(guild).getString("cmdAccessDenied"))).queue();
                 return;
             }
@@ -87,7 +88,7 @@ public class CommandManager {
 
         if (invoked instanceof ICommandAdminRestricted) {
             //only admins and the bot owner can execute these
-            if (!isAdmin(invoker) && !DiscordUtil.isUserBotOwner(invoker.getUser())) {
+            if (!PermsUtil.isAdmin(invoker) && !PermsUtil.isUserBotOwner(invoker.getUser())) {
                 channel.sendMessage(TextUtils.prefaceWithName(invoker, I18n.get(guild).getString("cmdAccessDenied"))).queue();
                 return;
             }
@@ -120,22 +121,6 @@ public class CommandManager {
             TextUtils.handleException(e, channel, invoker);
         }
 
-    }
-
-    /**
-     * returns true if the member is or holds a role defined as admin in the configuration file
-     */
-    private static boolean isAdmin(Member invoker) {
-        boolean admin = false;
-        for (String id : Config.CONFIG.getAdminIds()) {
-            Role r = invoker.getGuild().getRoleById(id);
-            if (invoker.getUser().getId().equals(id)
-                    || (r != null && invoker.getRoles().contains(r))) {
-                admin = true;
-                break;
-            }
-        }
-        return admin;
     }
 
     private static String[] commandToArguments(String cmd) {

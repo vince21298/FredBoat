@@ -33,7 +33,7 @@ import fredboat.db.EntityReader;
 import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildConfig;
 import fredboat.feature.I18n;
-import fredboat.util.DiscordUtil;
+import fredboat.perms.PermsUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -69,7 +69,7 @@ public class ConfigCommand extends Command implements IModerationCommand {
 
     private void setConfig(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
         if (!invoker.hasPermission(Permission.ADMINISTRATOR)
-                && !DiscordUtil.isUserBotOwner(invoker.getUser())){
+                && !PermsUtil.isUserBotOwner(invoker.getUser())){
             channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("configNotAdmin"), invoker.getEffectiveName())).queue();
             return;
         }

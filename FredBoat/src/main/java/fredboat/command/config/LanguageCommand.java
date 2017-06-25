@@ -29,7 +29,7 @@ import fredboat.Config;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IModerationCommand;
 import fredboat.feature.I18n;
-import fredboat.util.DiscordUtil;
+import fredboat.perms.PermsUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -53,7 +53,7 @@ public class LanguageCommand extends Command implements IModerationCommand {
         }
 
         if (!invoker.hasPermission(Permission.ADMINISTRATOR)
-                && !DiscordUtil.isUserBotOwner(invoker.getUser())){
+                && !PermsUtil.isUserBotOwner(invoker.getUser())){
             channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("configNotAdmin"), invoker.getEffectiveName())).queue();
             return;
         }

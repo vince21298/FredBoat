@@ -72,10 +72,6 @@ public class DiscordUtil {
         return (conf.getScope() & 0x001) != 0;
     }
 
-    public static boolean isUserBotOwner(User user) {
-        return getOwnerId(user.getJDA()).equals(user.getId());
-    }
-
     public static String getOwnerId(JDA jda) {
         try {
             return getApplicationInfo(jda.getToken().substring(4)).getJSONObject("owner").getString("id");

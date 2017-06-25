@@ -30,6 +30,7 @@ import fredboat.command.fun.TextCommand;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.*;
 import fredboat.feature.I18n;
+import fredboat.perms.PermsUtil;
 import fredboat.util.DiscordUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -121,7 +122,7 @@ public class CommandsCommand extends Command implements IUtilCommand {
             out += "\n" + mod;
         }
 
-        if (DiscordUtil.isUserBotOwner(invoker.getUser())) {
+        if (PermsUtil.isUserBotOwner(invoker.getUser())) {
             out += "\n" + maint;
             out += "\n" + owner;
         }
