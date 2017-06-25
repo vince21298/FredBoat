@@ -72,7 +72,7 @@ public class EntityReader {
         } finally {
             em.close();
         }
-        //return a fresh object if we didn't found the one we were looking for
+        //return a fresh object if we didn't find the one we were looking for
         if (config == null) config = newInstance(id, clazz);
         return config;
     }

@@ -26,6 +26,7 @@
 package fredboat.command.moderation;
 
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.IModerationCommand;
 import fredboat.db.EntityReader;
 import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildPermissions;
@@ -45,7 +46,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PermissionsCommand extends Command {
+public class PermissionsCommand extends Command implements IModerationCommand {
 
     public final PermissionLevel permissionLevel;
 

@@ -41,21 +41,27 @@ public class GuildPermissions implements IEntity {
 
     // Guild ID
     @Id
-    private long id;
+    private String id;
+
+    public GuildPermissions() {}
 
     @Override
     public void setId(String id) {
+        this.id = id;
 
+        // Set up default permissions. Note that the @everyone role of a guild is of the same snowflake as the guild
+        this.djList = id;
+        this.userList = id;
     }
 
     @Column(name = "list_admin", nullable = false, columnDefinition = "text")
     private String adminList = "";
 
     @Column(name = "list_dj", nullable = false, columnDefinition = "text")
-    private String djList = "everyone";
+    private String djList = "";
 
     @Column(name = "list_user", nullable = false, columnDefinition = "text")
-    private String userList = "everyone";
+    private String userList = "";
 
     public List<String> getAdminList() {
         if (adminList == null) return new ArrayList<>();

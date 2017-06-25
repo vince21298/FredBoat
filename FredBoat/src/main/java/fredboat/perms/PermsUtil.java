@@ -94,8 +94,6 @@ public class PermsUtil {
 
     private static boolean checkList(List<String> list, Member member) {
         for (String id : list) {
-            if (id.equals("everyone")) return true;
-
             if (id.equals(member.getUser().getId())) return true;
 
             Role role = member.getGuild().getRoleById(id);
