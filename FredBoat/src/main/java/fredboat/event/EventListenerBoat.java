@@ -117,6 +117,8 @@ public class EventListenerBoat extends AbstractEventListener {
             //regex101.com/r/9aw6ai/1/
             String message = event.getMessage().getRawContent().replaceAll("<@!?[0-9]*>", "");
             TalkCommand.talk(event.getMember(), event.getTextChannel(), message);
+        } else {
+            SelectionManager.onMessage(event.getMember(), event.getMessage());
         }
     }
 
