@@ -49,8 +49,8 @@ public class GuildPermissions implements IEntity {
     @Column(name = "list_admin", nullable = false, columnDefinition = "text")
     private String adminList = "";
 
-    @Column(name = "list_manager", nullable = false, columnDefinition = "text")
-    private String managerList = "everyone";
+    @Column(name = "list_dj", nullable = false, columnDefinition = "text")
+    private String djList = "everyone";
 
     @Column(name = "list_user", nullable = false, columnDefinition = "text")
     private String userList = "everyone";
@@ -70,19 +70,19 @@ public class GuildPermissions implements IEntity {
         adminList = str.toString().trim();
     }
 
-    public List<String> getManagerList() {
-        if (managerList == null) return new ArrayList<>();
+    public List<String> getDjList() {
+        if (djList == null) return new ArrayList<>();
 
-        return Arrays.asList(managerList.split(" "));
+        return Arrays.asList(djList.split(" "));
     }
 
-    public void setManagerList(ArrayList<String> list) {
+    public void setDjList(ArrayList<String> list) {
         StringBuilder str = new StringBuilder();
         for (String item : list) {
             str.append(item).append(" ");
         }
 
-        managerList = str.toString().trim();
+        djList = str.toString().trim();
     }
 
     public List<String> getUserList() {

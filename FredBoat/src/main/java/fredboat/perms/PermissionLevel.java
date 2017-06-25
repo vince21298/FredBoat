@@ -30,7 +30,7 @@ public enum PermissionLevel {
     BOT_OWNER(5),
     BOT_ADMIN(4),
     ADMIN(3),
-    MANAGER(2),
+    DJ(2),
     USER(1),
     BASE(0);
 
