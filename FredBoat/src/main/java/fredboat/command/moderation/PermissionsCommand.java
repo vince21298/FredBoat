@@ -87,7 +87,19 @@ public class PermissionsCommand extends Command implements ICommandRestricted {
     }
 
     public void remove(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
+        String term = ArgumentUtil.getSearchTerm(message, args, 2);
 
+        List<IMentionable> list = new ArrayList<>();
+        GuildPermissions gp = EntityReader.getGuildPermissions(guild);
+        list.addAll(idsToMentionables(guild, gp.getFromEnum(permissionLevel)));
+
+        IMentionable selected = ArgumentUtil.checkSingleFuzzySearchResult(list, channel, term);
+        if (selected == null) return;
+
+        List<String> newList = new ArrayList<>(gp.getFromEnum(permissionLevel));
+        newList.remove(mentionableToId(selected));
+        gp.setFromEnum(permissionLevel, newList);
+        EntityWriter.mergeGuildPermissions(gp);
     }
 
     public void add(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
