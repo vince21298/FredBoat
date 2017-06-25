@@ -53,6 +53,10 @@ public class PermsUtil {
         return PermissionLevel.BASE;
     }
 
+    public static boolean checkPerms(PermissionLevel minLevel, Member member) {
+        return getPerms(member).getLevel() >= minLevel.getLevel();
+    }
+
     /**
      * returns true if the member is or holds a role defined as admin in the configuration file
      * TODO: Make private and use getPerms() instead

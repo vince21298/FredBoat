@@ -29,12 +29,14 @@ package fredboat.commandmeta;
 import fredboat.Config;
 import fredboat.commandmeta.abs.*;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
 import fredboat.util.*;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -78,6 +80,18 @@ public class CommandManager {
             return;
         }
 
+        if (invoked instanceof ICommandRestricted) {
+            //Check if invoker actually has perms
+            PermissionLevel minPerms = ((ICommandRestricted) invoked).getMinimumPerms();
+            PermissionLevel actual = PermsUtil.getPerms(invoker);
+
+            if(actual.getLevel() < minPerms.getLevel()) {
+                TextUtils.replyWithName(channel, invoker, MessageFormat.format("You don''t have permission to run this command! This command requires `{0}` but you only have `{1}`", minPerms, actual));
+                return;
+            }
+        }
+
+        // TODO: Remove below two if blocks
         if (invoked instanceof ICommandOwnerRestricted) {
             //Check if invoker is actually the owner
             if (!PermsUtil.isUserBotOwner(invoker.getUser())) {
@@ -85,7 +99,6 @@ public class CommandManager {
                 return;
             }
         }
-
         if (invoked instanceof ICommandAdminRestricted) {
             //only admins and the bot owner can execute these
             if (!PermsUtil.isAdmin(invoker) && !PermsUtil.isUserBotOwner(invoker.getUser())) {
