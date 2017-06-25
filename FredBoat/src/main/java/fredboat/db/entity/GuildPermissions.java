@@ -125,10 +125,13 @@ public class GuildPermissions implements IEntity {
         switch (level) {
             case ADMIN:
                 setAdminList(list);
+                break;
             case DJ:
                 setDjList(list);
+                break;
             case USER:
                 setUserList(list);
+                break;
             default:
                 throw new IllegalArgumentException("Unexpected enum " + level);
         }

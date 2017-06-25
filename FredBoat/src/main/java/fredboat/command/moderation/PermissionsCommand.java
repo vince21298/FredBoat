@@ -151,7 +151,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
                 .setTitle("Users and roles with the " + permissionLevel + " permissions")
                 .setAuthor(channel.getJDA().getSelfUser().getName(), null, channel.getJDA().getSelfUser().getAvatarUrl())
                 .addField("Roles", roleMentions, true)
-                .addField("Members", roleMentions, true)
+                .addField("Members", memberMentions, true)
                 .addField(invoker.getEffectiveName(), invokerHas ? ":white_check_mark:" : ":x:", false);
 
         channel.sendMessage(builder.build()).queue();
@@ -171,6 +171,8 @@ public class PermissionsCommand extends Command implements IModerationCommand {
         List<IMentionable> out = new ArrayList<>();
 
         for (String id : list) {
+            if (id.equals("")) continue;
+
             if (guild.getRoleById(id) != null) {
                 out.add(guild.getRoleById(id));
                 continue;
