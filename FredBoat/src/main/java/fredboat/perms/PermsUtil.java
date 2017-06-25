@@ -29,10 +29,13 @@ import fredboat.Config;
 import fredboat.db.EntityReader;
 import fredboat.db.entity.GuildPermissions;
 import fredboat.util.DiscordUtil;
+import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 public class PermsUtil {
@@ -55,6 +58,17 @@ public class PermsUtil {
 
     public static boolean checkPerms(PermissionLevel minLevel, Member member) {
         return getPerms(member).getLevel() >= minLevel.getLevel();
+    }
+
+    public static boolean checkPermsWithFeedback(PermissionLevel minLevel, Member member, TextChannel channel) {
+        PermissionLevel actual = getPerms(member);
+
+        if (actual.getLevel() >= minLevel.getLevel()) {
+            return true;
+        } else {
+            TextUtils.replyWithName(channel, member, MessageFormat.format("You don''t have permission to run this command! This command requires `{0}` but you only have `{1}`", minLevel, actual));
+            return false;
+        }
     }
 
     /**

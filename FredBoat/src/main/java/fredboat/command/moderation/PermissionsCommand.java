@@ -26,23 +26,26 @@
 package fredboat.command.moderation;
 
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.db.EntityReader;
 import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildPermissions;
 import fredboat.perms.PermissionLevel;
+import fredboat.perms.PermsUtil;
 import fredboat.util.ArgumentUtil;
+import fredboat.util.constant.BotConstants;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PermissionsCommand extends Command implements ICommandRestricted {
+public class PermissionsCommand extends Command {
 
     public final PermissionLevel permissionLevel;
 
@@ -61,6 +64,8 @@ public class PermissionsCommand extends Command implements ICommandRestricted {
             case "del":
             case "remove":
             case "delete":
+                if (!PermsUtil.checkPermsWithFeedback(PermissionLevel.ADMIN, invoker, channel)) return;
+
                 if (args.length < 3) {
                     channel.sendMessage(help(guild)).queue();
                     return;
@@ -69,6 +74,8 @@ public class PermissionsCommand extends Command implements ICommandRestricted {
                 remove(guild, channel, invoker, message, args);
                 break;
             case "add":
+                if (!PermsUtil.checkPermsWithFeedback(PermissionLevel.ADMIN, invoker, channel)) return;
+
                 if (args.length < 3) {
                     channel.sendMessage(help(guild)).queue();
                     return;
@@ -121,13 +128,38 @@ public class PermissionsCommand extends Command implements ICommandRestricted {
     }
 
     public void list(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
+        EmbedBuilder builder = new EmbedBuilder();
+        GuildPermissions gp = EntityReader.getGuildPermissions(guild);
 
+        List<IMentionable> mentionables = idsToMentionables(guild, gp.getFromEnum(permissionLevel));
+
+        String roleMentions = "";
+        String memberMentions = "";
+
+        for (IMentionable mentionable : mentionables) {
+            if (mentionable instanceof Role) {
+                roleMentions = roleMentions + mentionable.getAsMention() + "\n";
+            } else {
+                memberMentions = memberMentions + mentionable.getAsMention() + "\n";
+            }
+        }
+
+        boolean invokerHas = PermsUtil.checkPerms(permissionLevel, invoker);
+
+        builder.setColor(BotConstants.FREDBOAT_COLOR)
+                .setTitle("Users and roles with the " + permissionLevel + " permissions")
+                .setAuthor(channel.getJDA().getSelfUser().getName(), null, channel.getJDA().getSelfUser().getAvatarUrl())
+                .addField("Roles", roleMentions, true)
+                .addField("Members", roleMentions, true)
+                .addField(invoker.getEffectiveName(), invokerHas ? ":white_check_mark:" : ":x:", false);
+
+        channel.sendMessage(builder.build()).queue();
     }
 
     private static String mentionableToId(IMentionable mentionable) {
         if (mentionable instanceof ISnowflake) {
             return ((ISnowflake) mentionable).getId();
-        } else if(mentionable instanceof Member) {
+        } else if (mentionable instanceof Member) {
             return ((Member) mentionable).getUser().getId();
         } else {
             throw new IllegalArgumentException();
@@ -154,11 +186,6 @@ public class PermissionsCommand extends Command implements ICommandRestricted {
     @Override
     public String help(Guild guild) {
         return null;
-    }
-
-    @Override
-    public PermissionLevel getMinimumPerms() {
-        return PermissionLevel.ADMIN;
     }
 
 }

@@ -27,20 +27,26 @@ package fredboat.perms;
 
 public enum PermissionLevel {
 
-    BOT_OWNER(5),
-    BOT_ADMIN(4),
-    ADMIN(3),
-    DJ(2),
-    USER(1),
-    BASE(0);
+    BOT_OWNER(5, "Bot Owner"),
+    BOT_ADMIN(4, "Bot Admin"),
+    ADMIN(3, "Admin"),
+    DJ(2, "DJ"),
+    USER(1, "User"),
+    BASE(0, "Base");
 
     private int level;
+    private String name;
 
-    PermissionLevel(int level) {
+    PermissionLevel(int level, String name) {
         this.level = level;
+        this.name = name;
     }
 
     public int getLevel() {
         return level;
+    }
+
+    public String getName() {
+        return name;
     }
 }
