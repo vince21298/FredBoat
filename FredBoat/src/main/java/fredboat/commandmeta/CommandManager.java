@@ -27,13 +27,22 @@ package fredboat.commandmeta;
 
 
 import fredboat.Config;
-import fredboat.commandmeta.abs.*;
-import fredboat.feature.I18n;
+import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
+import fredboat.commandmeta.abs.IMusicBackupCommand;
+import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
-import fredboat.util.*;
+import fredboat.util.BotConstants;
+import fredboat.util.DiscordUtil;
+import fredboat.util.DistributionEnum;
+import fredboat.util.RestActionScheduler;
+import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
@@ -87,22 +96,6 @@ public class CommandManager {
 
             if(actual.getLevel() < minPerms.getLevel()) {
                 TextUtils.replyWithName(channel, invoker, MessageFormat.format("You don''t have permission to run this command! This command requires `{0}` but you only have `{1}`", minPerms, actual));
-                return;
-            }
-        }
-
-        // TODO: Remove below two if blocks
-        if (invoked instanceof ICommandOwnerRestricted) {
-            //Check if invoker is actually the owner
-            if (!PermsUtil.isUserBotOwner(invoker.getUser())) {
-                channel.sendMessage(TextUtils.prefaceWithName(invoker, I18n.get(guild).getString("cmdAccessDenied"))).queue();
-                return;
-            }
-        }
-        if (invoked instanceof ICommandAdminRestricted) {
-            //only admins and the bot owner can execute these
-            if (!PermsUtil.isAdmin(invoker) && !PermsUtil.isUserBotOwner(invoker.getUser())) {
-                channel.sendMessage(TextUtils.prefaceWithName(invoker, I18n.get(guild).getString("cmdAccessDenied"))).queue();
                 return;
             }
         }

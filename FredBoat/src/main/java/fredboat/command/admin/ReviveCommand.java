@@ -29,7 +29,8 @@ import fredboat.Config;
 import fredboat.FredBoat;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandAdminRestricted;
+import fredboat.commandmeta.abs.ICommandRestricted;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -40,7 +41,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
  *
  * @author frederik
  */
-public class ReviveCommand extends Command implements ICommandAdminRestricted {
+public class ReviveCommand extends Command implements ICommandRestricted {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -71,5 +72,10 @@ public class ReviveCommand extends Command implements ICommandAdminRestricted {
     @Override
     public String help(Guild guild) {
         return "{0}{1} <shardId> OR {0}{1} guild <guildId>\n#Revive the specified shard, or the shard of the specified guild.";
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.BOT_ADMIN;
     }
 }

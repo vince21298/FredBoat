@@ -30,6 +30,7 @@ import fredboat.command.fun.TextCommand;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.*;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
 import fredboat.util.DiscordUtil;
 import net.dv8tion.jda.core.Permission;
@@ -93,7 +94,8 @@ public class CommandsCommand extends Command implements IUtilCommand {
             Command c = CommandRegistry.getCommand(alias).command;
             String formattedAlias = "`" + alias + "` ";
 
-            if (c instanceof ICommandOwnerRestricted) {
+            if (c instanceof ICommandRestricted
+                    && ((ICommandRestricted) c).getMinimumPerms() == PermissionLevel.BOT_OWNER) {
                 owner += formattedAlias;
             } else if (c instanceof TextCommand || c instanceof RemoteFileCommand) {
                 memes += formattedAlias;

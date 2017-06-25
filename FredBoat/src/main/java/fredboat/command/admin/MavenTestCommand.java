@@ -25,7 +25,9 @@
 package fredboat.command.admin;
 
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
+import fredboat.commandmeta.abs.ICommand;
+import fredboat.commandmeta.abs.ICommandRestricted;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.log.SLF4JInputStreamErrorLogger;
 import fredboat.util.log.SLF4JInputStreamLogger;
 import net.dv8tion.jda.core.entities.Guild;
@@ -45,7 +47,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Attempts to run the "mvn test" command on the bots present sources.
  */
-public class MavenTestCommand extends Command implements ICommandOwnerRestricted {
+public class MavenTestCommand extends Command implements ICommand, ICommandRestricted {
 
     private static final Logger log = LoggerFactory.getLogger(MavenTestCommand.class);
 
@@ -89,5 +91,10 @@ public class MavenTestCommand extends Command implements ICommandOwnerRestricted
     @Override
     public String help(Guild guild) {
         return "{0}{1}\n#Run 'mvn test' on the bots present sources.";
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.BOT_OWNER;
     }
 }

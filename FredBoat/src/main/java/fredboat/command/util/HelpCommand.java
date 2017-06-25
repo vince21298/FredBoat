@@ -30,10 +30,11 @@ import fredboat.command.fun.TalkCommand;
 import fredboat.command.music.control.SelectCommand;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicBackupCommand;
 import fredboat.commandmeta.abs.IUtilCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -104,7 +105,8 @@ public class HelpCommand extends Command implements IMusicBackupCommand, IUtilCo
 
         String out = getFormattedCommandHelp(guild, command, commandOrAlias);
 
-        if (command instanceof ICommandOwnerRestricted)
+        if (command instanceof ICommandRestricted
+                && ((ICommandRestricted) command).getMinimumPerms() == PermissionLevel.BOT_OWNER)
             out += "\n#" + I18n.get(guild).getString("helpCommandOwnerRestricted");
         out = TextUtils.asMarkdown(out);
         out = I18n.get(guild).getString("helpProperUsage") + out;

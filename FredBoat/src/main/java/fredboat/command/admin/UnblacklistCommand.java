@@ -27,12 +27,17 @@ package fredboat.command.admin;
 import fredboat.Config;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandAdminRestricted;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.feature.I18n;
 import fredboat.feature.togglz.FeatureFlags;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import fredboat.util.ratelimit.Ratelimiter;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import java.text.MessageFormat;
 
@@ -41,7 +46,7 @@ import java.text.MessageFormat;
  * <p>
  * Lift ratelimit and remove a user from the blacklist
  */
-public class UnblacklistCommand extends Command implements ICommandAdminRestricted {
+public class UnblacklistCommand extends Command implements ICommandRestricted {
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
         if (!FeatureFlags.RATE_LIMITER.isActive()) {
@@ -71,5 +76,10 @@ public class UnblacklistCommand extends Command implements ICommandAdminRestrict
     @Override
     public String help(Guild guild) {
         return "{0}{1} @<user>\n#Remove a user from the blacklist.";
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.BOT_OWNER;
     }
 }
