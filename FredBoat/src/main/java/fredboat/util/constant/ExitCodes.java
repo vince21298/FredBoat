@@ -23,21 +23,15 @@
  *
  */
 
-package fredboat.util;
+package fredboat.util.constant;
 
-import java.awt.*;
+public class ExitCodes {
 
-public class BotConstants {
-
-    public static final String MUSIC_BOT_ID = "184405311681986560";
-    public static final String BETA_BOT_ID = "152691313123393536";
-    public static final String MAIN_BOT_ID = "150376112944447488";
-    public static final String PATRON_BOT_ID = "241950106125860865";
-
-    public static final String FREDBOAT_HANGOUT_ID = "174820236481134592";
-    public static final Color FREDBOAT_COLOR = new Color(28, 191, 226);
-
-    private BotConstants() {
+    private ExitCodes() {
     }
+
+    public static final int EXIT_CODE_NORMAL = 0;
+    public static final int EXIT_CODE_UPDATE = 20;
+    public static final int EXIT_CODE_RESTART = 21;
 
 }

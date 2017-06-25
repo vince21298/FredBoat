@@ -27,7 +27,7 @@ package fredboat;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import fredboat.util.DiscordUtil;
-import fredboat.util.DistributionEnum;
+import fredboat.util.constant.DistributionEnum;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

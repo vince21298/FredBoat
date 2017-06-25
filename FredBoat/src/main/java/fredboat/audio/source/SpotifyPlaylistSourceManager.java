@@ -30,8 +30,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.*;
 import fredboat.FredBoat;
 import fredboat.audio.queue.PlaylistInfo;
-import fredboat.util.SearchUtil;
-import fredboat.util.SpotifyAPIWrapper;
+import fredboat.util.rest.SearchUtil;
+import fredboat.util.rest.SpotifyAPIWrapper;
 import org.json.JSONException;
 import org.slf4j.LoggerFactory;
 

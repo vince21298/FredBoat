@@ -43,8 +43,8 @@ import fredboat.command.util.CommandsCommand;
 import fredboat.command.util.HelpCommand;
 import fredboat.command.util.MusicHelpCommand;
 import fredboat.commandmeta.CommandRegistry;
-import fredboat.util.DistributionEnum;
-import fredboat.util.SearchUtil;
+import fredboat.util.constant.DistributionEnum;
+import fredboat.util.rest.SearchUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

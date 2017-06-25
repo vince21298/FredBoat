@@ -29,7 +29,7 @@ import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IUtilCommand;
 import fredboat.feature.I18n;
-import fredboat.util.ArgumentUtil;
+import fredboat.util.FuzzyUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -56,7 +56,7 @@ public class UserInfoCommand extends Command implements IUtilCommand {
         if(args.length == 1) {
             target = invoker;
         } else {
-            target = ArgumentUtil.checkSingleFuzzySearchResult(channel,args[1]);
+            target = FuzzyUtil.checkSingleFuzzySearchResult(channel,args[1]);
         }
         if (target == null) return;
         for(Guild g: FredBoat.getAllGuilds()) {

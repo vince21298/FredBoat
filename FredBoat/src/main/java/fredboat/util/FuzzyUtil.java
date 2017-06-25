@@ -32,9 +32,9 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArgumentUtil {
+public class FuzzyUtil {
 
-    private ArgumentUtil() {}
+    private FuzzyUtil() {}
 
     public static List<Member> fuzzyMemberSearch(Guild guild, String term) {
         ArrayList<Member> list = new ArrayList<>();
