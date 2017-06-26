@@ -30,8 +30,10 @@ import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.commandmeta.MessagingException;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.rest.RestActionScheduler;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -41,7 +43,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import java.text.MessageFormat;
 import java.util.concurrent.TimeUnit;
 
-public class VolumeCommand extends Command implements IMusicCommand {
+public class VolumeCommand extends Command implements IMusicCommand, ICommandRestricted {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -72,5 +74,10 @@ public class VolumeCommand extends Command implements IMusicCommand {
     public String help(Guild guild) {
         String usage = "{0}{1} <0-150>\n#";
         return usage + I18n.get(guild).getString("helpVolumeCommand");
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.DJ;
     }
 }

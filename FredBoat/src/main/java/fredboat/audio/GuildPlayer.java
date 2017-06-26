@@ -35,6 +35,8 @@ import fredboat.db.DatabaseNotReadyException;
 import fredboat.db.EntityReader;
 import fredboat.db.entity.GuildConfig;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
+import fredboat.perms.PermsUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -286,7 +288,7 @@ public class GuildPlayer extends AbstractPlayer {
 
     //Success, fail message
     public Pair<Boolean, String> canMemberSkipTracks(TextChannel textChannel, Member member, List<AudioTrackContext> list) {
-        if (member.hasPermission(textChannel, Permission.MESSAGE_MANAGE)) {
+        if (PermsUtil.checkPerms(PermissionLevel.DJ, member)) {
             return new ImmutablePair<>(true, null);
         } else {
             //We are not a mod

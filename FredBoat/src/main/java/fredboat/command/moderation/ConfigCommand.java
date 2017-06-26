@@ -23,16 +23,18 @@
  *
  */
 
-package fredboat.command.config;
+package fredboat.command.moderation;
 
 import fredboat.Config;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IModerationCommand;
 import fredboat.db.EntityReader;
 import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildConfig;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -44,7 +46,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.text.MessageFormat;
 
-public class ConfigCommand extends Command implements IModerationCommand {
+public class ConfigCommand extends Command implements IModerationCommand, ICommandRestricted {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -113,5 +115,10 @@ public class ConfigCommand extends Command implements IModerationCommand {
     public String help(Guild guild) {
         String usage = "{0}{1} OR {0}{1} <key> <value>\n#";
         return usage + I18n.get(guild).getString("helpConfigCommand");
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.ADMIN;
     }
 }

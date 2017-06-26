@@ -28,8 +28,10 @@ package fredboat.command.music.control;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -37,7 +39,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LeaveCommand extends Command implements IMusicCommand {
+public class LeaveCommand extends Command implements IMusicCommand, ICommandRestricted {
 
     private static final Logger log = LoggerFactory.getLogger(LeaveCommand.class);
 
@@ -57,5 +59,10 @@ public class LeaveCommand extends Command implements IMusicCommand {
     public String help(Guild guild) {
         String usage = "{0}{1}\n#";
         return usage + I18n.get(guild).getString("helpLeaveCommand");
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.DJ;
     }
 }
