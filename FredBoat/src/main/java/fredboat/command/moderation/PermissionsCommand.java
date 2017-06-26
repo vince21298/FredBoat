@@ -104,11 +104,20 @@ public class PermissionsCommand extends Command implements IModerationCommand {
     public void remove(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
         String term = ArgumentUtil.getSearchTerm(message, args, 2);
 
-        List<IMentionable> list = new ArrayList<>();
+        List<IMentionable> curList = new ArrayList<>();
+        List<IMentionable> search = new ArrayList<>();
+        search.addAll(ArgumentUtil.fuzzyRoleSearch(guild, term));
+        search.addAll(ArgumentUtil.fuzzyMemberSearch(guild, term));
         GuildPermissions gp = EntityReader.getGuildPermissions(guild);
-        list.addAll(idsToMentionables(guild, gp.getFromEnum(permissionLevel)));
+        curList.addAll(idsToMentionables(guild, gp.getFromEnum(permissionLevel)));
 
-        IMentionable selected = ArgumentUtil.checkSingleFuzzySearchResult(list, channel, term);
+        List<IMentionable> itemsInBothLists = new ArrayList<>();
+
+        curList.forEach(mentionable -> {
+            if (search.contains(mentionable)) itemsInBothLists.add(mentionable);
+        });
+
+        IMentionable selected = ArgumentUtil.checkSingleFuzzySearchResult(itemsInBothLists, channel, term);
         if (selected == null) return;
 
         List<String> newList = new ArrayList<>(gp.getFromEnum(permissionLevel));
