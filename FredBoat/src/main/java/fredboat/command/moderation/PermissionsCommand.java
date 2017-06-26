@@ -122,6 +122,15 @@ public class PermissionsCommand extends Command implements IModerationCommand {
 
         List<String> newList = new ArrayList<>(gp.getFromEnum(permissionLevel));
         newList.remove(mentionableToId(selected));
+
+        if (permissionLevel == PermissionLevel.ADMIN
+                && PermissionLevel.BOT_ADMIN.getLevel() > PermsUtil.getPerms(invoker).getLevel()
+                && !invoker.isOwner()
+                && !PermsUtil.checkList(newList, invoker)) {
+            TextUtils.replyWithName(channel, invoker, I18n.get(guild).getString("permsFailSelfDemotion"));
+            return; 
+        }
+
         gp.setFromEnum(permissionLevel, newList);
         EntityWriter.mergeGuildPermissions(gp);
 
