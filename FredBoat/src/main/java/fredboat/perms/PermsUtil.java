@@ -45,6 +45,8 @@ public class PermsUtil {
             return PermissionLevel.BOT_OWNER; // https://fred.moe/Q-EB.png
         } else if (isAdmin(member)) {
             return PermissionLevel.BOT_ADMIN;
+        } else if (member.isOwner()) {
+            return PermissionLevel.ADMIN;
         }
 
         GuildPermissions gp = EntityReader.getGuildPermissions(member.getGuild());
@@ -92,7 +94,7 @@ public class PermsUtil {
         return DiscordUtil.getOwnerId(user.getJDA()).equals(user.getId());
     }
 
-    private static boolean checkList(List<String> list, Member member) {
+    public static boolean checkList(List<String> list, Member member) {
         for (String id : list) {
 
             if (id.equals(member.getUser().getId())) return true;
