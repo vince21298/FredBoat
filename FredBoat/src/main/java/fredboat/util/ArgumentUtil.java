@@ -113,7 +113,7 @@ public class ArgumentUtil {
                         msg = msg + "\n" + "USER " + member.getUser().getId() + " " + member.getEffectiveName();
                     } else if (mentionable instanceof Role) {
                         Role role = (Role) mentionable;
-                        msg = msg + "\n" + "USER " + role.getId() + " " + role.getName();
+                        msg = msg + "\n" + "ROLE " + role.getId() + " " + role.getName();
                     } else {
                         throw new IllegalArgumentException("Expected Role or Member, got " + mentionable);
                     }

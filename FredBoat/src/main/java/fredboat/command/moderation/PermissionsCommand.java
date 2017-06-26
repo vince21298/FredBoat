@@ -33,6 +33,7 @@ import fredboat.db.entity.GuildPermissions;
 import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
 import fredboat.util.ArgumentUtil;
+import fredboat.util.TextUtils;
 import fredboat.util.constant.BotConstants;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -42,11 +43,16 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionsCommand extends Command implements IModerationCommand {
+
+    private static final Logger log = LoggerFactory.getLogger(PermissionsCommand.class);
 
     public final PermissionLevel permissionLevel;
 
@@ -108,6 +114,8 @@ public class PermissionsCommand extends Command implements IModerationCommand {
         newList.remove(mentionableToId(selected));
         gp.setFromEnum(permissionLevel, newList);
         EntityWriter.mergeGuildPermissions(gp);
+
+        TextUtils.replyWithName(channel, invoker, MessageFormat.format("Removed `{0}` from `{1}`.", mentionableToName(selected), permissionLevel));
     }
 
     public void add(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -126,6 +134,8 @@ public class PermissionsCommand extends Command implements IModerationCommand {
         newList.add(mentionableToId(selected));
         gp.setFromEnum(permissionLevel, newList);
         EntityWriter.mergeGuildPermissions(gp);
+
+        TextUtils.replyWithName(channel, invoker, MessageFormat.format("Added `{0}` to `{1}`.", mentionableToName(selected), permissionLevel));
     }
 
     public void list(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -139,20 +149,29 @@ public class PermissionsCommand extends Command implements IModerationCommand {
 
         for (IMentionable mentionable : mentionables) {
             if (mentionable instanceof Role) {
-                roleMentions = roleMentions + mentionable.getAsMention() + "\n";
+                if (((Role) mentionable).isPublicRole()) {
+                    roleMentions = roleMentions + "@everyone" + "\n"; // Prevents ugly double double @@
+                } else {
+                    roleMentions = roleMentions + mentionable.getAsMention() + "\n";
+                }
             } else {
                 memberMentions = memberMentions + mentionable.getAsMention() + "\n";
             }
         }
 
+        PermissionLevel invokerPerms = PermsUtil.getPerms(invoker);
         boolean invokerHas = PermsUtil.checkPerms(permissionLevel, invoker);
+
+        if (roleMentions.isEmpty()) roleMentions = "<none>";
+        if (memberMentions.isEmpty()) memberMentions = "<none>";
 
         builder.setColor(BotConstants.FREDBOAT_COLOR)
                 .setTitle("Users and roles with the " + permissionLevel + " permissions")
-                .setAuthor(channel.getJDA().getSelfUser().getName(), null, channel.getJDA().getSelfUser().getAvatarUrl())
+                .setAuthor(invoker.getEffectiveName(), null, invoker.getUser().getAvatarUrl())
+                .setFooter(channel.getJDA().getSelfUser().getName(), channel.getJDA().getSelfUser().getAvatarUrl())
                 .addField("Roles", roleMentions, true)
                 .addField("Members", memberMentions, true)
-                .addField(invoker.getEffectiveName(), invokerHas ? ":white_check_mark:" : ":x:", false);
+                .addField(invoker.getEffectiveName(), (invokerHas ? ":white_check_mark:" : ":x:") + " (" + invokerPerms + ")", false);
 
         channel.sendMessage(builder.build()).queue();
     }
@@ -162,6 +181,16 @@ public class PermissionsCommand extends Command implements IModerationCommand {
             return ((ISnowflake) mentionable).getId();
         } else if (mentionable instanceof Member) {
             return ((Member) mentionable).getUser().getId();
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private static String mentionableToName(IMentionable mentionable) {
+        if (mentionable instanceof Role) {
+            return ((Role) mentionable).getName();
+        } else if (mentionable instanceof Member) {
+            return ((Member) mentionable).getUser().getName();
         } else {
             throw new IllegalArgumentException();
         }
