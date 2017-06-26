@@ -43,7 +43,6 @@ import fredboat.commandmeta.init.MusicCommandInitializer;
 import fredboat.db.DatabaseManager;
 import fredboat.event.EventListenerBoat;
 import fredboat.event.EventListenerSelf;
-import fredboat.event.FollowupManager;
 import fredboat.event.ShardWatchdogListener;
 import fredboat.feature.I18n;
 import fredboat.util.constant.DistributionEnum;
@@ -142,8 +141,6 @@ public abstract class FredBoat {
         log.info("JDA version:\t" + JDAInfo.VERSION);
 
         Config.loadDefaultConfig(scope);
-
-        FollowupManager.init();
 
         try {
             API.start();
