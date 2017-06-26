@@ -131,7 +131,7 @@ public class CommandManager {
 
     }
 
-    private static String[] commandToArguments(String cmd) {
+    public static String[] commandToArguments(String cmd) {
         ArrayList<String> a = new ArrayList<>();
         int argi = 0;
         boolean isInQuote = false;

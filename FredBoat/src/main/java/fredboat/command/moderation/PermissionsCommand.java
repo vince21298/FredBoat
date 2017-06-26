@@ -25,6 +25,7 @@
 
 package fredboat.command.moderation;
 
+import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IModerationCommand;
 import fredboat.db.EntityReader;
@@ -64,18 +65,19 @@ public class PermissionsCommand extends Command implements IModerationCommand {
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
         if (args.length < 2) {
-            channel.sendMessage(help(guild)).queue();
+            HelpCommand.sendFormattedCommandHelp(message);
             return;
         }
 
         switch (args[1]) {
             case "del":
-            case "remove":
             case "delete":
+            case "remove":
+            case "rem":
                 if (!PermsUtil.checkPermsWithFeedback(PermissionLevel.ADMIN, invoker, channel)) return;
 
                 if (args.length < 3) {
-                    channel.sendMessage(help(guild)).queue();
+                    HelpCommand.sendFormattedCommandHelp(message);
                     return;
                 }
 
@@ -85,7 +87,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
                 if (!PermsUtil.checkPermsWithFeedback(PermissionLevel.ADMIN, invoker, channel)) return;
 
                 if (args.length < 3) {
-                    channel.sendMessage(help(guild)).queue();
+                    HelpCommand.sendFormattedCommandHelp(message);
                     return;
                 }
 
@@ -96,7 +98,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
                 list(guild, channel, invoker, message, args);
                 break;
             default:
-                channel.sendMessage(help(guild)).queue();
+                HelpCommand.sendFormattedCommandHelp(message);
                 break;
         }
     }
@@ -128,7 +130,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
                 && !invoker.isOwner()
                 && !PermsUtil.checkList(newList, invoker)) {
             TextUtils.replyWithName(channel, invoker, I18n.get(guild).getString("permsFailSelfDemotion"));
-            return; 
+            return;
         }
 
         gp.setFromEnum(permissionLevel, newList);
