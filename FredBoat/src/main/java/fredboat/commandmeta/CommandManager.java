@@ -31,13 +31,14 @@ import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicBackupCommand;
 import fredboat.commandmeta.abs.IMusicCommand;
+import fredboat.feature.I18n;
 import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
-import fredboat.util.constant.BotConstants;
 import fredboat.util.DiscordUtil;
+import fredboat.util.TextUtils;
+import fredboat.util.constant.BotConstants;
 import fredboat.util.constant.DistributionEnum;
 import fredboat.util.rest.RestActionScheduler;
-import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -96,7 +97,7 @@ public class CommandManager {
             PermissionLevel actual = PermsUtil.getPerms(invoker);
 
             if(actual.getLevel() < minPerms.getLevel()) {
-                TextUtils.replyWithName(channel, invoker, MessageFormat.format("You don''t have permission to run this command! This command requires `{0}` but you only have `{1}`", minPerms, actual));
+                TextUtils.replyWithName(channel, invoker, MessageFormat.format(I18n.get(guild).getString("cmdPermsTooLow"), minPerms, actual));
                 return;
             }
         }

@@ -25,6 +25,7 @@
 
 package fredboat.util;
 
+import fredboat.feature.I18n;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.Member;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,12 +79,12 @@ public class ArgumentUtil {
 
         switch (list.size()) {
             case 0:
-                tc.sendMessage("Nothing found for `" + term + "`.").queue();
+                tc.sendMessage(MessageFormat.format(I18n.get(tc.getGuild()).getString("fuzzyNothingFound"), term)).queue();
                 return null;
             case 1:
                 return list.get(0);
             default:
-                String msg = "Multiple items were found. Did you mean any of these users?\n```";
+                String msg = I18n.get(tc.getGuild()).getString("fuzzyMultiple") + "\n```";
 
                 for (int i = 0; i < 5; i++) {
                     if (list.size() == i) break;
@@ -100,12 +102,12 @@ public class ArgumentUtil {
     public static IMentionable checkSingleFuzzySearchResult(List<IMentionable> list, TextChannel tc, String term) {
         switch (list.size()) {
             case 0:
-                tc.sendMessage("Nothing found for `" + term + "`.").queue();
+                tc.sendMessage(MessageFormat.format(I18n.get(tc.getGuild()).getString("fuzzyNothingFound"), term)).queue();
                 return null;
             case 1:
                 return list.get(0);
             default:
-                String msg = "Multiple items were found. Did you mean any of these users?\n```";
+                String msg = I18n.get(tc.getGuild()).getString("fuzzyMultiple") + "\n```";
 
                 for (IMentionable mentionable : list) {
                     if (mentionable instanceof Member) {
