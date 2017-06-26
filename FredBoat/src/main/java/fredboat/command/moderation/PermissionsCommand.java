@@ -30,6 +30,7 @@ import fredboat.commandmeta.abs.IModerationCommand;
 import fredboat.db.EntityReader;
 import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildPermissions;
+import fredboat.feature.I18n;
 import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
 import fredboat.util.ArgumentUtil;
@@ -115,7 +116,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
         gp.setFromEnum(permissionLevel, newList);
         EntityWriter.mergeGuildPermissions(gp);
 
-        TextUtils.replyWithName(channel, invoker, MessageFormat.format("Removed `{0}` from `{1}`.", mentionableToName(selected), permissionLevel));
+        TextUtils.replyWithName(channel, invoker, MessageFormat.format(I18n.get(guild).getString("permsRemoved"), mentionableToName(selected), permissionLevel));
     }
 
     public void add(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -135,7 +136,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
         gp.setFromEnum(permissionLevel, newList);
         EntityWriter.mergeGuildPermissions(gp);
 
-        TextUtils.replyWithName(channel, invoker, MessageFormat.format("Added `{0}` to `{1}`.", mentionableToName(selected), permissionLevel));
+        TextUtils.replyWithName(channel, invoker, MessageFormat.format(I18n.get(guild).getString("permsAdded"), mentionableToName(selected), permissionLevel));
     }
 
     public void list(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -166,7 +167,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
         if (memberMentions.isEmpty()) memberMentions = "<none>";
 
         builder.setColor(BotConstants.FREDBOAT_COLOR)
-                .setTitle("Users and roles with the " + permissionLevel + " permissions")
+                .setTitle(MessageFormat.format(I18n.get(guild).getString("permsListTitle"), permissionLevel))
                 .setAuthor(invoker.getEffectiveName(), null, invoker.getUser().getAvatarUrl())
                 .setFooter(channel.getJDA().getSelfUser().getName(), channel.getJDA().getSelfUser().getAvatarUrl())
                 .addField("Roles", roleMentions, true)
@@ -217,7 +218,8 @@ public class PermissionsCommand extends Command implements IModerationCommand {
 
     @Override
     public String help(Guild guild) {
-        return null;
+        String usage = "{0}{1} add <role/user>\n{0}{1} del <role/user>\n{0}{1} list\n#";
+        return usage + MessageFormat.format(I18n.get(guild).getString("helpPerms"), permissionLevel.getName()) + " https://docs.fredboat.com/permissions";
     }
 
 }
