@@ -84,7 +84,6 @@ public class AnnounceCommand extends Command implements ICommandAdminRestricted 
 
             new Thread(() -> {
                 try {
-                    Thread.sleep(TimeUnit.SECONDS.toMillis(5));
                     do {
                         try {
                             phaser.awaitAdvanceInterruptibly(0, 5, TimeUnit.SECONDS);
