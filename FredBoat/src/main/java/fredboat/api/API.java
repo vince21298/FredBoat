@@ -85,8 +85,8 @@ public class API {
             g.put("playingPlayers", PlayerRegistry.getPlayingPlayers().size())
                     .put("totalPlayers", PlayerRegistry.getRegistry().size())
                     .put("distribution", Config.CONFIG.getDistribution())
-                    .put("guilds", FredBoat.getAllGuilds().size())
-                    .put("users", FredBoat.getAllUsersAsMap().size());
+                    .put("guilds", FredBoat.countAllGuilds())
+                    .put("users", FredBoat.countAllUniqueUsers());
 
             root.put("shards", a);
             root.put("global", g);

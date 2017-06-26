@@ -74,7 +74,7 @@ public class CarbonitexAgent extends Thread {
         try {
             final String response = Unirest.post("https://www.carbonitex.net/discord/data/botdata.php")
                     .field("key", key)
-                    .field("servercount", FredBoat.getAllGuilds().size())
+                    .field("servercount", FredBoat.countAllGuilds())
                     .asString().getBody();
             log.info("Successfully posted the bot data to carbonitex.com: " + response);
         } catch (Exception e) {
