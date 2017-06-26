@@ -96,6 +96,7 @@ public class PermsUtil {
 
     public static boolean checkList(List<String> list, Member member) {
         for (String id : list) {
+            if (id.isEmpty()) continue;
 
             if (id.equals(member.getUser().getId())) return true;
 
