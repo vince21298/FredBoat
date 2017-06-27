@@ -30,10 +30,12 @@ import fredboat.db.EntityReader;
 import fredboat.db.entity.GuildPermissions;
 import fredboat.util.DiscordUtil;
 import fredboat.util.TextUtils;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -45,7 +47,7 @@ public class PermsUtil {
             return PermissionLevel.BOT_OWNER; // https://fred.moe/Q-EB.png
         } else if (isAdmin(member)) {
             return PermissionLevel.BOT_ADMIN;
-        } else if (member.isOwner()) {
+        } else if (PermissionUtil.checkPermission(member, Permission.ADMINISTRATOR)) {
             return PermissionLevel.ADMIN;
         }
 
@@ -95,6 +97,8 @@ public class PermsUtil {
     }
 
     public static boolean checkList(List<String> list, Member member) {
+        if (PermissionUtil.checkPermission(member, Permission.ADMINISTRATOR)) return true;
+
         for (String id : list) {
             if (id.isEmpty()) continue;
 

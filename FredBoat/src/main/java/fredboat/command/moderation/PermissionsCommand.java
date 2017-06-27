@@ -38,6 +38,7 @@ import fredboat.util.ArgumentUtil;
 import fredboat.util.TextUtils;
 import fredboat.util.constant.BotConstants;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.ISnowflake;
@@ -45,6 +46,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +129,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
 
         if (permissionLevel == PermissionLevel.ADMIN
                 && PermissionLevel.BOT_ADMIN.getLevel() > PermsUtil.getPerms(invoker).getLevel()
-                && !invoker.isOwner()
+                && !PermissionUtil.checkPermission(invoker, Permission.ADMINISTRATOR)
                 && !PermsUtil.checkList(newList, invoker)) {
             TextUtils.replyWithName(channel, invoker, I18n.get(guild).getString("permsFailSelfDemotion"));
             return;
