@@ -27,8 +27,10 @@ package fredboat.command.admin;
 
 import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
-import fredboat.util.ExitCodes;
+import fredboat.commandmeta.abs.ICommand;
+import fredboat.commandmeta.abs.ICommandRestricted;
+import fredboat.perms.PermissionLevel;
+import fredboat.util.constant.ExitCodes;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -40,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class UpdateCommand extends Command implements ICommandOwnerRestricted {
+public class UpdateCommand extends Command implements ICommand, ICommandRestricted {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateCommand.class);
     private static final CompileCommand COMPILE_COMMAND = new CompileCommand();
@@ -84,5 +86,10 @@ public class UpdateCommand extends Command implements ICommandOwnerRestricted {
     @Override
     public String help(Guild guild) {
         return "{0}{1} [branch [repo]]\n#Update the bot by checking out the provided branch from the provided github repo and compiling it. Default github repo is Frederikam, default branch is master. Restart with the fresh build.";
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.BOT_OWNER;
     }
 }

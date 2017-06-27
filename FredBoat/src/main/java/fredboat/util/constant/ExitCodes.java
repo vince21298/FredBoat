@@ -23,25 +23,15 @@
  *
  */
 
-package fredboat.commandmeta;
+package fredboat.util.constant;
 
-import fredboat.commandmeta.abs.ICommand;
-import fredboat.feature.I18n;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+public class ExitCodes {
 
-/**
- * @author frederik
- */
-public class UnknownCommand implements ICommand {
-
-    @Override
-    public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {}
-
-    @Override
-    public String help(Guild guild) {
-        return I18n.get(guild).getString("helpUnknownCommand");
+    private ExitCodes() {
     }
+
+    public static final int EXIT_CODE_NORMAL = 0;
+    public static final int EXIT_CODE_UPDATE = 20;
+    public static final int EXIT_CODE_RESTART = 21;
+
 }

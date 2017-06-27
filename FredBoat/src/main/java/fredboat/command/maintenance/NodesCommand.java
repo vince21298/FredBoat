@@ -30,7 +30,7 @@ import com.sedmelluq.discord.lavaplayer.remote.RemoteNode;
 import fredboat.audio.AbstractPlayer;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IMaintenanceCommand;
-import fredboat.util.DiscordUtil;
+import fredboat.perms.PermsUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -49,7 +49,7 @@ public class NodesCommand extends Command implements IMaintenanceCommand {
         boolean showHost = false;
 
         if (args.length == 2 && args[1].equals("host")) {
-            if (DiscordUtil.isUserBotOwner(invoker.getUser())) {
+            if (PermsUtil.isUserBotOwner(invoker.getUser())) {
                 showHost = true;
             } else {
                 TextUtils.replyWithName(channel, invoker, "You do not have permission to view the hosts!");

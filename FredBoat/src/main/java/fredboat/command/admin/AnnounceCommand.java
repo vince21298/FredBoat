@@ -28,8 +28,9 @@ package fredboat.command.admin;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandAdminRestricted;
 import fredboat.util.TextUtils;
+import fredboat.commandmeta.abs.ICommandRestricted;
+import fredboat.perms.PermissionLevel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -48,7 +49,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author frederik
  */
-public class AnnounceCommand extends Command implements ICommandAdminRestricted {
+public class AnnounceCommand extends Command implements ICommandRestricted {
 
     private static final Logger log = LoggerFactory.getLogger(AnnounceCommand.class);
 
@@ -125,5 +126,10 @@ public class AnnounceCommand extends Command implements ICommandAdminRestricted 
     @Override
     public String help(Guild guild) {
         return "{0}{1}\n#Broadcasts an announcement to GuildPlayer TextChannels.";
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.BOT_ADMIN;
     }
 }

@@ -28,12 +28,14 @@ package fredboat.command.util;
 import fredboat.Config;
 import fredboat.command.fun.TalkCommand;
 import fredboat.command.music.control.SelectCommand;
+import fredboat.commandmeta.CommandManager;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicBackupCommand;
 import fredboat.commandmeta.abs.IUtilCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -90,6 +92,12 @@ public class HelpCommand extends Command implements IMusicBackupCommand, IUtilCo
         return MessageFormat.format(helpStr, Config.CONFIG.getPrefix(), commandOrAlias, thirdParam);
     }
 
+    public static void sendFormattedCommandHelp(Message message) {
+        String[] args = CommandManager.commandToArguments(message.getRawContent());
+        String command = args[0].substring(Config.CONFIG.getPrefix().length());
+        sendFormattedCommandHelp(message.getGuild(), message.getTextChannel(), message.getMember(), command);
+    }
+
     public static void sendFormattedCommandHelp(Guild guild, TextChannel channel, Member invoker, String commandOrAlias) {
 
         CommandRegistry.CommandEntry commandEntry = CommandRegistry.getCommand(commandOrAlias);
@@ -104,7 +112,8 @@ public class HelpCommand extends Command implements IMusicBackupCommand, IUtilCo
 
         String out = getFormattedCommandHelp(guild, command, commandOrAlias);
 
-        if (command instanceof ICommandOwnerRestricted)
+        if (command instanceof ICommandRestricted
+                && ((ICommandRestricted) command).getMinimumPerms() == PermissionLevel.BOT_OWNER)
             out += "\n#" + I18n.get(guild).getString("helpCommandOwnerRestricted");
         out = TextUtils.asMarkdown(out);
         out = I18n.get(guild).getString("helpProperUsage") + out;

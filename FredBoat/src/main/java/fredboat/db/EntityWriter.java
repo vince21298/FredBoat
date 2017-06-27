@@ -28,6 +28,7 @@ package fredboat.db;
 import fredboat.FredBoat;
 import fredboat.db.entity.BlacklistEntry;
 import fredboat.db.entity.GuildConfig;
+import fredboat.db.entity.GuildPermissions;
 import fredboat.db.entity.IEntity;
 import fredboat.db.entity.UConfig;
 import org.hibernate.exception.JDBCConnectionException;
@@ -50,6 +51,10 @@ public class EntityWriter {
 
     public static void mergeBlacklistEntry(BlacklistEntry ble) {
         merge(ble);
+    }
+
+    public static void mergeGuildPermissions(GuildPermissions guildPermissions) {
+        merge(guildPermissions);
     }
 
     private static void merge(IEntity entity) {

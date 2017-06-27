@@ -27,8 +27,10 @@ package fredboat.command.admin;
 
 import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
+import fredboat.commandmeta.abs.ICommand;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.db.DatabaseManager;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -42,7 +44,7 @@ import javax.persistence.EntityManager;
 /**
  * Stress tests the database
  */
-public class TestCommand extends Command implements ICommandOwnerRestricted {
+public class TestCommand extends Command implements ICommand, ICommandRestricted {
 
     private static final Logger log = LoggerFactory.getLogger(TestCommand.class);
 
@@ -195,5 +197,10 @@ public class TestCommand extends Command implements ICommandOwnerRestricted {
     @Override
     public String help(Guild guild) {
         return "{0}{1} [n m]\n#Stress test the database with n threads each doing m operations. Results will be shown after max 10 minutes.";
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.BOT_OWNER;
     }
 }

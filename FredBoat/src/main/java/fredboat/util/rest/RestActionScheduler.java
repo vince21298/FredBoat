@@ -23,21 +23,18 @@
  *
  */
 
-package fredboat.util;
+package fredboat.util.rest;
 
-import java.awt.*;
+import net.dv8tion.jda.core.requests.RestAction;
 
-public class BotConstants {
+import java.util.concurrent.*;
 
-    public static final String MUSIC_BOT_ID = "184405311681986560";
-    public static final String BETA_BOT_ID = "152691313123393536";
-    public static final String MAIN_BOT_ID = "150376112944447488";
-    public static final String PATRON_BOT_ID = "241950106125860865";
+public class RestActionScheduler {
 
-    public static final String FREDBOAT_HANGOUT_ID = "174820236481134592";
-    public static final Color FREDBOAT_COLOR = new Color(28, 191, 226);
+    private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
 
-    private BotConstants() {
+    public static void schedule(RestAction action, long time, TimeUnit unit) {
+        SCHEDULER.schedule((Runnable) action::queue, time, unit);
     }
 
 }

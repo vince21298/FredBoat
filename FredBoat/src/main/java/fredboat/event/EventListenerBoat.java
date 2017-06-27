@@ -113,7 +113,7 @@ public class EventListenerBoat extends AbstractEventListener {
             limitOrExecuteCommand(invoked, event);
         } else if (event.getMessage().getMentionedUsers().contains(event.getJDA().getSelfUser())) {
             log.info(event.getGuild().getName() + " \t " + event.getAuthor().getName() + " \t " + event.getMessage().getRawContent());
-            CommandManager.commandsExecuted++;
+            CommandManager.commandsExecuted.getAndIncrement();
             //regex101.com/r/9aw6ai/1/
             String message = event.getMessage().getRawContent().replaceAll("<@!?[0-9]*>", "");
             TalkCommand.talk(event.getMember(), event.getTextChannel(), message);

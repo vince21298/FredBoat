@@ -31,8 +31,10 @@ import fredboat.audio.PlayerRegistry;
 import fredboat.audio.queue.AudioTrackContext;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -47,7 +49,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SkipCommand extends Command implements IMusicCommand {
+public class SkipCommand extends Command implements IMusicCommand, ICommandRestricted {
     private static final String TRACK_RANGE_REGEX = "^(0?\\d+)-(0?\\d+)$";
     private static final Pattern trackRangePattern = Pattern.compile(TRACK_RANGE_REGEX);
 
@@ -157,5 +159,10 @@ public class SkipCommand extends Command implements IMusicCommand {
     public String help(Guild guild) {
         String usage = "{0}{1} OR {0}{1} n OR {0}{1} n-m\n#";
         return usage + I18n.get(guild).getString("helpSkipCommand");
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.USER;
     }
 }

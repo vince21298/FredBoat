@@ -23,29 +23,12 @@
  *
  */
 
-package fredboat.command.config;
+package fredboat.commandmeta.abs;
 
-import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.IModerationCommand;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import fredboat.perms.PermissionLevel;
 
-import java.util.ArrayList;
+public interface ICommandRestricted {
 
-public abstract class GuildSettingCommand extends Command implements IModerationCommand {
+    PermissionLevel getMinimumPerms();
 
-    //TODO: Finish this
-    @Override
-    public void onInvoke(JDA jda, Guild guild, TextChannel channel, Member invoker, Message message, ArrayList<String> args) {
-        super.onInvoke(jda, guild, channel, invoker, message, args);
-    }
-
-    //TODO: when finished, i18n the help string
-    @Override
-    public String help(Guild guild) {
-        return "{0}{1}\n#TODO";
-    }
 }

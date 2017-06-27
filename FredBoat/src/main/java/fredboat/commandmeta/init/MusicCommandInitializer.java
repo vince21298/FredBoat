@@ -28,8 +28,9 @@ import fredboat.Config;
 import fredboat.agent.VoiceChannelCleanupAgent;
 import fredboat.command.admin.*;
 import fredboat.command.maintenance.*;
-import fredboat.command.config.ConfigCommand;
-import fredboat.command.config.LanguageCommand;
+import fredboat.command.moderation.ConfigCommand;
+import fredboat.command.moderation.LanguageCommand;
+import fredboat.command.moderation.PermissionsCommand;
 import fredboat.command.music.control.*;
 import fredboat.command.music.info.ExportCommand;
 import fredboat.command.music.info.GensokyoRadioCommand;
@@ -43,8 +44,9 @@ import fredboat.command.util.CommandsCommand;
 import fredboat.command.util.HelpCommand;
 import fredboat.command.util.MusicHelpCommand;
 import fredboat.commandmeta.CommandRegistry;
-import fredboat.util.DistributionEnum;
-import fredboat.util.SearchUtil;
+import fredboat.perms.PermissionLevel;
+import fredboat.util.constant.DistributionEnum;
+import fredboat.util.rest.SearchUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +101,10 @@ public class MusicCommandInitializer {
         CommandRegistry.registerCommand("seek", new SeekCommand());
         CommandRegistry.registerCommand("forward", new ForwardCommand(), "fwd");
         CommandRegistry.registerCommand("rewind", new RewindCommand(), "rew");
+
+        CommandRegistry.registerCommand("admin", new PermissionsCommand(PermissionLevel.ADMIN));
+        CommandRegistry.registerCommand("dj", new PermissionsCommand(PermissionLevel.DJ));
+        CommandRegistry.registerCommand("user", new PermissionsCommand(PermissionLevel.USER));
 
         // The null check is to ensure we can run this in a test run
         if (Config.CONFIG == null || Config.CONFIG.getDistribution() != DistributionEnum.PATRON) {

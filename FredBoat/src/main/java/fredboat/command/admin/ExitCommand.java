@@ -27,8 +27,10 @@ package fredboat.command.admin;
 
 import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
-import fredboat.util.ExitCodes;
+import fredboat.commandmeta.abs.ICommand;
+import fredboat.commandmeta.abs.ICommandRestricted;
+import fredboat.perms.PermissionLevel;
+import fredboat.util.constant.ExitCodes;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -39,7 +41,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
  *
  * @author frederik
  */
-public class ExitCommand extends Command implements ICommandOwnerRestricted {
+public class ExitCommand extends Command implements ICommand, ICommandRestricted {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -50,5 +52,10 @@ public class ExitCommand extends Command implements ICommandOwnerRestricted {
     @Override
     public String help(Guild guild) {
         return "{0}{1}\n#Shut down the bot.";
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.BOT_ADMIN;
     }
 }

@@ -23,18 +23,30 @@
  *
  */
 
-package fredboat.util;
+package fredboat.perms;
 
-import net.dv8tion.jda.core.requests.RestAction;
+public enum PermissionLevel {
 
-import java.util.concurrent.*;
+    BOT_OWNER(5, "Bot Owner"),
+    BOT_ADMIN(4, "Bot Admin"),
+    ADMIN(3, "Admin"),
+    DJ(2, "DJ"),
+    USER(1, "User"),
+    BASE(0, "Base");
 
-public class RestActionScheduler {
+    private int level;
+    private String name;
 
-    private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
-
-    public static void schedule(RestAction action, long time, TimeUnit unit) {
-        SCHEDULER.schedule((Runnable) action::queue, time, unit);
+    PermissionLevel(int level, String name) {
+        this.level = level;
+        this.name = name;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

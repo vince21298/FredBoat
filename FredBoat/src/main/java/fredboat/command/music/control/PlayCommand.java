@@ -32,9 +32,11 @@ import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.audio.VideoSelection;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
-import fredboat.util.SearchUtil;
+import fredboat.perms.PermissionLevel;
+import fredboat.util.rest.SearchUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -52,7 +54,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PlayCommand extends Command implements IMusicCommand {
+public class PlayCommand extends Command implements IMusicCommand, ICommandRestricted {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(PlayCommand.class);
     private final SearchUtil.SearchProvider searchProvider;
@@ -199,5 +201,10 @@ public class PlayCommand extends Command implements IMusicCommand {
     public String help(Guild guild) {
         String usage = "{0}{1} <url> OR {0}{1} <search-term>\n#";
         return usage + I18n.get(guild).getString("helpPlayCommand");
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.USER;
     }
 }

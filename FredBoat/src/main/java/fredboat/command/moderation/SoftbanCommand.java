@@ -56,7 +56,7 @@ public class SoftbanCommand extends Command implements IModerationCommand {
             return;
         }
 
-        Member target = ArgumentUtil.checkSingleFuzzySearchResult(channel, args[1]);
+        Member target = ArgumentUtil.checkSingleFuzzyMemberSearchResult(channel, args[1]);
 
         if (target == null) return;
 

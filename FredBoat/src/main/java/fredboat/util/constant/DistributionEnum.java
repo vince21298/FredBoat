@@ -20,14 +20,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package fredboat.commandmeta.abs;
+package fredboat.util.constant;
 
-/**
- * Created by napster on 04.04.17.
- * <p>
- * A command that implements this can be run by users and roles defined as admins of the bot in the config file
- */
-public interface ICommandAdminRestricted {
+public enum DistributionEnum {
+    MAIN("production", false),
+    MUSIC("music", false),
+    DEVELOPMENT("beta", true),
+    PATRON("patron", true);
+
+    private final String id;
+    private final boolean volumeSupported;
+
+    DistributionEnum(String id, boolean volumeSupported) {
+        this.id = id;
+        this.volumeSupported = volumeSupported;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public boolean volumeSupported() {
+        return volumeSupported;
+    }
 }

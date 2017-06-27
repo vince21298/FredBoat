@@ -31,14 +31,16 @@ import fredboat.audio.PlayerRegistry;
 import fredboat.audio.queue.IdentifierContext;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-public class PlaySplitCommand extends Command implements IMusicCommand {
+public class PlaySplitCommand extends Command implements IMusicCommand, ICommandRestricted {
 
 
     @Override
@@ -67,5 +69,10 @@ public class PlaySplitCommand extends Command implements IMusicCommand {
     public String help(Guild guild) {
         String usage = "{0}{1} <url>\n#";
         return usage + I18n.get(guild).getString("helpPlaySplitCommand");
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.USER;
     }
 }
