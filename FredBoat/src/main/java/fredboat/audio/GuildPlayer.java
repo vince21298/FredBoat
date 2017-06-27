@@ -298,7 +298,7 @@ public class GuildPlayer extends AbstractPlayer {
                 if(!atc.getMember().equals(member)) otherPeoplesTracks++;
             }
 
-            if (otherPeoplesTracks > 1) {
+            if (otherPeoplesTracks > 0) {
                 return new ImmutablePair<>(false, I18n.get(getGuild()).getString("skipDeniedTooManyTracks"));
             } else {
                 return new ImmutablePair<>(true, null);
