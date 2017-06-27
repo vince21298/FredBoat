@@ -109,7 +109,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
         List<IMentionable> curList = new ArrayList<>();
         List<IMentionable> search = new ArrayList<>();
         search.addAll(ArgumentUtil.fuzzyRoleSearch(guild, term));
-        search.addAll(ArgumentUtil.fuzzyMemberSearch(guild, term));
+        search.addAll(ArgumentUtil.fuzzyMemberSearch(guild, term, false));
         GuildPermissions gp = EntityReader.getGuildPermissions(guild);
         curList.addAll(idsToMentionables(guild, gp.getFromEnum(permissionLevel)));
 
@@ -144,7 +144,7 @@ public class PermissionsCommand extends Command implements IModerationCommand {
 
         List<IMentionable> list = new ArrayList<>();
         list.addAll(ArgumentUtil.fuzzyRoleSearch(guild, term));
-        list.addAll(ArgumentUtil.fuzzyMemberSearch(guild, term));
+        list.addAll(ArgumentUtil.fuzzyMemberSearch(guild, term, false));
         GuildPermissions gp = EntityReader.getGuildPermissions(guild);
         list.removeAll(idsToMentionables(guild, gp.getFromEnum(permissionLevel)));
 

@@ -42,7 +42,7 @@ public class ArgumentUtil {
     private ArgumentUtil() {
     }
 
-    public static List<Member> fuzzyMemberSearch(Guild guild, String term) {
+    public static List<Member> fuzzyMemberSearch(Guild guild, String term, boolean includeBots) {
         ArrayList<Member> list = new ArrayList<>();
 
         term = term.toLowerCase();
@@ -51,6 +51,8 @@ public class ArgumentUtil {
             if ((mem.getUser().getName().toLowerCase() + "#" + mem.getUser().getDiscriminator()).contains(term)
                     || (mem.getEffectiveName().toLowerCase().contains(term))
                     || term.contains(mem.getUser().getId())) {
+
+                if (!includeBots && mem.getUser().isBot()) continue;
                 list.add(mem);
             }
         }
@@ -75,7 +77,7 @@ public class ArgumentUtil {
 
 
     public static Member checkSingleFuzzyMemberSearchResult(TextChannel tc, String term) {
-        List<Member> list = fuzzyMemberSearch(tc.getGuild(), term);
+        List<Member> list = fuzzyMemberSearch(tc.getGuild(), term, false);
 
         switch (list.size()) {
             case 0:
@@ -109,7 +111,10 @@ public class ArgumentUtil {
             default:
                 String msg = I18n.get(tc.getGuild()).getString("fuzzyMultiple") + "\n```";
 
+                int i = 0;
                 for (IMentionable mentionable : list) {
+                    if (i == 5) break;
+
                     if (mentionable instanceof Member) {
                         Member member = (Member) mentionable;
                         msg = msg + "\n" + "USER " + member.getUser().getId() + " " + member.getEffectiveName();
@@ -119,6 +124,7 @@ public class ArgumentUtil {
                     } else {
                         throw new IllegalArgumentException("Expected Role or Member, got " + mentionable);
                     }
+                    i++;
                 }
 
                 msg = list.size() > 5 ? msg + "\n[...]" : msg;

@@ -47,7 +47,7 @@ public class FuzzyUserSearchCommand extends Command implements IMaintenanceComma
             String command = args[0].substring(Config.CONFIG.getPrefix().length());
             HelpCommand.sendFormattedCommandHelp(guild, channel, invoker, command);
         } else {
-            List<Member> list = ArgumentUtil.fuzzyMemberSearch(guild, args[1]);
+            List<Member> list = ArgumentUtil.fuzzyMemberSearch(guild, args[1], true);
 
             if(list.isEmpty()){
                 TextUtils.replyWithName(channel, invoker, I18n.get(guild).getString("fuzzyNoResults"));
