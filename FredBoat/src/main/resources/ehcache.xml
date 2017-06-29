@@ -51,6 +51,15 @@
             overflowToDisk="true"
     />
 
+    <cache
+            name="guild_permissions"
+            maxElementsInMemory="120000"
+            eternal="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="120"
+            overflowToDisk="true"
+    />
+
     <cache name="org.hibernate.cache.internal.StandardQueryCache"
            maxEntriesLocalHeap="5" eternal="false" timeToLiveSeconds="120">
         <persistence strategy="localTempSwap" />
