@@ -25,26 +25,34 @@
 
 package fredboat.util;
 
+import fredboat.feature.I18n;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArgumentUtil {
 
-    private ArgumentUtil() {}
+    private ArgumentUtil() {
+    }
 
-    public static List<Member> fuzzyMemberSearch(Guild guild, String term) {
+    public static List<Member> fuzzyMemberSearch(Guild guild, String term, boolean includeBots) {
         ArrayList<Member> list = new ArrayList<>();
 
         term = term.toLowerCase();
 
-        for(Member mem : guild.getMembers()) {
-            if((mem.getUser().getName().toLowerCase() + "#" + mem.getUser().getDiscriminator()).contains(term)
-                    | (mem.getEffectiveName().toLowerCase().contains(term))
-                    | term.contains(mem.getUser().getId())) {
+        for (Member mem : guild.getMembers()) {
+            if ((mem.getUser().getName().toLowerCase() + "#" + mem.getUser().getDiscriminator()).contains(term)
+                    || (mem.getEffectiveName().toLowerCase().contains(term))
+                    || term.contains(mem.getUser().getId())) {
+
+                if (!includeBots && mem.getUser().isBot()) continue;
                 list.add(mem);
             }
         }
@@ -52,20 +60,36 @@ public class ArgumentUtil {
         return list;
     }
 
-    public static Member checkSingleFuzzySearchResult(TextChannel tc, String term) {
-        List<Member> list = fuzzyMemberSearch(tc.getGuild(), term);
+    public static List<Role> fuzzyRoleSearch(Guild guild, String term) {
+        ArrayList<Role> list = new ArrayList<>();
+
+        term = term.toLowerCase();
+
+        for (Role role : guild.getRoles()) {
+            if ((role.getName().toLowerCase()).contains(term)
+                    || term.contains(role.getId())) {
+                list.add(role);
+            }
+        }
+
+        return list;
+    }
+
+
+    public static Member checkSingleFuzzyMemberSearchResult(TextChannel tc, String term) {
+        List<Member> list = fuzzyMemberSearch(tc.getGuild(), term, false);
 
         switch (list.size()) {
             case 0:
-                tc.sendMessage("No members found for `" + term + "`.").queue();
+                tc.sendMessage(MessageFormat.format(I18n.get(tc.getGuild()).getString("fuzzyNothingFound"), term)).queue();
                 return null;
             case 1:
                 return list.get(0);
             default:
-                String msg = "Multiple users were found. Did you mean any of these users?\n```";
+                String msg = I18n.get(tc.getGuild()).getString("fuzzyMultiple") + "\n```";
 
-                for (int i = 0; i < 5; i++){
-                    if(list.size() == i) break;
+                for (int i = 0; i < 5; i++) {
+                    if (list.size() == i) break;
                     msg = msg + "\n" + list.get(i).getUser().getName() + "#" + list.get(i).getUser().getDiscriminator();
                 }
 
@@ -76,4 +100,44 @@ public class ArgumentUtil {
                 return null;
         }
     }
+
+    public static IMentionable checkSingleFuzzySearchResult(List<IMentionable> list, TextChannel tc, String term) {
+        switch (list.size()) {
+            case 0:
+                tc.sendMessage(MessageFormat.format(I18n.get(tc.getGuild()).getString("fuzzyNothingFound"), term)).queue();
+                return null;
+            case 1:
+                return list.get(0);
+            default:
+                String msg = I18n.get(tc.getGuild()).getString("fuzzyMultiple") + "\n```";
+
+                int i = 0;
+                for (IMentionable mentionable : list) {
+                    if (i == 5) break;
+
+                    if (mentionable instanceof Member) {
+                        Member member = (Member) mentionable;
+                        msg = msg + "\n" + "USER " + member.getUser().getId() + " " + member.getEffectiveName();
+                    } else if (mentionable instanceof Role) {
+                        Role role = (Role) mentionable;
+                        msg = msg + "\n" + "ROLE " + role.getId() + " " + role.getName();
+                    } else {
+                        throw new IllegalArgumentException("Expected Role or Member, got " + mentionable);
+                    }
+                    i++;
+                }
+
+                msg = list.size() > 5 ? msg + "\n[...]" : msg;
+                msg = msg + "```";
+
+                tc.sendMessage(msg).queue();
+                return null;
+        }
+    }
+
+    public static String getSearchTerm(Message message, String[] args, int argsToStrip) {
+        String raw = message.getRawContent();
+        return raw.substring(raw.indexOf(args[argsToStrip])).trim();
+    }
+
 }

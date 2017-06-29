@@ -28,10 +28,12 @@ package fredboat.agent;
 import fredboat.Config;
 import fredboat.FredBoat;
 import fredboat.event.ShardWatchdogListener;
-import fredboat.util.DistributionEnum;
+import fredboat.util.constant.DistributionEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.util.List;
 
 public class ShardWatchdogAgent extends Thread {
@@ -69,18 +71,25 @@ public class ShardWatchdogAgent extends Thread {
     private void inspect() throws InterruptedException {
         List<FredBoat> shards = FredBoat.getShards();
 
-        for(FredBoat shard : shards) {
+        for (FredBoat shard : shards) {
             if (shutdown) break;
             ShardWatchdogListener listener = shard.getShardWatchdogListener();
 
             long diff = System.currentTimeMillis() - listener.getLastEventTime();
 
-            if(diff > ACCEPTABLE_SILENCE) {
+            if (diff > ACCEPTABLE_SILENCE) {
                 if (listener.getEventCount() < 100) {
                     log.warn("Did not revive shard " + shard.getShardInfo() + " because it did not receive enough events since construction!");
                 } else {
                     log.warn("Reviving shard " + shard.getShardInfo() + " after " + (diff / 1000) +
                             " seconds of no events. Last event received was " + listener.getLastEvent());
+
+                    /*try {
+                        log.info("Thread dump for shard's JDA threads at time of death: " + getShardThreadDump(shard.getShardInfo().getShardId()));
+                    } catch (Exception e) {
+                        log.error("Got exception while printing thread dump after shard death was detected");
+                    }*/
+
                     shard.revive();
                     sleep(5000);
                 }
@@ -93,10 +102,23 @@ public class ShardWatchdogAgent extends Thread {
     }
 
     private static int getAcceptableSilenceThreshold() {
-        if(Config.CONFIG.getDistribution() == DistributionEnum.DEVELOPMENT) {
+        if (Config.CONFIG.getDistribution() == DistributionEnum.DEVELOPMENT) {
             return Integer.MAX_VALUE;
         }
 
         return Config.CONFIG.getNumShards() != 1 ? 30 * 1000 : 600 * 1000; //30 seconds or 10 minutes depending on shard count
+    }
+
+    private static String getShardThreadDump(int shardId) {
+        ThreadInfo[] threadInfos = ManagementFactory.getThreadMXBean()
+                .dumpAllThreads(true,
+                        true);
+        StringBuilder dump = new StringBuilder();
+        dump.append(String.format("%n"));
+        for (ThreadInfo threadInfo : threadInfos) {
+            if (threadInfo.getThreadName().contains("[" + shardId + " / "))
+                dump.append(threadInfo);
+        }
+        return dump.toString();
     }
 }

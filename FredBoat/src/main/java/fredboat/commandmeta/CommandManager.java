@@ -27,25 +27,39 @@ package fredboat.commandmeta;
 
 
 import fredboat.Config;
-import fredboat.commandmeta.abs.*;
+import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
+import fredboat.commandmeta.abs.IMusicBackupCommand;
+import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
-import fredboat.util.*;
+import fredboat.perms.PermissionLevel;
+import fredboat.perms.PermsUtil;
+import fredboat.util.DiscordUtil;
+import fredboat.util.TextUtils;
+import fredboat.util.constant.BotConstants;
+import fredboat.util.constant.DistributionEnum;
+import fredboat.util.rest.RestActionScheduler;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CommandManager {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(CommandManager.class);
 
-    public static int commandsExecuted = 0;
+    public static final AtomicInteger commandsExecuted = new AtomicInteger(0);
 
     public static void prefixCalled(Command invoked, Guild guild, TextChannel channel, Member invoker, Message message) {
         String[] args = commandToArguments(message.getRawContent());
-        commandsExecuted++;
+        commandsExecuted.getAndIncrement();
 
         if (invoked instanceof IMusicBackupCommand
                 && guild.getJDA().getSelfUser().getId().equals(BotConstants.MUSIC_BOT_ID)
@@ -77,18 +91,13 @@ public class CommandManager {
             return;
         }
 
-        if (invoked instanceof ICommandOwnerRestricted) {
-            //Check if invoker is actually the owner
-            if (!DiscordUtil.isUserBotOwner(invoker.getUser())) {
-                channel.sendMessage(TextUtils.prefaceWithName(invoker, I18n.get(guild).getString("cmdAccessDenied"))).queue();
-                return;
-            }
-        }
+        if (invoked instanceof ICommandRestricted) {
+            //Check if invoker actually has perms
+            PermissionLevel minPerms = ((ICommandRestricted) invoked).getMinimumPerms();
+            PermissionLevel actual = PermsUtil.getPerms(invoker);
 
-        if (invoked instanceof ICommandAdminRestricted) {
-            //only admins and the bot owner can execute these
-            if (!isAdmin(invoker) && !DiscordUtil.isUserBotOwner(invoker.getUser())) {
-                channel.sendMessage(TextUtils.prefaceWithName(invoker, I18n.get(guild).getString("cmdAccessDenied"))).queue();
+            if(actual.getLevel() < minPerms.getLevel()) {
+                TextUtils.replyWithName(channel, invoker, MessageFormat.format(I18n.get(guild).getString("cmdPermsTooLow"), minPerms, actual));
                 return;
             }
         }
@@ -122,23 +131,7 @@ public class CommandManager {
 
     }
 
-    /**
-     * returns true if the member is or holds a role defined as admin in the configuration file
-     */
-    private static boolean isAdmin(Member invoker) {
-        boolean admin = false;
-        for (String id : Config.CONFIG.getAdminIds()) {
-            Role r = invoker.getGuild().getRoleById(id);
-            if (invoker.getUser().getId().equals(id)
-                    || (r != null && invoker.getRoles().contains(r))) {
-                admin = true;
-                break;
-            }
-        }
-        return admin;
-    }
-
-    private static String[] commandToArguments(String cmd) {
+    public static String[] commandToArguments(String cmd) {
         ArrayList<String> a = new ArrayList<>();
         int argi = 0;
         boolean isInQuote = false;

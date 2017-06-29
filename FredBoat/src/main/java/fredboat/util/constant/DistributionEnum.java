@@ -23,18 +23,27 @@
  *
  */
 
-package fredboat.util;
+package fredboat.util.constant;
 
-import net.dv8tion.jda.core.requests.RestAction;
+public enum DistributionEnum {
+    MAIN("production", false),
+    MUSIC("music", false),
+    DEVELOPMENT("beta", true),
+    PATRON("patron", true);
 
-import java.util.concurrent.*;
+    private final String id;
+    private final boolean volumeSupported;
 
-public class RestActionScheduler {
-
-    private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
-
-    public static void schedule(RestAction action, long time, TimeUnit unit) {
-        SCHEDULER.schedule((Runnable) action::queue, time, unit);
+    DistributionEnum(String id, boolean volumeSupported) {
+        this.id = id;
+        this.volumeSupported = volumeSupported;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public boolean volumeSupported() {
+        return volumeSupported;
+    }
 }

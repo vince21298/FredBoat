@@ -23,7 +23,7 @@
  *
  */
 
-package fredboat.util;
+package fredboat.util.constant;
 
 import java.awt.*;
 

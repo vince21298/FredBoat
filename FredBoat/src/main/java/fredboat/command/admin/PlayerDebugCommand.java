@@ -29,7 +29,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
+import fredboat.commandmeta.abs.ICommand;
+import fredboat.commandmeta.abs.ICommandRestricted;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -41,7 +43,7 @@ import org.json.JSONObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PlayerDebugCommand extends Command implements ICommandOwnerRestricted {
+public class PlayerDebugCommand extends Command implements ICommand, ICommandRestricted {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -69,5 +71,10 @@ public class PlayerDebugCommand extends Command implements ICommandOwnerRestrict
     @Override
     public String help(Guild guild) {
         return "{0}{1}\n#Show debug information about the music player of this guild.";
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.BOT_OWNER;
     }
 }

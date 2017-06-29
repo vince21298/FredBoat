@@ -106,8 +106,11 @@ public class FredBoatBot extends FredBoat {
         try {
             channelsToRejoin.clear();
 
-            PlayerRegistry.getPlayingPlayers().stream().filter(guildPlayer -> guildPlayer.getJda().equals(jda))
-                    .forEach(guildPlayer -> channelsToRejoin.add(guildPlayer.getChannel().getId()));
+            PlayerRegistry.getPlayingPlayers().stream()
+                    .filter(guildPlayer -> guildPlayer.getJda().getShardInfo().getShardId() == shardId)
+                    .forEach(guildPlayer -> {
+                        if (guildPlayer.getChannel() != null) channelsToRejoin.add(guildPlayer.getChannel().getId());
+                    });
         } catch (Exception ex) {
             log.error("Caught exception while reviving shard " + this, ex);
         }

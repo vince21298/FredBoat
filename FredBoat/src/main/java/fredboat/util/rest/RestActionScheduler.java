@@ -20,14 +20,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package fredboat.commandmeta.abs;
+package fredboat.util.rest;
 
-/**
- * Created by napster on 04.04.17.
- * <p>
- * A command that implements this can be run by users and roles defined as admins of the bot in the config file
- */
-public interface ICommandAdminRestricted {
+import net.dv8tion.jda.core.requests.RestAction;
+
+import java.util.concurrent.*;
+
+public class RestActionScheduler {
+
+    private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
+
+    public static void schedule(RestAction action, long time, TimeUnit unit) {
+        SCHEDULER.schedule((Runnable) action::queue, time, unit);
+    }
+
 }

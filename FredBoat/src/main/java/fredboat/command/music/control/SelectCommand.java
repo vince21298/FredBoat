@@ -31,19 +31,20 @@ import fredboat.audio.PlayerRegistry;
 import fredboat.audio.VideoSelection;
 import fredboat.audio.queue.AudioTrackContext;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import java.text.MessageFormat;
 
-public class SelectCommand extends Command implements IMusicCommand {
+public class SelectCommand extends Command implements IMusicCommand, ICommandRestricted {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -63,7 +64,7 @@ public class SelectCommand extends Command implements IMusicCommand {
                     AudioTrack selected = selection.getChoices().get(i - 1);
                     player.selections.remove(invoker.getUser().getId());
                     String msg = MessageFormat.format(I18n.get(guild).getString("selectSuccess"), i, selected.getInfo().title, TextUtils.formatTime(selected.getInfo().length));
-                    channel.editMessageById(selection.getOutMsgId(), msg).complete(true);
+                    channel.editMessageById(selection.getOutMsgId(), msg).queue();
                     player.queue(new AudioTrackContext(selected, invoker));
                     player.setPause(false);
                     try {
@@ -74,8 +75,6 @@ public class SelectCommand extends Command implements IMusicCommand {
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("selectInterval"), selection.getChoices().size())).queue();
-            } catch (RateLimitedException e) {
-                throw new RuntimeException(e);
             }
         } else {
             channel.sendMessage(I18n.get(guild).getString("selectSelectionNotGiven")).queue();
@@ -86,5 +85,10 @@ public class SelectCommand extends Command implements IMusicCommand {
     public String help(Guild guild) {
         String usage = "{0}{1} n OR {0}{2} n\n#";
         return usage + I18n.get(guild).getString("helpSelectCommand");
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.USER;
     }
 }

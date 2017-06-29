@@ -27,7 +27,7 @@ package fredboat.command.fun;
 
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IFunCommand;
-import fredboat.util.CacheUtil;
+import fredboat.util.rest.CacheUtil;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;

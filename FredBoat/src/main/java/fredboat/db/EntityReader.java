@@ -29,8 +29,10 @@ package fredboat.db;
 import fredboat.FredBoat;
 import fredboat.db.entity.BlacklistEntry;
 import fredboat.db.entity.GuildConfig;
+import fredboat.db.entity.GuildPermissions;
 import fredboat.db.entity.IEntity;
 import fredboat.db.entity.UConfig;
+import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,10 @@ public class EntityReader {
         return getEntity(id, GuildConfig.class);
     }
 
+    public static GuildPermissions getGuildPermissions(Guild guild) {
+        return getEntity(guild.getId(), GuildPermissions.class);
+    }
+
     private static <E extends IEntity> E getEntity(String id, Class<E> clazz) throws DatabaseNotReadyException {
         DatabaseManager dbManager = FredBoat.getDbManager();
         if (!dbManager.isAvailable()) {
@@ -66,7 +72,7 @@ public class EntityReader {
         } finally {
             em.close();
         }
-        //return a fresh object if we didn't found the one we were looking for
+        //return a fresh object if we didn't find the one we were looking for
         if (config == null) config = newInstance(id, clazz);
         return config;
     }

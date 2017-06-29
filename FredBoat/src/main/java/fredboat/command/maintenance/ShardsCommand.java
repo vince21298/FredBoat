@@ -29,12 +29,12 @@ import fredboat.Config;
 import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IMaintenanceCommand;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class ShardsCommand extends Command implements IMaintenanceCommand {
@@ -57,11 +57,11 @@ public class ShardsCommand extends Command implements IMaintenanceCommand {
         List<FredBoat> shards = new ArrayList<>(FredBoat.getShards());
         int borkenShards = 0;
         int healthyGuilds = 0;
-        final HashSet<String> healthyUsers = new HashSet<>();
+        LongOpenHashSet healthyUsers = new LongOpenHashSet(FredBoat.getExpectedUserCount());
         for (FredBoat fb : shards) {
             if (fb.getJda().getStatus() == JDA.Status.CONNECTED && !full) {
                 healthyGuilds += fb.getJda().getGuilds().size();
-                fb.getJda().getUsers().forEach((User u) -> healthyUsers.add(u.getId()));
+                fb.getJda().getUsers().parallelStream().mapToLong(ISnowflake::getIdLong).forEach(healthyUsers::add);
             } else {
                 if (borkenShards % SHARDS_PER_MESSAGE == 0) {
                     mb = new MessageBuilder()

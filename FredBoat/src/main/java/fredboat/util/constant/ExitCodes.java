@@ -23,11 +23,15 @@
  *
  */
 
-package fredboat.commandmeta.abs;
+package fredboat.util.constant;
 
-/**
- * classifies a command as only allowed for the owner of the bot to use
- */
-public interface ICommandOwnerRestricted extends ICommand {
+public class ExitCodes {
+
+    private ExitCodes() {
+    }
+
+    public static final int EXIT_CODE_NORMAL = 0;
+    public static final int EXIT_CODE_UPDATE = 20;
+    public static final int EXIT_CODE_RESTART = 21;
 
 }

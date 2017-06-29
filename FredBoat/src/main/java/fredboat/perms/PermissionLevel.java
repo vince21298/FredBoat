@@ -23,29 +23,30 @@
  *
  */
 
-package fredboat.command.config;
+package fredboat.perms;
 
-import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.IModerationCommand;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+public enum PermissionLevel {
 
-import java.util.ArrayList;
+    BOT_OWNER(5, "Bot Owner"),
+    BOT_ADMIN(4, "Bot Admin"),
+    ADMIN(3, "Admin"),
+    DJ(2, "DJ"),
+    USER(1, "User"),
+    BASE(0, "Base");
 
-public abstract class GuildSettingCommand extends Command implements IModerationCommand {
+    private int level;
+    private String name;
 
-    //TODO: Finish this
-    @Override
-    public void onInvoke(JDA jda, Guild guild, TextChannel channel, Member invoker, Message message, ArrayList<String> args) {
-        super.onInvoke(jda, guild, channel, invoker, message, args);
+    PermissionLevel(int level, String name) {
+        this.level = level;
+        this.name = name;
     }
 
-    //TODO: when finished, i18n the help string
-    @Override
-    public String help(Guild guild) {
-        return "{0}{1}\n#TODO";
+    public int getLevel() {
+        return level;
+    }
+
+    public String getName() {
+        return name;
     }
 }

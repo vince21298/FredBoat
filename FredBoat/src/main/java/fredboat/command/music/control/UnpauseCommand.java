@@ -28,14 +28,16 @@ package fredboat.command.music.control;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-public class UnpauseCommand extends Command implements IMusicCommand {
+public class UnpauseCommand extends Command implements IMusicCommand, ICommandRestricted {
 
     private static final JoinCommand JOIN_COMMAND = new JoinCommand();
 
@@ -66,5 +68,10 @@ public class UnpauseCommand extends Command implements IMusicCommand {
     public String help(Guild guild) {
         String usage = "{0}{1}\n#";
         return usage + I18n.get(guild).getString("helpUnpauseCommand");
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.DJ;
     }
 }

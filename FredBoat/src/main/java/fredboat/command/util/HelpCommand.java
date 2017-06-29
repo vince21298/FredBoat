@@ -28,18 +28,19 @@ package fredboat.command.util;
 import fredboat.Config;
 import fredboat.command.fun.TalkCommand;
 import fredboat.command.music.control.SelectCommand;
+import fredboat.commandmeta.CommandManager;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
-import fredboat.commandmeta.abs.ICommandOwnerRestricted;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicBackupCommand;
 import fredboat.commandmeta.abs.IUtilCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,17 +71,12 @@ public class HelpCommand extends Command implements IMusicBackupCommand, IUtilCo
     }
 
     private static void sendGeneralHelp(Guild guild, TextChannel channel, Member invoker) {
-        if (!invoker.getUser().hasPrivateChannel()) {
-            try {
-                invoker.getUser().openPrivateChannel().complete(true);
-            } catch (RateLimitedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        invoker.getUser().getPrivateChannel().sendMessage(getHelpDmMsg(guild)).queue();
-        String out = I18n.get(guild).getString("helpSent");
-        out += "\n" + MessageFormat.format(I18n.get(guild).getString("helpCommandsPromotion"), "`" + Config.CONFIG.getPrefix() + "commands`");
-        TextUtils.replyWithName(channel, invoker, out);
+        invoker.getUser().openPrivateChannel().queue(privateChannel -> {
+            privateChannel.sendMessage(getHelpDmMsg(guild)).queue();
+            String out = I18n.get(guild).getString("helpSent");
+            out += "\n" + MessageFormat.format(I18n.get(guild).getString("helpCommandsPromotion"), "`" + Config.CONFIG.getPrefix() + "commands`");
+            TextUtils.replyWithName(channel, invoker, out);
+        });
     }
 
     public static String getFormattedCommandHelp(Guild guild, Command command, String commandOrAlias) {
@@ -94,6 +90,12 @@ public class HelpCommand extends Command implements IMusicBackupCommand, IUtilCo
             thirdParam = "play";
 
         return MessageFormat.format(helpStr, Config.CONFIG.getPrefix(), commandOrAlias, thirdParam);
+    }
+
+    public static void sendFormattedCommandHelp(Message message) {
+        String[] args = CommandManager.commandToArguments(message.getRawContent());
+        String command = args[0].substring(Config.CONFIG.getPrefix().length());
+        sendFormattedCommandHelp(message.getGuild(), message.getTextChannel(), message.getMember(), command);
     }
 
     public static void sendFormattedCommandHelp(Guild guild, TextChannel channel, Member invoker, String commandOrAlias) {
@@ -110,7 +112,8 @@ public class HelpCommand extends Command implements IMusicBackupCommand, IUtilCo
 
         String out = getFormattedCommandHelp(guild, command, commandOrAlias);
 
-        if (command instanceof ICommandOwnerRestricted)
+        if (command instanceof ICommandRestricted
+                && ((ICommandRestricted) command).getMinimumPerms() == PermissionLevel.BOT_OWNER)
             out += "\n#" + I18n.get(guild).getString("helpCommandOwnerRestricted");
         out = TextUtils.asMarkdown(out);
         out = I18n.get(guild).getString("helpProperUsage") + out;

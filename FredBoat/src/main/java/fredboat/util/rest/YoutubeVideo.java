@@ -23,7 +23,7 @@
  *
  */
 
-package fredboat.util;
+package fredboat.util.rest;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;

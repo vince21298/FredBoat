@@ -32,8 +32,10 @@ import fredboat.audio.PlayerRegistry;
 import fredboat.audio.queue.AudioTrackContext;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
+import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
+import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -42,7 +44,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.text.MessageFormat;
 
-public class RewindCommand extends Command implements IMusicCommand {
+public class RewindCommand extends Command implements IMusicCommand, ICommandRestricted {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
@@ -84,5 +86,10 @@ public class RewindCommand extends Command implements IMusicCommand {
         String usage = "{0}{1} [[hh:]mm:]ss\n#";
         String example = " {0}{1} 30";
         return usage + I18n.get(guild).getString("helpRewindCommand") + example;
+    }
+
+    @Override
+    public PermissionLevel getMinimumPerms() {
+        return PermissionLevel.DJ;
     }
 }

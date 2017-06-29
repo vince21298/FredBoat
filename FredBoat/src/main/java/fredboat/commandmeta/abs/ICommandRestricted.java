@@ -23,15 +23,12 @@
  *
  */
 
-package fredboat.util;
+package fredboat.commandmeta.abs;
 
-public class ExitCodes {
+import fredboat.perms.PermissionLevel;
 
-    private ExitCodes() {
-    }
+public interface ICommandRestricted {
 
-    public static final int EXIT_CODE_NORMAL = 0;
-    public static final int EXIT_CODE_UPDATE = 20;
-    public static final int EXIT_CODE_RESTART = 21;
+    PermissionLevel getMinimumPerms();
 
 }

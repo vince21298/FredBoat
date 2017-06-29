@@ -23,25 +23,44 @@
  *
  */
 
-package fredboat.commandmeta;
+package fredboat.audio;
 
-import fredboat.commandmeta.abs.ICommand;
-import fredboat.feature.I18n;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
 
-/**
- * @author frederik
- */
-public class UnknownCommand implements ICommand {
+import fredboat.FredBoat;
+import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.entities.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class DebugConnectionListener implements ConnectionListener {
+
+    private static final Logger log = LoggerFactory.getLogger(DebugConnectionListener.class);
+
+    private ConnectionStatus oldStatus = null;
+    private final String guildId;
+    private final FredBoat.ShardInfo shardInfo;
+
+    DebugConnectionListener(String guildId, FredBoat.ShardInfo shardInfo) {
+        this.guildId = guildId;
+        this.shardInfo = shardInfo;
+    }
 
     @Override
-    public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {}
+    public void onPing(long l) {
+
+    }
 
     @Override
-    public String help(Guild guild) {
-        return I18n.get(guild).getString("helpUnknownCommand");
+    public void onStatusChange(ConnectionStatus connectionStatus) {
+        log.debug(String.format("Status change for audio connection in guild %s in %s: %s => %s",
+                guildId, shardInfo, oldStatus, connectionStatus));
+
+        oldStatus = connectionStatus;
+    }
+
+    @Override
+    public void onUserSpeaking(User user, boolean b) {
+
     }
 }

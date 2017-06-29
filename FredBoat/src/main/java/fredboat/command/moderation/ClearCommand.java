@@ -29,7 +29,7 @@ import fredboat.commandmeta.MessagingException;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IModerationCommand;
 import fredboat.feature.I18n;
-import fredboat.util.DiscordUtil;
+import fredboat.perms.PermsUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -46,7 +46,7 @@ public class ClearCommand extends Command implements IModerationCommand {
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
         JDA jda = guild.getJDA();
 
-        if (!invoker.hasPermission(channel, Permission.MESSAGE_MANAGE) && !DiscordUtil.isUserBotOwner(invoker.getUser())) {
+        if (!invoker.hasPermission(channel, Permission.MESSAGE_MANAGE) && !PermsUtil.isUserBotOwner(invoker.getUser())) {
             TextUtils.replyWithName(channel, invoker, " You must have Manage Messages to do that!");
             return;
         }
