@@ -32,7 +32,6 @@ import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
 import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
-import fredboat.util.DiscordUtil;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -45,7 +44,6 @@ public class DestroyCommand extends Command implements IMusicCommand, ICommandRe
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
         if(invoker.hasPermission(channel, Permission.MESSAGE_MANAGE)
-                || DiscordUtil.isUserBotCommander(invoker)
                 || PermsUtil.isUserBotOwner(invoker.getUser())) {
             PlayerRegistry.destroyPlayer(guild);
             TextUtils.replyWithName(channel, invoker, I18n.get(guild).getString("destroySucc"));

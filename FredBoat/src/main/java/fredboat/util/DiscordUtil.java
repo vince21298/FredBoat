@@ -31,9 +31,17 @@ import fredboat.Config;
 import fredboat.util.constant.BotConstants;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +51,9 @@ import java.util.List;
 public class DiscordUtil {
 
     private static final Logger log = LoggerFactory.getLogger(DiscordUtil.class);
-
     private static final String USER_AGENT = "FredBoat DiscordBot (https://github.com/Frederikam/FredBoat, 1.0)";
+
+    private static String cachedOwnerId = null;
 
     private DiscordUtil() {
     }
@@ -74,11 +83,15 @@ public class DiscordUtil {
     }
 
     public static String getOwnerId(JDA jda) {
+        if (cachedOwnerId != null) return cachedOwnerId;
+
         try {
-            return getApplicationInfo(jda.getToken().substring(4)).getJSONObject("owner").getString("id");
+            cachedOwnerId = getApplicationInfo(jda.getToken().substring(4)).getJSONObject("owner").getString("id");
         } catch (UnirestException e) {
             throw new RuntimeException(e);
         }
+
+        return cachedOwnerId;
     }
 
     public static boolean isMainBotPresent(Guild guild) {
@@ -92,29 +105,11 @@ public class DiscordUtil {
         User other = jda.getUserById(BotConstants.MUSIC_BOT_ID);
         return other != null && guild.getMember(other) != null;
     }
-    
+
     public static boolean isPatronBotPresentAndOnline(Guild guild) {
         JDA jda = guild.getJDA();
         User other = jda.getUserById(BotConstants.PATRON_BOT_ID);
         return other != null && guild.getMember(other) != null && guild.getMember(other).getOnlineStatus() == OnlineStatus.ONLINE;
-    }
-
-    public static boolean isUserBotCommander(Member member) {
-        return isUserBotCommander(member.getGuild(), member.getUser());
-    }
-
-    public static boolean isUserBotCommander(Guild guild, User user) {
-        Member member = guild.getMember(user);
-        if (member == null) return false;
-        List<Role> roles = member.getRoles();
-
-        for (Role r : roles) {
-            if (r.getName().equals("Bot Commander")) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static int getHighestRolePosition(Member member) {
@@ -163,17 +158,18 @@ public class DiscordUtil {
 
     public static User getUserFromBearer(JDA jda, String token) {
         try {
-            JSONObject user =  Unirest.get(Requester.DISCORD_API_PREFIX + "/users/@me")
+            JSONObject user = Unirest.get(Requester.DISCORD_API_PREFIX + "/users/@me")
                     .header("Authorization", "Bearer " + token)
                     .header("User-agent", USER_AGENT)
                     .asJson()
                     .getBody()
                     .getObject();
 
-            if(user.has("id")){
+            if (user.has("id")) {
                 return jda.retrieveUserById(user.getString("id")).complete(true);
             }
-        } catch (UnirestException | RateLimitedException ignored) {}
+        } catch (UnirestException | RateLimitedException ignored) {
+        }
 
         return null;
     }
