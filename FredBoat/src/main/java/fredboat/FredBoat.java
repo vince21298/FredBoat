@@ -326,7 +326,12 @@ public abstract class FredBoat {
         int ready = numShardsReady.get();
         if (ready == Config.CONFIG.getNumShards()) {
             log.info("All " + ready + " shards are ready.");
-            MusicPersistenceHandler.reloadPlaylists();
+
+            if (Config.CONFIG.getNumShards() <= 10) {
+                MusicPersistenceHandler.reloadPlaylists();
+            } else {
+                log.warn("Skipped music persistence loading! We are using more than 10 shards, so probably not a good idea to run that.");
+            }
         }
 
         //Rejoin old channels if revived
