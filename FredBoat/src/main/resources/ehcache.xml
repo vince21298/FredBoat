@@ -43,7 +43,7 @@
     </cache>-->
 
     <cache
-            name="fredboat.db.entity.GuildConfig"
+            name="guild_config"
             maxElementsInMemory="120000"
             eternal="false"
             timeToIdleSeconds="60"
@@ -52,7 +52,7 @@
     />
 
     <cache
-            name="fredboat.db.entity.GuildPermissions"
+            name="guild_permissions"
             maxElementsInMemory="120000"
             eternal="false"
             timeToIdleSeconds="60"
