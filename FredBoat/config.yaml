@@ -1,7 +1,7 @@
 ---
-patron: false
-development: true        # Set this to true for self hosting
-prefix: '<<'             # Default prefix used by the bot
-restServerEnabled: true  # Change this if you are running multiple FredBoat bots on the same machine
-admins: []               # add comma separated userIds and roleIds that should have access to admin commands
-useAutoBlacklist: true   # set to true to automatically blacklist users who frequently hit the rate limits
+patron:            false       # Set this to true for self hosting the music bot
+development:       true        # Set this to true for self hosting the full bot (including non music commands)
+prefix:            '<<'        # Default prefix used by the bot
+restServerEnabled: true        # Set this to false if you are running multiple FredBoat bots on the same machine
+admins:            []          # add comma separated userIds and roleIds that should have access to bot admin commands
+useAutoBlacklist:  true        # set to true to automatically blacklist users who frequently hit the rate limits
