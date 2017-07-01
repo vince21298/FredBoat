@@ -31,6 +31,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import fredboat.agent.CarbonitexAgent;
 import fredboat.agent.DBConnectionWatchdogAgent;
+import fredboat.agent.OrchestrationAgent;
 import fredboat.agent.ShardWatchdogAgent;
 import fredboat.api.API;
 import fredboat.api.OAuthManager;
@@ -102,6 +103,7 @@ public abstract class FredBoat {
 
     private static ShardWatchdogAgent shardWatchdogAgent;
     private static DBConnectionWatchdogAgent dbConnectionWatchdogAgent;
+    private static OrchestrationAgent orchestrationAgent;
 
     private static DatabaseManager dbManager;
     private boolean hasReadiedOnce = false;
@@ -218,6 +220,13 @@ public abstract class FredBoat {
         shardWatchdogAgent = new ShardWatchdogAgent();
         shardWatchdogAgent.setDaemon(true);
         shardWatchdogAgent.start();
+
+        String orchestratorUrl = Config.CONFIG.getOrchestratorUrl();
+        if (orchestratorUrl != null && !"".equals(orchestratorUrl)) {
+            orchestrationAgent = new OrchestrationAgent(orchestratorUrl);
+            orchestrationAgent.setDaemon(true);
+            orchestrationAgent.start();
+        }
     }
 
     private static boolean loadJCA() {
@@ -355,6 +364,7 @@ public abstract class FredBoat {
 
         shardWatchdogAgent.shutdown();
         if (dbConnectionWatchdogAgent != null) dbConnectionWatchdogAgent.shutdown();
+        orchestrationAgent.shutdown();
 
         try {
             MusicPersistenceHandler.handlePreShutdown(code);

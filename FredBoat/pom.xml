@@ -210,6 +210,11 @@
             <version>5.0.0-M4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>fredboat</groupId>
+            <artifactId>Orchestrator</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

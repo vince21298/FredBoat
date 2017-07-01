@@ -26,6 +26,7 @@
 package fredboat.orchestrator.stats;
 
 import fredboat.orchestrator.Allocator;
+import fredboat.orchestrator.json.ShardReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +46,14 @@ public class StatsManager {
 
         final int[] guilds = {0};
 
-        reports.forEach(shardReport -> guilds[0] += shardReport.getGuilds());
+        reports.forEach(shardReport -> guilds[0] += shardReport.getGuildCount());
 
         return guilds[0];
     }
     
     public static int getTotalUsers() {
-        // TODO: 4/29/2017  
+        // TODO: 4/29/2017
+        return totalUsers;
     }
 
     private static int computeTotalUsers() {

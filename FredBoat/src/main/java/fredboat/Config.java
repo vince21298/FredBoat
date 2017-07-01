@@ -78,6 +78,7 @@ public class Config {
     private boolean restServerEnabled = true;
     private List<String> adminIds = new ArrayList<>();
     private boolean useAutoBlacklist = false;
+    private String orchestratorUrl = "";
 
     //testing related stuff
     private String testBotToken;
@@ -158,6 +159,8 @@ public class Config {
             } else {
                 log.warn("No google API keys found. Some commands may not work, check the documentation.");
             }
+
+            orchestratorUrl = (String) creds.getOrDefault("orchestratorUrl", "");
 
             List<String> nodesArray = (List) creds.get("lavaplayerNodes");
             if(nodesArray != null) {
@@ -306,6 +309,10 @@ public class Config {
 
     public List<String> getGoogleKeys() {
         return googleKeys;
+    }
+
+    public String getOrchestratorUrl() {
+        return orchestratorUrl;
     }
 
     public String[] getLavaplayerNodes() {

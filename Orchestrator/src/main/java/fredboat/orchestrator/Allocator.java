@@ -25,7 +25,7 @@
 
 package fredboat.orchestrator;
 
-import fredboat.orchestrator.stats.ShardReport;
+import fredboat.orchestrator.json.ShardReport;
 
 import java.util.HashMap;
 import java.util.LinkedList;
