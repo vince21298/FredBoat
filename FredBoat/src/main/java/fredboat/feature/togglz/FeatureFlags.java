@@ -44,7 +44,11 @@ public enum FeatureFlags implements Feature {
     //using the chatbot class
     @Label("Chatbot")
     @EnabledByDefault
-    CHATBOT;
+    CHATBOT,
+
+    @Label("Permissions")
+    @EnabledByDefault
+    PERMISSIONS;
 
     public boolean isActive() {
         return FeatureConfig.getTheFeatureManager().isActive(this);
