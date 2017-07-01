@@ -119,7 +119,7 @@ nbproject/private/
 run.bat
 target/
 .nb-gradle/
-/dependency-reduced-pom.xml
+*/dependency-reduced-pom.xml
 *credentials.json
 *credentials.yaml
 *tokens.json
