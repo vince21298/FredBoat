@@ -68,7 +68,7 @@ public class GitInfoCommand extends Command implements IMaintenanceCommand {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy @ hh:mm:ss z");
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Build & git info", url);
+        embedBuilder.setTitle("Build & git info");
         embedBuilder.addField("Commit info", gitRepoState.describe + "\n\n" + gitRepoState.commitMessageFull, false);
         embedBuilder.addField("Commit timestamp", gitRepoState.commitTime, false);
         embedBuilder.addField("Commit on Github", url, false);
