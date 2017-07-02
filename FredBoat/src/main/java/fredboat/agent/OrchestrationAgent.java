@@ -29,10 +29,12 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import fredboat.Config;
 import fredboat.FredBoat;
 import fredboat.shared.json.HeartbeatPayload;
 import fredboat.shared.json.JvmAndSystemReport;
 import fredboat.shared.json.ShardReport;
+import fredboat.shared.util.RestUtil;
 import net.dv8tion.jda.core.entities.User;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -56,13 +58,27 @@ public class OrchestrationAgent extends Thread {
 
     private boolean shutdown = false;
     private String orchestratorBaseUrl;
+    private String tokenHash;
     private String key;
 
-    public OrchestrationAgent(String orchestratorUrl) {
+    public OrchestrationAgent(String orchestratorUrl, String tokenHash) {
         super(OrchestrationAgent.class.getSimpleName());
         this.orchestratorBaseUrl = orchestratorUrl;
-        this.key = FredBoat.START_TIME + ""; //todo should be good enough for testing, something more permanent between restarts for production?
+        this.tokenHash = RestUtil.hashUrlSafe("password");//tokenHash;//todo change this for production
+        this.key = FredBoat.START_TIME + ""; //todo start time should be good enough, something more permanent between restarts for production? needs to be url safe
         log.info("Created orchestrator agent with base url: {}", orchestratorBaseUrl);
+
+        //announce ourselves
+        String allocationUrl = orchestratorBaseUrl + "/allocate?key=" + key;
+        try {
+            HttpResponse<JsonNode> response = Unirest.get(allocationUrl)
+                    .basicAuth(Config.CONFIG.getDistribution().name(), this.tokenHash)
+                    .asJson();
+
+            log.info("Received allocation response: {}", response.getBody().toString());
+        } catch (UnirestException e) {
+            log.error("Exception when during allocating from {}", allocationUrl, e);
+        }
     }
 
 
@@ -107,6 +123,7 @@ public class OrchestrationAgent extends Thread {
         String heartBeatUrl = orchestratorBaseUrl + "/heartbeat";
         try {
             HttpResponse<JsonNode> response = Unirest.post(heartBeatUrl)
+                    .basicAuth(Config.CONFIG.getDistribution().name(), tokenHash)
                     .body(heartbeatPayload)
                     .asJson();
             log.info("Received heartbeat response: {}", response.getBody().toString());

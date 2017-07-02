@@ -47,6 +47,7 @@ import fredboat.event.EventListenerSelf;
 import fredboat.event.ShardWatchdogListener;
 import fredboat.feature.I18n;
 import fredboat.shared.constant.DistributionEnum;
+import fredboat.shared.util.RestUtil;
 import fredboat.util.JDAUtil;
 import fredboat.util.log.SimpleLogToSLF4JAdapter;
 import frederikam.jca.JCA;
@@ -223,7 +224,7 @@ public abstract class FredBoat {
 
         String orchestratorUrl = Config.CONFIG.getOrchestratorUrl();
         if (orchestratorUrl != null && !"".equals(orchestratorUrl)) {
-            orchestrationAgent = new OrchestrationAgent(orchestratorUrl);
+            orchestrationAgent = new OrchestrationAgent(orchestratorUrl, RestUtil.hashUrlSafe(Config.CONFIG.getBotToken()));
             orchestrationAgent.setDaemon(true);
             orchestrationAgent.start();
         }

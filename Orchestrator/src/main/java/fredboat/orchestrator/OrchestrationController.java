@@ -26,13 +26,17 @@
 package fredboat.orchestrator;
 
 import fredboat.shared.json.ShardReport;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +45,11 @@ import java.util.List;
 public class OrchestrationController {
 
     private static final Logger log = LoggerFactory.getLogger(OrchestrationController.class);
+
+    @ExceptionHandler({IllegalArgumentException.class, JSONException.class})
+    void handleIllegalArgumentException(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
 
     // Called when a new container starts. Tells the invoker which shards to start and when
     @GetMapping(value = "/allocate", produces = "application/json")
@@ -69,14 +78,27 @@ public class OrchestrationController {
 
     // Post shard statusses and make sure shards are still alive
     @PostMapping(value = "/heartbeat", produces = "application/json")
+    @ResponseBody
     void heartbeat(@RequestBody String rawJson) {
         JSONObject json = new JSONObject(rawJson);
-        Allocator.INSTANCE.getAllocation(json.getString("key")).onBeat();
+        String key = json.getString("key");
+
+        if (key == null || "".equals(key)) {
+            throw new IllegalArgumentException("Provided json object is missing a 'key' property.");
+        }
+
+        log.info("Heartbeat received from key {} : {}", key, rawJson);
+        Allocation allocation = Allocator.INSTANCE.getAllocation(json.getString("key"));
+
+        if (allocation == null) {
+            throw new IllegalArgumentException("There is no allocation present for key: " + key);
+        }
+        allocation.onBeat();
     }
 
     // Collection of shard reports
     @PostMapping(value = "/stats", produces = "application/json")
-    void userstats(@RequestBody String rawJson) {
+    void userStats(@RequestBody String rawJson) {
         JSONObject json = new JSONObject(rawJson);
         Allocation alloc = Allocator.INSTANCE.getAllocation(json.getString("key"));
 

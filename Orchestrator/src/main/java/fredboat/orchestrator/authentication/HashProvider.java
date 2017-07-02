@@ -1,4 +1,5 @@
 /*
+ *
  * MIT License
  *
  * Copyright (c) 2017 Frederik Ar. Mikkelsen
@@ -20,28 +21,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package fredboat.orchestrator;
+package fredboat.orchestrator.authentication;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import fredboat.shared.constant.DistributionEnum;
+import fredboat.shared.util.RestUtil;
 
-@SpringBootApplication
-@ConfigurationProperties(prefix="orchestrator")
-public class Launcher {
+/**
+ * Created by napster on 02.07.17.
+ * <p>
+ * Provide hashes of the tokens in use
+ */
+public class HashProvider {
 
-    private int chunkSize = 5;
-    private int chunkCount = 10;
-
-    public static void main(String[] args) {
-
-        int recommendedShards = 10; //todo call discord about this
-        Allocator.INSTANCE = new Allocator(5, 5); // Total of 25 shards
-
-        SpringApplication.run(Launcher.class, args);
+    /**
+     * @param distribution The distribution which hashed token shall be returned
+     * @return Hash of the token of the provided distribution
+     */
+    public static String getTokenHash(DistributionEnum distribution) {
+        //todo fetch this from a database or something
+        return RestUtil.hashUrlSafe("password");
     }
 
+    /**
+     * @param username The name of the user whose hashed password shall be returned
+     * @return Hash of the password for the provided username
+     */
+    public static String getPasswordHash(String username) {
+        //todo fetch this from a database or something
+        return RestUtil.hashUrlSafe("password");
+    }
 }

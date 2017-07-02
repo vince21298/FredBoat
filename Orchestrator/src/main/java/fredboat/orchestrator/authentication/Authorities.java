@@ -1,4 +1,5 @@
 /*
+ *
  * MIT License
  *
  * Copyright (c) 2017 Frederik Ar. Mikkelsen
@@ -20,28 +21,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package fredboat.orchestrator;
+package fredboat.orchestrator.authentication;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-@SpringBootApplication
-@ConfigurationProperties(prefix="orchestrator")
-public class Launcher {
+import java.util.Collections;
+import java.util.List;
 
-    private int chunkSize = 5;
-    private int chunkCount = 10;
+/**
+ * Created by napster on 02.07.17.
+ * <p>
+ * Describes authorities that shall be granted to authenticated users
+ */
+public class Authorities {
 
-    public static void main(String[] args) {
+    public static final SimpleGrantedAuthority ROLE_FREDBOAT = new SimpleGrantedAuthority("ROLE_FREDBOAT");
+    public static final SimpleGrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 
-        int recommendedShards = 10; //todo call discord about this
-        Allocator.INSTANCE = new Allocator(5, 5); // Total of 25 shards
-
-        SpringApplication.run(Launcher.class, args);
-    }
-
+    public static List<GrantedAuthority> FREDBOAT = Collections.singletonList(ROLE_FREDBOAT);
+    public static List<GrantedAuthority> ADMIN = Collections.singletonList(ROLE_ADMIN);
 }
