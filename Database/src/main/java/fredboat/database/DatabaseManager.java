@@ -1,4 +1,5 @@
 /*
+ *
  * MIT License
  *
  * Copyright (c) 2017 Frederik Ar. Mikkelsen
@@ -20,15 +21,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package fredboat.db;
+package fredboat.database;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import fredboat.Config;
-import fredboat.FredBoat;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +36,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 public class DatabaseManager {
 
@@ -50,19 +49,23 @@ public class DatabaseManager {
     //local port, if using SSH tunnel point your jdbc to this, e.g. jdbc:postgresql://localhost:9333/...
     private static final int SSH_TUNNEL_PORT = 9333;
 
-    private String jdbcUrl;
-    private String dialect;
-    private int poolSize;
+    private final DatabaseConfig dbConfig;
+    private final String dialect;
+    private final int poolSize;
+    private final String appName;
+    private final ExecutorService providedExecutor;
 
     /**
-     * @param jdbcUrl  connection to the database
+     * @param dbConfig class containing many details for the database connection
      * @param dialect  set to null or empty String to have it auto detected by Hibernate, chosen jdbc driver must support that
      * @param poolSize max size of the connection pool
      */
-    public DatabaseManager(String jdbcUrl, String dialect, int poolSize) {
-        this.jdbcUrl = jdbcUrl;
+    public DatabaseManager(DatabaseConfig dbConfig, String dialect, int poolSize, String appName, ExecutorService executorService) {
+        this.dbConfig = dbConfig;
         this.dialect = dialect;
         this.poolSize = poolSize;
+        this.appName = appName;
+        this.providedExecutor = executorService;
     }
 
     /**
@@ -78,7 +81,7 @@ public class DatabaseManager {
         state = DatabaseState.INITIALIZING;
 
         try {
-            if (Config.CONFIG.isUseSshTunnel()) {
+            if (dbConfig.useSshTunnel) {
                 //don't connect again if it's already connected
                 if (sshTunnel == null || !sshTunnel.isConnected()) {
                     connectSSH();
@@ -90,7 +93,7 @@ public class DatabaseManager {
             properties.put("configLocation", "hibernate.cfg.xml");
 
             properties.put("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
-            properties.put("hibernate.connection.url", jdbcUrl);
+            properties.put("hibernate.connection.url", dbConfig.jdbcUrl);
             if (dialect != null && !"".equals(dialect)) properties.put("hibernate.dialect", dialect);
             properties.put("hibernate.cache.use_second_level_cache", "true");
             properties.put("hibernate.cache.provider_configuration_file_resource_path", "ehcache.xml");
@@ -106,9 +109,9 @@ public class DatabaseManager {
             properties.put("hibernate.hikari.maximumPoolSize", Integer.toString(poolSize));
 
             //how long to wait for a connection becoming available, also the timeout when a DB fails
-            properties.put("hibernate.hikari.connectionTimeout", Integer.toString(Config.HIKARI_TIMEOUT_MILLISECONDS));
+            properties.put("hibernate.hikari.connectionTimeout", Integer.toString(DatabaseConfig.HIKARI_TIMEOUT_MILLISECONDS));
             //this helps with sorting out connections in pgAdmin
-            properties.put("hibernate.hikari.dataSource.ApplicationName", "FredBoat_" + Config.CONFIG.getDistribution());
+            properties.put("hibernate.hikari.dataSource.ApplicationName", appName);
 
             //timeout the validation query (will be done automatically through Connection.isValid())
             properties.put("hibernate.hikari.validationTimeout", "1000");
@@ -150,7 +153,7 @@ public class DatabaseManager {
     }
 
     private synchronized void connectSSH() {
-        if (!Config.CONFIG.isUseSshTunnel()) {
+        if (!dbConfig.useSshTunnel) {
             log.warn("Cannot connect ssh tunnel as it is not specified in the config");
             return;
         }
@@ -167,14 +170,11 @@ public class DatabaseManager {
             JSch.setLogger(new JSchLogger());
 
             //Parse host:port
-            String sshHost = Config.CONFIG.getSshHost().split(":")[0];
-            int sshPort = Integer.parseInt(Config.CONFIG.getSshHost().split(":")[1]);
+            String sshHost = dbConfig.sshHost.split(":")[0];
+            int sshPort = Integer.parseInt(dbConfig.sshHost.split(":")[1]);
 
-            Session session = jsch.getSession(Config.CONFIG.getSshUser(),
-                    sshHost,
-                    sshPort
-            );
-            jsch.addIdentity(Config.CONFIG.getSshPrivateKeyFile());
+            Session session = jsch.getSession(dbConfig.sshUser, sshHost, sshPort);
+            jsch.addIdentity(dbConfig.sshPrivateKeyFile);
             config.put("StrictHostKeyChecking", "no");
             config.put("ConnectionAttempts", "3");
             session.setConfig(config);
@@ -187,12 +187,12 @@ public class DatabaseManager {
             int assignedPort = session.setPortForwardingL(
                     SSH_TUNNEL_PORT,
                     "localhost",
-                    Config.CONFIG.getForwardToPort()
+                    dbConfig.forwardToPort
             );
 
             sshTunnel = session;
 
-            log.info("localhost:" + assignedPort + " -> " + sshHost + ":" + Config.CONFIG.getForwardToPort());
+            log.info("localhost:" + assignedPort + " -> " + sshHost + ":" + dbConfig.forwardToPort);
             log.info("Port Forwarded");
         } catch (Exception e) {
             throw new RuntimeException("Failed to start SSH tunnel", e);
@@ -223,7 +223,7 @@ public class DatabaseManager {
             state = DatabaseState.FAILED;
             //immediately try to reconnect the tunnel
             //DBConnectionWatchdogAgent should take further care of this
-            FredBoat.executor.submit(this::reconnectSSH);
+            providedExecutor.submit(this::reconnectSSH);
             return false;
         }
 

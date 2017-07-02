@@ -24,6 +24,7 @@
 
 package fredboat.db.entity;
 
+import fredboat.database.IEntity;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;

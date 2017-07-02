@@ -2,11 +2,16 @@ package fredboat.command.admin;
 
 import fredboat.Config;
 import fredboat.ProvideJDASingleton;
-import fredboat.db.DatabaseManager;
+import fredboat.database.DatabaseConfig;
+import fredboat.database.DatabaseManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by napster on 16.04.17.
@@ -24,16 +29,19 @@ class TestCommandTest extends ProvideJDASingleton {
      * Run a small db test
      */
     @Test
-    void onInvoke() {
+    void onInvoke() throws IOException {
         Assumptions.assumeFalse(isTravisEnvironment(), () -> "Aborting test: Travis CI detected");
         Assumptions.assumeTrue(initialized);
         String[] args = {"test", "10", "10"};
 
         //test the connection if one was specified
-        String jdbcUrl = Config.CONFIG.getJdbcUrl();
-        if (jdbcUrl != null && !"".equals(jdbcUrl)) {
+        DatabaseConfig dbConfig = DatabaseConfig.loadDefault();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        String appName = "FredBoat_TESTING";
+        if (dbConfig.jdbcUrl != null && !"".equals(dbConfig.jdbcUrl)) {
             //start the database
-            DatabaseManager dbm = new DatabaseManager(jdbcUrl, null, Config.CONFIG.getHikariPoolSize());
+            DatabaseManager dbm = new DatabaseManager(dbConfig, null, Config.CONFIG.getHikariPoolSize(),
+                    appName, executor);
             try {
                 dbm.startup();
                 Assertions.assertTrue(new TestCommand().invoke(dbm, testChannel, testSelfMember, args));
@@ -44,7 +52,10 @@ class TestCommandTest extends ProvideJDASingleton {
 
         //test the internal SQLite db
         args[1] = args[2] = "2";
-        DatabaseManager dbm = new DatabaseManager("jdbc:sqlite:fredboat.db", "org.hibernate.dialect.SQLiteDialect", 1);
+        dbConfig.jdbcUrl = "jdbc:sqlite:fredboat.db";
+        dbConfig.useSshTunnel = false;
+        DatabaseManager dbm = new DatabaseManager(dbConfig, "org.hibernate.dialect.SQLiteDialect", 1,
+                appName, executor);
         try {
             dbm.startup();
             Assertions.assertTrue(new TestCommand().invoke(dbm, testChannel, testSelfMember, args));

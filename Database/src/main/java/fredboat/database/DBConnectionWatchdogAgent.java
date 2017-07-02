@@ -1,4 +1,5 @@
 /*
+ *
  * MIT License
  *
  * Copyright (c) 2017 Frederik Ar. Mikkelsen
@@ -22,9 +23,8 @@
  * SOFTWARE.
  */
 
-package fredboat.agent;
+package fredboat.database;
 
-import fredboat.db.DatabaseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

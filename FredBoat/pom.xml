@@ -50,6 +50,12 @@
             <version>1.0</version>
         </dependency>
         <dependency>
+            <!-- fredboat database connection lib -->
+            <groupId>fredboat</groupId>
+            <artifactId>Database</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <!-- discord api -->
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>

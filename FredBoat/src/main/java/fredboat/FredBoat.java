@@ -30,7 +30,6 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import fredboat.agent.CarbonitexAgent;
-import fredboat.agent.DBConnectionWatchdogAgent;
 import fredboat.agent.OrchestrationAgent;
 import fredboat.agent.ShardWatchdogAgent;
 import fredboat.api.API;
@@ -41,7 +40,7 @@ import fredboat.audio.PlayerRegistry;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.init.MainCommandInitializer;
 import fredboat.commandmeta.init.MusicCommandInitializer;
-import fredboat.db.DatabaseManager;
+import fredboat.database.*;
 import fredboat.event.EventListenerBoat;
 import fredboat.event.EventListenerSelf;
 import fredboat.event.ShardWatchdogListener;
@@ -107,6 +106,8 @@ public abstract class FredBoat {
     private static OrchestrationAgent orchestrationAgent;
 
     private static DatabaseManager dbManager;
+    private static EntityWriter entityWriter;
+    private static EntityReader entityReader;
     private boolean hasReadiedOnce = false;
 
     public static void main(String[] args) throws LoginException, IllegalArgumentException, InterruptedException, IOException, UnirestException {
@@ -151,19 +152,25 @@ public abstract class FredBoat {
             log.info("Failed to ignite Spark, FredBoat API unavailable", e);
         }
 
-        if (!Config.CONFIG.getJdbcUrl().equals("")) {
-            dbManager = new DatabaseManager(Config.CONFIG.getJdbcUrl(), null, Config.CONFIG.getHikariPoolSize());
+        DatabaseConfig dbConfig = DatabaseConfig.loadDefault();
+        String appName = "FredBoat_" + Config.CONFIG.getDistribution();
+        if (dbConfig.jdbcUrl != null && !"".equals(dbConfig.jdbcUrl)) {
+            dbManager = new DatabaseManager(dbConfig, null, Config.CONFIG.getHikariPoolSize(), appName, executor);
             dbManager.startup();
             dbConnectionWatchdogAgent = new DBConnectionWatchdogAgent(dbManager);
             dbConnectionWatchdogAgent.start();
         } else if (Config.CONFIG.getNumShards() > 2) {
-            log.warn("No JDBC URL and more than 2 shard found! Initializing the SQLi DB is potentially dangerous too. Skipping...");
+            log.warn("No JDBC URL and more than 2 shards found! Initializing the SQLite DB is potentially dangerous too. Skipping...");
         } else {
             log.warn("No JDBC URL found, skipped database connection, falling back to internal SQLite db.");
-            dbManager = new DatabaseManager("jdbc:sqlite:fredboat.db", "org.hibernate.dialect.SQLiteDialect",
-                    Config.CONFIG.getHikariPoolSize());
+            dbConfig.jdbcUrl = "jdbc:sqlite:fredboat.db";
+            dbConfig.useSshTunnel = false;
+            dbManager = new DatabaseManager(dbConfig, "org.hibernate.dialect.SQLiteDialect",
+                    Config.CONFIG.getHikariPoolSize(), appName, executor);
             dbManager.startup();
         }
+        entityWriter = new EntityWriter(dbManager);
+        entityReader = new EntityReader(dbManager);
 
 
         try {
@@ -550,5 +557,13 @@ public abstract class FredBoat {
 
     public static DatabaseManager getDbManager() {
         return dbManager;
+    }
+
+    public static EntityWriter getEntityWriter() {
+        return entityWriter;
+    }
+
+    public static EntityReader getEntityReader() {
+        return entityReader;
     }
 }

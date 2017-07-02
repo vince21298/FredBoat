@@ -25,11 +25,11 @@
 
 package fredboat.command.moderation;
 
-import fredboat.commandmeta.MessagingException;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IModerationCommand;
 import fredboat.feature.I18n;
 import fredboat.perms.PermsUtil;
+import fredboat.shared.util.MessagingException;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;

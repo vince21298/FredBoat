@@ -30,13 +30,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import fredboat.FredBoat;
 import fredboat.audio.queue.*;
-import fredboat.commandmeta.MessagingException;
-import fredboat.db.DatabaseNotReadyException;
-import fredboat.db.EntityReader;
+import fredboat.database.DatabaseNotReadyException;
 import fredboat.db.entity.GuildConfig;
 import fredboat.feature.I18n;
 import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
+import fredboat.shared.util.MessagingException;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -369,7 +368,7 @@ public class GuildPlayer extends AbstractPlayer {
     private boolean isTrackAnnounceEnabled() {
         boolean enabled = false;
         try {
-            GuildConfig config = EntityReader.getEntity(guildId, GuildConfig.class);
+            GuildConfig config = FredBoat.getEntityReader().getEntity(guildId, GuildConfig.class);
             enabled = config.isTrackAnnounce();
         } catch (DatabaseNotReadyException ignored) {}
 

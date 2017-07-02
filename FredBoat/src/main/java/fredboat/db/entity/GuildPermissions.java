@@ -25,6 +25,7 @@
 
 package fredboat.db.entity;
 
+import fredboat.database.IEntity;
 import fredboat.perms.PermissionLevel;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;

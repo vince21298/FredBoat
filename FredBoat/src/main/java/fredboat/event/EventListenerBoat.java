@@ -25,6 +25,7 @@
 package fredboat.event;
 
 import fredboat.Config;
+import fredboat.FredBoat;
 import fredboat.audio.GuildPlayer;
 import fredboat.audio.PlayerRegistry;
 import fredboat.command.fun.TalkCommand;
@@ -33,7 +34,6 @@ import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.CommandManager;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.abs.Command;
-import fredboat.db.EntityReader;
 import fredboat.db.entity.GuildConfig;
 import fredboat.feature.I18n;
 import fredboat.feature.togglz.FeatureFlags;
@@ -219,7 +219,7 @@ public class EventListenerBoat extends AbstractEventListener {
                 && player.getPlayingTrack() != null
                 && event.getChannelJoined().getMembers().contains(event.getGuild().getSelfMember())
                 && player.getHumanUsersInVC().size() == 1
-                && EntityReader.getEntity(event.getGuild().getIdLong(), GuildConfig.class).isAutoResume()
+                && FredBoat.getEntityReader().getEntity(event.getGuild().getIdLong(), GuildConfig.class).isAutoResume()
                 ) {
             player.getActiveTextChannel().sendMessage(I18n.get(event.getGuild()).getString("eventAutoResumed")).queue();
             player.setPause(false);

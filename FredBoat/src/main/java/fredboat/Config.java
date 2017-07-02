@@ -52,13 +52,10 @@ public class Config {
     public static Config CONFIG = null;
 
     public static String DEFAULT_PREFIX = ";;";
-    //see https://github.com/brettwooldridge/HikariCP connectionTimeout
-    public static int HIKARI_TIMEOUT_MILLISECONDS = 1000;
 
     private final DistributionEnum distribution;
     private final String botToken;
     private String oauthSecret;
-    private final String jdbcUrl;
     private final int hikariPoolSize;
     private int numShards;
     private String mashapeKey;
@@ -84,12 +81,6 @@ public class Config {
     private String testBotToken;
     private String testChannelId;
 
-    // SSH tunnel stuff
-    private final boolean useSshTunnel;
-    private final String sshHost; //Eg localhost:22
-    private final String sshUser; //Eg fredboat
-    private final String sshPrivateKeyFile;
-    private final int forwardToPort; //port where the remote database is listening, postgres default: 5432
 
     @SuppressWarnings("unchecked")
     public Config(File credentialsFile, File configFile, int scope) {
@@ -149,7 +140,6 @@ public class Config {
                 Map<String, Object> oas = (Map) creds.get("oauthSecret");
                 oauthSecret = (String) oas.getOrDefault(distribution.getId(), "");
             }
-            jdbcUrl = (String) creds.getOrDefault("jdbcUrl", "");
 
             Object gkeys = creds.get("googleServerKeys");
             if (gkeys instanceof List) {
@@ -194,7 +184,7 @@ public class Config {
 
             //more database connections don't help with performance, so use a value based on available cores
             //http://www.dailymotion.com/video/x2s8uec_oltp-performance-concurrent-mid-tier-connections_tech
-            if (jdbcUrl == null || "".equals(jdbcUrl) || distribution == DistributionEnum.DEVELOPMENT)
+            if (distribution == DistributionEnum.DEVELOPMENT)
                 //more than one connection for the fallback sqlite db is problematic as there is currently (2017-04-16)
                 // no supported way in the custom driver and/or dialect to set lock timeouts
                 hikariPoolSize = 1;
@@ -206,11 +196,6 @@ public class Config {
             testBotToken = (String) creds.getOrDefault("testToken", "");
             testChannelId = creds.getOrDefault("testChannelId", "") + "";
 
-            useSshTunnel = (boolean) creds.getOrDefault("useSshTunnel", false);
-            sshHost = (String) creds.getOrDefault("sshHost", "localhost:22");
-            sshUser = (String) creds.getOrDefault("sshUser", "fredboat");
-            sshPrivateKeyFile = (String) creds.getOrDefault("sshPrivateKeyFile", "database.ppk");
-            forwardToPort = (int) creds.getOrDefault("forwardToPort", 5432);
         } catch (IOException | UnirestException e) {
             throw new RuntimeException(e);
         }
@@ -273,10 +258,6 @@ public class Config {
 
     String getOauthSecret() {
         return oauthSecret;
-    }
-
-    public String getJdbcUrl() {
-        return jdbcUrl;
     }
 
     public int getHikariPoolSize() {
@@ -365,25 +346,5 @@ public class Config {
 
     public String getTestChannelId() {
         return testChannelId;
-    }
-
-    public boolean isUseSshTunnel() {
-        return useSshTunnel;
-    }
-
-    public String getSshHost() {
-        return sshHost;
-    }
-
-    public String getSshUser() {
-        return sshUser;
-    }
-
-    public String getSshPrivateKeyFile() {
-        return sshPrivateKeyFile;
-    }
-
-    public int getForwardToPort() {
-        return forwardToPort;
     }
 }

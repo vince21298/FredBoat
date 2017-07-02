@@ -29,7 +29,7 @@ import fredboat.FredBoat;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.ICommand;
 import fredboat.commandmeta.abs.ICommandRestricted;
-import fredboat.db.DatabaseManager;
+import fredboat.database.DatabaseManager;
 import fredboat.perms.PermissionLevel;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.entities.Guild;

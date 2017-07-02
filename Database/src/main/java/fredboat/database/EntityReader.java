@@ -1,4 +1,5 @@
 /*
+ *
  * MIT License
  *
  * Copyright (c) 2017 Frederik Ar. Mikkelsen
@@ -20,15 +21,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package fredboat.db;
+package fredboat.database;
 
 
-import fredboat.FredBoat;
-import fredboat.database.DatabaseManager;
-import fredboat.db.entity.IEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +37,12 @@ public class EntityReader {
 
     private static final Logger log = LoggerFactory.getLogger(EntityReader.class);
 
+    private final DatabaseManager dbManager;
+
+    public EntityReader(DatabaseManager dbManager) {
+        this.dbManager = dbManager;
+    }
+
     /**
      * @param id    id of the entity to get
      * @param clazz class of the entity to get
@@ -47,8 +50,7 @@ public class EntityReader {
      * @return the entity with the requested id of the requested class
      * @throws DatabaseNotReadyException if the database is not available
      */
-    public static <E extends IEntity> E getEntity(long id, Class<E> clazz) throws DatabaseNotReadyException {
-        DatabaseManager dbManager = FredBoat.getDbManager();
+    public <E extends IEntity> E getEntity(long id, Class<E> clazz) throws DatabaseNotReadyException {
         if (!dbManager.isAvailable()) {
             throw new DatabaseNotReadyException();
         }
@@ -83,8 +85,7 @@ public class EntityReader {
      * @param <E>   class needs to implement IEntity
      * @return a list of all elements of the requested class
      */
-    public static <E extends IEntity> List<E> loadAll(Class<E> clazz) {
-        DatabaseManager dbManager = FredBoat.getDbManager();
+    public <E extends IEntity> List<E> loadAll(Class<E> clazz) {
         if (!dbManager.isAvailable()) {
             throw new DatabaseNotReadyException("The database is not available currently. Please try again later.");
         }

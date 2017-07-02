@@ -23,11 +23,8 @@
  *
  */
 
-package fredboat.db;
+package fredboat.database;
 
-import fredboat.FredBoat;
-import fredboat.database.DatabaseManager;
-import fredboat.db.entity.IEntity;
 import org.hibernate.exception.JDBCConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +35,18 @@ public class EntityWriter {
 
     private static final Logger log = LoggerFactory.getLogger(EntityWriter.class);
 
+    private final DatabaseManager dbManager;
+
+    public EntityWriter(DatabaseManager dbManager) {
+        this.dbManager = dbManager;
+    }
+
     /**
      * @param entity entity to be merged
      * @param <E>    entity needs to implement IEntity
      * @return the merged entity
      */
-    public static <E extends IEntity> E merge(E entity) {
-        DatabaseManager dbManager = FredBoat.getDbManager();
+    public <E extends IEntity> E merge(E entity) {
         if (!dbManager.isAvailable()) {
             throw new DatabaseNotReadyException();
         }
@@ -68,8 +70,7 @@ public class EntityWriter {
      * @param clazz class of the entity to be deleted
      * @param <E>   entity needs to implement IEntity
      */
-    public static <E extends IEntity> void delete(long id, Class<E> clazz) {
-        DatabaseManager dbManager = FredBoat.getDbManager();
+    public <E extends IEntity> void delete(long id, Class<E> clazz) {
         if (!dbManager.isAvailable()) {
             throw new DatabaseNotReadyException("The database is not available currently. Please try again later.");
         }

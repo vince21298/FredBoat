@@ -1,4 +1,5 @@
 /*
+ *
  * MIT License
  *
  * Copyright (c) 2017 Frederik Ar. Mikkelsen
@@ -20,18 +21,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package fredboat.commandmeta;
+package fredboat.database;
 
-public class MessagingException extends RuntimeException {
 
-    public MessagingException(String str) {
+import fredboat.shared.util.MessagingException;
+
+public class DatabaseNotReadyException extends MessagingException {
+
+    private static final long serialVersionUID = 1427234171880139274L;
+
+    private static final String DEFAULT_MESSAGE = "The database is not available currently. Please try again in a moment.";
+
+    DatabaseNotReadyException(String str, Throwable cause) {
+        super(str, cause);
+    }
+
+    DatabaseNotReadyException(String str) {
         super(str);
     }
 
-    public MessagingException(String str, Throwable cause) {
-        super(str, cause);
+    DatabaseNotReadyException(Throwable cause) {
+        super(DEFAULT_MESSAGE, cause);
+    }
+
+    DatabaseNotReadyException() {
+        super(DEFAULT_MESSAGE);
     }
 }

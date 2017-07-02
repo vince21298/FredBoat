@@ -20,18 +20,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package fredboat.db.entity;
+package fredboat.shared.util;
 
-/**
- * Created by napster on 02.05.17.
- * <p>
- * Just fucking around with generics
- * Implement this in all entities to retrieve them easily over a shared function
- * in EntityReader while having some type safety
- */
-public interface IEntity {
+public class MessagingException extends RuntimeException {
 
-    void setId(long id);
+    public MessagingException(String str) {
+        super(str);
+    }
+
+    public MessagingException(String str, Throwable cause) {
+        super(str, cause);
+    }
 }

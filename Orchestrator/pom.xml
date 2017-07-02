@@ -40,7 +40,6 @@
 
     <properties>
         <start-class>fredboat.orchestrator.Launcher</start-class>
-        <spring-boot-version>1.5.4.RELEASE</spring-boot-version>
     </properties>
 
     <dependencyManagement>

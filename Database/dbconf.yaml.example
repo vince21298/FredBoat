@@ -1,0 +1,6 @@
+jdbcUrl: ""                     # example: jdbc:postgresql://localhost:5432/YOURDATABASE?user=YOURDATABASEUSER&password=YOURPASSWORD
+useSshTunnel: false             # true if the database is on a remote server
+sshHost: db.your.domain:22      # 22 is the default port for the ssh service
+sshUser: YOURSSHUSER            # ssh user
+sshPrivateKeyFile: YOURSSHKEY   # ssh credentials
+forwardToPort: 5432             # local port of the database on the remote machine

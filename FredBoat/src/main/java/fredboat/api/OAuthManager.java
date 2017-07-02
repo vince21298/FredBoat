@@ -27,8 +27,6 @@ package fredboat.api;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import fredboat.FredBoat;
-import fredboat.db.EntityReader;
-import fredboat.db.EntityWriter;
 import fredboat.db.entity.UConfig;
 import fredboat.util.DiscordUtil;
 import net.dv8tion.jda.core.entities.User;
@@ -85,7 +83,7 @@ public class OAuthManager {
     private static UConfig saveTokenToConfig(TokenGrant token){
         User user = DiscordUtil.getUserFromBearer(FredBoat.getFirstJDA(), token.getBearer());
 
-        UConfig uconfig = EntityReader.getEntity(user.getIdLong(), UConfig.class);
+        UConfig uconfig = FredBoat.getEntityReader().getEntity(user.getIdLong(), UConfig.class);
 
         uconfig = uconfig == null ? new UConfig() : uconfig;
 
@@ -95,7 +93,7 @@ public class OAuthManager {
                 .setUserId(user.getIdLong());
 
         //Save to database
-        uconfig = EntityWriter.merge(uconfig);
+        uconfig = FredBoat.getEntityWriter().merge(uconfig);
 
         return uconfig;
     }

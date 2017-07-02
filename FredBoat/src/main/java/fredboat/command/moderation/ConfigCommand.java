@@ -26,12 +26,11 @@
 package fredboat.command.moderation;
 
 import fredboat.Config;
+import fredboat.FredBoat;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IModerationCommand;
-import fredboat.db.EntityReader;
-import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildConfig;
 import fredboat.feature.I18n;
 import fredboat.perms.PermissionLevel;
@@ -58,7 +57,7 @@ public class ConfigCommand extends Command implements IModerationCommand, IComma
     }
 
     private void printConfig(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
-        GuildConfig gc = EntityReader.getEntity(guild.getIdLong(), GuildConfig.class);
+        GuildConfig gc = FredBoat.getEntityReader().getEntity(guild.getIdLong(), GuildConfig.class);
 
         MessageBuilder mb = new MessageBuilder()
                 .append(MessageFormat.format(I18n.get(guild).getString("configNoArgs") + "\n", guild.getName()))
@@ -82,7 +81,7 @@ public class ConfigCommand extends Command implements IModerationCommand, IComma
             return;
         }
 
-        GuildConfig gc = EntityReader.getEntity(guild.getIdLong(), GuildConfig.class);
+        GuildConfig gc = FredBoat.getEntityReader().getEntity(guild.getIdLong(), GuildConfig.class);
         String key = args[1];
         String val = args[2];
 
@@ -90,7 +89,7 @@ public class ConfigCommand extends Command implements IModerationCommand, IComma
             case "track_announce":
                 if (val.equalsIgnoreCase("true") | val.equalsIgnoreCase("false")) {
                     gc.setTrackAnnounce(Boolean.valueOf(val));
-                    gc = EntityWriter.merge(gc);
+                    gc = FredBoat.getEntityWriter().merge(gc);
                     TextUtils.replyWithName(channel, invoker, "`track_announce` " + MessageFormat.format(I18n.get(guild).getString("configSetTo"), val));
                 } else {
                     channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("configMustBeBoolean"), invoker.getEffectiveName())).queue();
@@ -99,7 +98,7 @@ public class ConfigCommand extends Command implements IModerationCommand, IComma
             case "auto_resume":
                 if (val.equalsIgnoreCase("true") | val.equalsIgnoreCase("false")) {
                     gc.setAutoResume(Boolean.valueOf(val));
-                    gc = EntityWriter.merge(gc);
+                    gc = FredBoat.getEntityWriter().merge(gc);
                     TextUtils.replyWithName(channel, invoker, "`auto_resume` " + MessageFormat.format(I18n.get(guild).getString("configSetTo"), val));
                 } else {
                     channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("configMustBeBoolean"), invoker.getEffectiveName())).queue();

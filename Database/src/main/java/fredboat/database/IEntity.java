@@ -20,30 +20,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
-package fredboat.db;
+package fredboat.database;
 
-import fredboat.commandmeta.MessagingException;
+/**
+ * Created by napster on 02.05.17.
+ * <p>
+ * Just fucking around with generics
+ * Implement this in all entities to retrieve them easily over a shared function
+ * in EntityReader while having some type safety
+ */
+public interface IEntity {
 
-public class DatabaseNotReadyException extends MessagingException {
-
-    private static final String DEFAULT_MESSAGE = "The database is not available currently. Please try again in a moment.";
-
-    DatabaseNotReadyException(String str, Throwable cause) {
-        super(str, cause);
-    }
-
-    DatabaseNotReadyException(String str) {
-        super(str);
-    }
-
-    DatabaseNotReadyException(Throwable cause) {
-        super(DEFAULT_MESSAGE, cause);
-    }
-
-    DatabaseNotReadyException() {
-        super(DEFAULT_MESSAGE);
-    }
+    void setId(long id);
 }
