@@ -1,4 +1,5 @@
 /*
+ *
  * MIT License
  *
  * Copyright (c) 2017 Frederik Ar. Mikkelsen
@@ -20,33 +21,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package fredboat.orchestrator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.util.HashMap;
+import java.util.Map;
 
-@SpringBootApplication
-@ConfigurationProperties(prefix="orchestrator")
-public class Launcher {
+/**
+ * Created by napster on 02.07.17.
+ * <p>
+ * The Treasury gives out coins which can be used to start/restart a shard
+ */
+public class Treasury {
 
-    private static final Logger log = LoggerFactory.getLogger(Launcher.class);
+    //requester <-> last coin requested
+    //the requester is defined as a single bot account on discord
+    //the bot account may run on more than one JVM and/or machine, this is the place to coordinate the
+    //swarms' log ins to discord
+    private static Map<String, Long> coins = new HashMap<>();
 
+    private static final int SHARD_START_COOLDOWN = 6000;
 
-    private int chunkSize = 5;
-    private int chunkCount = 10;
-
-    public static void main(String[] args) {
-
-        int recommendedShards = 10; //todo call discord about this
-        Allocator.INSTANCE = new Allocator(5, 5); // Total of 25 shards
-
-        SpringApplication.run(Launcher.class, args);
+    /**
+     * @param requester the account requesting the coin
+     * @return true if a coin has been granted
+     */
+    //synchronized for obvious reasons
+    public static synchronized boolean requestCoin(String requester) {
+        Long lastCoinGiven = coins.get(requester);
+        long now = System.currentTimeMillis();
+        if (lastCoinGiven == null || now - lastCoinGiven > SHARD_START_COOLDOWN) {
+            coins.put(requester, now);
+            return true;
+        }
+        return false;
     }
-
 }

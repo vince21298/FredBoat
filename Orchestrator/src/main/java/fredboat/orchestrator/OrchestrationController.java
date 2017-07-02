@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,6 +67,25 @@ public class OrchestrationController {
                 + ". Will begin building in " + (alloc.getAssignedStartTime() - System.currentTimeMillis()) + " millis,");
 
         return out.toString();
+    }
+
+    // one coin = one log in
+    // boats need to request coins to start/restart JDA shards to avoid getting disconnected by Discord due to ratelimits
+    @GetMapping(value = "/shardcoin", produces = "application/json")
+    @ResponseBody
+    boolean shardCoin(@AuthenticationPrincipal String activeUser) {
+        if (activeUser == null) {
+            log.error("Can't give a coin to a null user");
+            throw new IllegalStateException("Active user is null");
+        }
+        log.info("User {} requests a coin", activeUser);
+        boolean granted = Treasury.requestCoin(activeUser);
+        if (granted) {
+            log.info("User {} was granted a coin", activeUser);
+        } else {
+            log.info("User {} was told to get lost", activeUser);
+        }
+        return granted;
     }
 
     // Status of the swarm, like total number of guilds. Can also be used manually
