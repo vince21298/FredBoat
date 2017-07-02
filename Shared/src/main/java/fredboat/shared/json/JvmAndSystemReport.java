@@ -23,10 +23,13 @@
  * SOFTWARE.
  */
 
-package fredboat.orchestrator.json;
+package fredboat.shared.json;
 
+import fredboat.shared.constant.DistributionEnum;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,8 +46,11 @@ public class JvmAndSystemReport {
     private long jvmMaxMemory;
     private long jvmTotalMemory;
     private Map<String, String> systemEnvironment;
+    private String hostname;
 
     private long fredboatStartTime; //this should not change for the same running fredboat jvm
+    private DistributionEnum fredboatDistribution;
+    private String tokenHash; //hash of the discord token that is being used to log in
 
     public static JvmAndSystemReport from(JSONObject jsonObject) {
         JvmAndSystemReport result = new JvmAndSystemReport();
@@ -56,8 +62,11 @@ public class JvmAndSystemReport {
         JSONObject sysEnv = jsonObject.getJSONObject("systemEnvironment");
         result.systemEnvironment = new HashMap<>();
         sysEnv.keySet().forEach(key -> result.systemEnvironment.put(key, sysEnv.getString(key)));
+        result.hostname = jsonObject.getString("hostname");
 
         result.fredboatStartTime = jsonObject.getLong("fredboatStartTime");
+        result.fredboatDistribution = DistributionEnum.valueOf(jsonObject.getString("fredboatDistribution"));
+        result.tokenHash = jsonObject.getString("tokenHash");
 
         return result;
     }
@@ -68,15 +77,22 @@ public class JvmAndSystemReport {
 
     }
 
-    public JvmAndSystemReport(long fredboatStartTime) {
+    public JvmAndSystemReport(long fredboatStartTime, DistributionEnum distribution, String tokenHash) {
         this.reportCreated = System.currentTimeMillis();
         this.availableProcessors = Runtime.getRuntime().availableProcessors();
         this.jvmFreeMemory = Runtime.getRuntime().freeMemory();
         this.jvmMaxMemory = Runtime.getRuntime().maxMemory();
         this.jvmTotalMemory = Runtime.getRuntime().totalMemory();
         this.systemEnvironment = System.getenv();
+        try {
+            this.hostname = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            this.hostname = "unknown";
+        }
 
         this.fredboatStartTime = fredboatStartTime;
+        this.fredboatDistribution = distribution;
+        this.tokenHash = tokenHash;
     }
 
     public JSONObject toJson() {
@@ -88,8 +104,11 @@ public class JvmAndSystemReport {
         result.put("jvmMaxMemory", this.jvmMaxMemory);
         result.put("jvmTotalMemory", this.jvmTotalMemory);
         result.put("systemEnvironment", new JSONObject(systemEnvironment));
+        result.put("hostname", this.hostname);
 
         result.put("fredboatStartTime", this.fredboatStartTime);
+        result.put("fredboatDistribution", this.fredboatDistribution.name());
+        result.put("tokenHash", this.tokenHash);
 
         return result;
     }
@@ -119,7 +138,19 @@ public class JvmAndSystemReport {
         return systemEnvironment;
     }
 
+    public String getHostname() {
+        return hostname;
+    }
+
     public long getFredboatStartTime() {
         return fredboatStartTime;
+    }
+
+    public DistributionEnum getFredboatDistribution() {
+        return fredboatDistribution;
+    }
+
+    public String getTokenHash() {
+        return tokenHash;
     }
 }

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-package fredboat.orchestrator.json;
+package fredboat.shared.json;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

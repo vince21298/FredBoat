@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-package fredboat.orchestrator.json;
+package fredboat.shared.json;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,12 +37,14 @@ import java.util.List;
  */
 public class HeartbeatPayload {
 
+    private String key;
     private JvmAndSystemReport jvmAndSystemReport;
     private List<ShardReport> shardReports;
 
     public static HeartbeatPayload from(JSONObject jsonObject) {
         HeartbeatPayload result = new HeartbeatPayload();
 
+        result.key = jsonObject.getString("key");
         result.jvmAndSystemReport = JvmAndSystemReport.from(jsonObject.getJSONObject("jvmAndSystemReport"));
 
         result.shardReports = new ArrayList<>();
@@ -59,13 +61,15 @@ public class HeartbeatPayload {
 
     }
 
-    public HeartbeatPayload(JvmAndSystemReport jvmAndSystemReport, Collection<ShardReport> shardReports) {
+    public HeartbeatPayload(String key, JvmAndSystemReport jvmAndSystemReport, Collection<ShardReport> shardReports) {
+        this.key = key;
         this.jvmAndSystemReport = jvmAndSystemReport;
         this.shardReports = new ArrayList<>(shardReports);
     }
 
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
+        result.put("key", key);
         result.put("jvmAndSystemReport", jvmAndSystemReport.toJson());
         JSONArray shardsArray = new JSONArray();
         shardReports.forEach(shardReport -> shardsArray.put(shardReport.toJson()));

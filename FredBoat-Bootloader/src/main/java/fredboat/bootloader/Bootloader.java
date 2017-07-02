@@ -29,6 +29,10 @@ import fredboat.shared.constant.ExitCodes;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import fredboat.shared.constant.ExitCodes;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

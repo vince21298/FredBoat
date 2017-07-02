@@ -25,7 +25,7 @@
 
 package fredboat.orchestrator;
 
-import fredboat.orchestrator.json.ShardReport;
+import fredboat.shared.json.ShardReport;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

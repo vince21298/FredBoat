@@ -30,9 +30,9 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import fredboat.FredBoat;
-import fredboat.orchestrator.json.HeartbeatPayload;
-import fredboat.orchestrator.json.JvmAndSystemReport;
-import fredboat.orchestrator.json.ShardReport;
+import fredboat.shared.json.HeartbeatPayload;
+import fredboat.shared.json.JvmAndSystemReport;
+import fredboat.shared.json.ShardReport;
 import net.dv8tion.jda.core.entities.User;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -56,10 +56,12 @@ public class OrchestrationAgent extends Thread {
 
     private boolean shutdown = false;
     private String orchestratorBaseUrl;
+    private String key;
 
     public OrchestrationAgent(String orchestratorUrl) {
         super(OrchestrationAgent.class.getSimpleName());
         this.orchestratorBaseUrl = orchestratorUrl;
+        this.key = FredBoat.START_TIME + ""; //todo should be good enough for testing, something more permanent between restarts for production?
         log.info("Created orchestrator agent with base url: {}", orchestratorBaseUrl);
     }
 
@@ -87,7 +89,7 @@ public class OrchestrationAgent extends Thread {
     // - information about the shards running (shard number, total shards, status, users, etc)
     private void sendHeartBeat() {
         log.info("Sending heartbeat");
-        JvmAndSystemReport jvmAndSystemReport = new JvmAndSystemReport(FredBoat.START_TIME);
+        JvmAndSystemReport jvmAndSystemReport = new JvmAndSystemReport(FredBoat.START_TIME, Config.CONFIG.getDistribution(), tokenHash);
 
         List<ShardReport> shardReports = new ArrayList<>();
         for (FredBoat shard : Collections.unmodifiableCollection(FredBoat.getShards())) {
@@ -100,7 +102,7 @@ public class OrchestrationAgent extends Thread {
             );
         }
 
-        JSONObject heartbeatPayload = new HeartbeatPayload(jvmAndSystemReport, shardReports).toJson();
+        JSONObject heartbeatPayload = new HeartbeatPayload(key, jvmAndSystemReport, shardReports).toJson();
 
         String heartBeatUrl = orchestratorBaseUrl + "/heartbeat";
         try {
