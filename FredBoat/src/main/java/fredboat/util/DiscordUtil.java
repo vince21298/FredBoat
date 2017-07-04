@@ -28,24 +28,19 @@ package fredboat.util;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import fredboat.Config;
+import fredboat.feature.I18n;
 import fredboat.util.constant.BotConstants;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.List;
 
 public class DiscordUtil {
@@ -185,4 +180,21 @@ public class DiscordUtil {
                 .getObject();
     }
 
+    // ########## Moderation related helper functions
+    public static String getReasonForModAction(String[] commandArgs, Guild guild) {
+        String r = null;
+        if (commandArgs.length > 2) {
+            r = String.join(" ", Arrays.copyOfRange(commandArgs, 2, commandArgs.length));
+        }
+
+        return I18n.get(guild).getString("modReason") + ": " + (r != null ? r : "No reason provided.");
+    }
+
+    public static String formatReasonForAuditLog(String plainReason, Guild guild, Member invoker) {
+        String i18nAuditLogMessage = MessageFormat.format(I18n.get(guild).getString("modAuditLogMessage"),
+                invoker.getEffectiveName(), invoker.getUser().getDiscriminator(), invoker.getUser().getId()) + ", ";
+        int auditLogMaxLength = 512 - i18nAuditLogMessage.length(); //512 is a hard limit by discord
+        return i18nAuditLogMessage + (plainReason.length() > auditLogMaxLength ?
+                plainReason.substring(0, auditLogMaxLength) : plainReason);
+    }
 }
