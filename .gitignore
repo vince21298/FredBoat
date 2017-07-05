@@ -132,3 +132,4 @@ target/
 /music_persistence/
 /bootloader.json
 gc-*.log
+*dbconf.yaml
