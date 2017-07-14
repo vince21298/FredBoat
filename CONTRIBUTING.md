@@ -1,6 +1,8 @@
 # Contributing
 FredBoat is built using Maven, so you should just be able to import the project in your favorite IDE and download all dependencies while building. Check out the [issues](https://github.com/Frederikam/FredBoat/issues) to find out what needs to be done.
 
+When submitting a pull request, please submit against the `development` branch, or you will have to reopen your PR. 
+
 ## Code conventions
 Code is indented with 4 spaces and without brackets on newlines. Please use the logging system (SLF4J) instead of `System.out` or `System.err`.
 
