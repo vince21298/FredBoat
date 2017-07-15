@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+  ~
   ~ MIT License
   ~
   ~ Copyright (c) 2017 Frederik Ar. Mikkelsen
@@ -21,7 +22,6 @@
   ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
-  ~
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -34,47 +34,14 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>FredBoat-Bootloader</artifactId>
+    <artifactId>Shared</artifactId>
     <version>1.0</version>
-    <packaging>jar</packaging>
-
-    <properties>
-        <start-class>fredboat.bootloader.Bootloader</start-class>
-    </properties>
 
     <dependencies>
         <dependency>
-            <!-- fredboat internal shared library -->
-            <groupId>fredboat</groupId>
-            <artifactId>Shared</artifactId>
-            <version>1.0</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20170516</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>fredboat.bootloader.Bootloader</Main-Class>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>
