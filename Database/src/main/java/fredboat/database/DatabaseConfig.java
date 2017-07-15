@@ -50,6 +50,9 @@ public class DatabaseConfig {
     public String sshPrivateKeyFile;
     public int forwardToPort; //port where the remote database is listening, postgres default: 5432
 
+    private DatabaseConfig() {
+
+    }
 
     public static DatabaseConfig loadDefault() throws IOException {
         return load(new File("./dbconf.yaml"));

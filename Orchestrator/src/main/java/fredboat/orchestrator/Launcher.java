@@ -25,14 +25,23 @@
 
 package fredboat.orchestrator;
 
+import fredboat.database.DatabaseConfig;
+import fredboat.database.DatabaseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.io.IOException;
+import java.util.concurrent.Executors;
+
 @SpringBootApplication
-@ConfigurationProperties(prefix="orchestrator")
+@ConfigurationProperties(prefix = "orchestrator")
+@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class})
 public class Launcher {
 
     private static final Logger log = LoggerFactory.getLogger(Launcher.class);
@@ -41,9 +50,17 @@ public class Launcher {
     private int chunkSize = 5;
     private int chunkCount = 10;
 
+    private static DatabaseManager dbManager;
+
     public static void main(String[] args) {
 
         int recommendedShards = 10; //todo call discord about this
+        try {
+            dbManager = new DatabaseManager(DatabaseConfig.loadDefault(), null, 2, "FredBoat-Orchestrator", Executors.newCachedThreadPool());
+        } catch (IOException ignoredForNow) {
+
+        }
+
         Allocator.INSTANCE = new Allocator(5, 5); // Total of 25 shards
 
         SpringApplication.run(Launcher.class, args);
