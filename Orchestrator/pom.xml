@@ -60,6 +60,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    
     <dependencies>
         <dependency>
             <groupId>fredboat</groupId>
@@ -87,13 +88,7 @@
             <version>4.3.9.RELEASE</version>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>jcenter</id>
-            <name>jcenter-bintray</name>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
-    </repositories>
+
     <build>
         <finalName>
             Orchestrator-${project.version}

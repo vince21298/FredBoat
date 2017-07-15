@@ -15,6 +15,7 @@ jdk:
   - oraclejdk8
 
 script:
+  - mvn install -Dmaven.javadoc.skip=true -B -V
   - TAG_NAME=$(echo ${TRAVIS_BRANCH} | sed -e 's/\//_/g')
   - docker build . --tag "fredboat/fredboat:${TAG_NAME}"
 
