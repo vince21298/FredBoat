@@ -26,6 +26,7 @@ package fredboat.event;
 
 import fredboat.Config;
 import fredboat.audio.player.GuildPlayer;
+import fredboat.audio.player.LavalinkManager;
 import fredboat.audio.player.PlayerRegistry;
 import fredboat.command.fun.TalkCommand;
 import fredboat.command.music.control.SkipCommand;
@@ -181,6 +182,7 @@ public class EventListenerBoat extends AbstractEventListener {
     public void onReady(ReadyEvent event) {
         super.onReady(event);
         event.getJDA().getPresence().setGame(Game.of("Say " + Config.CONFIG.getPrefix() + "help"));
+        LavalinkManager.ins.onJdaReady(event.getJDA());
     }
 
     @Override

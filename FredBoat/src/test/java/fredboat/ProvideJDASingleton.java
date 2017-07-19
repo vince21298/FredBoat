@@ -31,7 +31,7 @@ import java.util.List;
  * Created by napster on 22.03.17.
  * <p>
  * <p>
- * Extend this class from all tests that require a JDA instance
+ * Extend this class from all tests that require a JDA ins
  * <p>
  * <p>
  * Extend this class from all other tests and call bumpPassedTests() after every successful @Test function & call
@@ -168,7 +168,7 @@ public abstract class ProvideJDASingleton {
             testChannel.sendMessage(out).complete();
 
             initialized = true;
-            //post final test stats and shut down the JDA instance when testing is done
+            //post final test stats and shut down the JDA ins when testing is done
             Runtime.getRuntime().addShutdownHook(SHUTDOWNHOOK);
         } catch (RateLimitedException | LoginException | InterruptedException | IOException e) {
             log.error("Could not create JDA object for tests", e);
