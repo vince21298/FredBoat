@@ -78,7 +78,13 @@
             <!-- Audio player node client -->
             <groupId>com.github.Frederikam</groupId>
             <artifactId>Lavalink</artifactId>
-            <version>f0f4faa</version>
+            <version>fe5a6adc6f9118cb0ac3fcdb4a4b5720edbaadf3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.Frederikam</groupId>
+                    <artifactId>Lavalink-Server</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <!-- native audio system to avoid gc stutter in the audio -->
