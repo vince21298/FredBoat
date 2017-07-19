@@ -69,11 +69,14 @@ public class GuildPlayer extends AbstractPlayer {
 
     @SuppressWarnings("LeakingThisInConstructor")
     public GuildPlayer(Guild guild) {
+        super(guild.getId());
         this.shard = FredBoat.getInstance(guild.getJDA());
         this.guildId = guild.getId();
 
         AudioManager manager = guild.getAudioManager();
-        manager.setSendingHandler(this);
+
+        if (!LavalinkManager.instance.isLavalinkEnabled())
+            manager.setSendingHandler(this);
         audioTrackProvider = new SimpleTrackProvider();
         audioLoader = new AudioLoader(audioTrackProvider, getPlayerManager(), this);
     }
