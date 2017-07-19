@@ -125,7 +125,7 @@ public class PlayCommand extends Command implements IMusicCommand, ICommandRestr
             channel.sendMessage(I18n.get(guild).getString("playQueueEmpty")).queue();
         } else if (player.isPlaying()) {
             channel.sendMessage(I18n.get(guild).getString("playAlreadyPlaying")).queue();
-        } else if (player.getHumanUsersInVC().isEmpty() && guild.getAudioManager().isConnected()) {
+        } else if (player.getHumanUsersInVC().isEmpty() && LavalinkManager.ins.getConnectedChannel(guild) != null) {
             channel.sendMessage(I18n.get(guild).getString("playVCEmpty")).queue();
         } else if(LavalinkManager.ins.getConnectedChannel(guild) == null) {
             // When we just want to continue playing, but the user is not in a VC
