@@ -36,6 +36,7 @@ import fredboat.api.API;
 import fredboat.api.OAuthManager;
 import fredboat.audio.player.GuildPlayer;
 import fredboat.audio.MusicPersistenceHandler;
+import fredboat.audio.player.LavalinkManager;
 import fredboat.audio.player.PlayerRegistry;
 import fredboat.commandmeta.CommandRegistry;
 import fredboat.commandmeta.init.MainCommandInitializer;
@@ -147,6 +148,8 @@ public abstract class FredBoat {
         } catch (Exception e) {
             log.info("Failed to ignite Spark, FredBoat API unavailable", e);
         }
+
+        LavalinkManager.instance.start();
 
         if (!Config.CONFIG.getJdbcUrl().equals("")) {
             dbManager = new DatabaseManager(Config.CONFIG.getJdbcUrl(), null, Config.CONFIG.getHikariPoolSize());
