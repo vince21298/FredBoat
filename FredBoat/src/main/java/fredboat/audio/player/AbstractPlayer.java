@@ -72,7 +72,7 @@ public abstract class AbstractPlayer extends AudioEventAdapterWrapped implements
     @SuppressWarnings("LeakingThisInConstructor")
     AbstractPlayer(String guildId) {
         initAudioPlayerManager();
-        player = LavalinkManager.instance.createPlayer(guildId);
+        player = LavalinkManager.ins.createPlayer(guildId);
 
         player.addListener(this);
     }

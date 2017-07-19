@@ -75,7 +75,7 @@ public class GuildPlayer extends AbstractPlayer {
 
         AudioManager manager = guild.getAudioManager();
 
-        if (!LavalinkManager.instance.isLavalinkEnabled())
+        if (!LavalinkManager.ins.isLavalinkEnabled())
             manager.setSendingHandler(this);
         audioTrackProvider = new SimpleTrackProvider();
         audioLoader = new AudioLoader(audioTrackProvider, getPlayerManager(), this);
@@ -106,7 +106,7 @@ public class GuildPlayer extends AbstractPlayer {
 
         AudioManager manager = getGuild().getAudioManager();
 
-        manager.openAudioConnection(targetChannel);
+        LavalinkManager.ins.openConnection(targetChannel);
 
         manager.setConnectionListener(new DebugConnectionListener(guildId, shard.getShardInfo()));
 
@@ -122,7 +122,7 @@ public class GuildPlayer extends AbstractPlayer {
                 channel.sendMessage(MessageFormat.format(I18n.get(getGuild()).getString("playerLeftChannel"), getChannel().getName())).queue();
             }
         }
-        manager.closeAudioConnection();
+        LavalinkManager.ins.closeConnection(getGuild());
     }
 
     /**

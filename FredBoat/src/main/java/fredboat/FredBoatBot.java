@@ -89,7 +89,7 @@ public class FredBoatBot extends FredBoat {
                     newJda = builder.buildAsync();
                     success = true;
                 } catch (RateLimitedException e) {
-                    log.warn("Got rate limited while building bot JDA instance! Retrying...", e);
+                    log.warn("Got rate limited while building bot JDA ins! Retrying...", e);
                     Thread.sleep(SHARD_CREATION_SLEEP_INTERVAL);
                 }
             }

@@ -148,7 +148,7 @@ public abstract class FredBoat {
             log.info("Failed to ignite Spark, FredBoat API unavailable", e);
         }
 
-        LavalinkManager.instance.start();
+        LavalinkManager.ins.start();
 
         if (!Config.CONFIG.getJdbcUrl().equals("")) {
             dbManager = new DatabaseManager(Config.CONFIG.getJdbcUrl(), null, Config.CONFIG.getHikariPoolSize());
@@ -344,9 +344,9 @@ public abstract class FredBoat {
             if (player == null) return;
 
             AudioManager am = channel.getGuild().getAudioManager();
-            am.openAudioConnection(channel);
+            LavalinkManager.ins.openConnection(channel);
 
-            if (!LavalinkManager.instance.isLavalinkEnabled())
+            if (!LavalinkManager.ins.isLavalinkEnabled())
                 am.setSendingHandler(player);
         });
 
@@ -478,7 +478,7 @@ public abstract class FredBoat {
             }
         }
 
-        throw new IllegalStateException("Attempted to get instance for JDA shard that is not indexed");
+        throw new IllegalStateException("Attempted to get ins for JDA shard that is not indexed");
     }
 
     public static FredBoat getInstance(int id) {
