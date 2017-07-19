@@ -23,7 +23,7 @@
  *
  */
 
-package fredboat.audio;
+package fredboat.audio.player;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;

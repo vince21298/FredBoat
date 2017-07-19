@@ -27,8 +27,8 @@ package fredboat.command.music.seeking;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import fredboat.Config;
-import fredboat.audio.GuildPlayer;
-import fredboat.audio.PlayerRegistry;
+import fredboat.audio.player.GuildPlayer;
+import fredboat.audio.player.PlayerRegistry;
 import fredboat.audio.queue.AudioTrackContext;
 import fredboat.command.util.HelpCommand;
 import fredboat.commandmeta.abs.Command;
