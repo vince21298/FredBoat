@@ -26,8 +26,8 @@
 package fredboat.agent;
 
 import fredboat.FredBoat;
-import fredboat.audio.GuildPlayer;
-import fredboat.audio.PlayerRegistry;
+import fredboat.audio.player.GuildPlayer;
+import fredboat.audio.player.PlayerRegistry;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;

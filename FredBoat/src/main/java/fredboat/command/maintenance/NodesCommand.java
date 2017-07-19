@@ -27,7 +27,7 @@ package fredboat.command.maintenance;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.remote.RemoteNode;
-import fredboat.audio.AbstractPlayer;
+import fredboat.audio.player.AbstractPlayer;
 import fredboat.commandmeta.abs.Command;
 import fredboat.commandmeta.abs.IMaintenanceCommand;
 import fredboat.perms.PermsUtil;
