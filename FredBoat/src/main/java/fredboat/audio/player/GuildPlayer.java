@@ -112,9 +112,8 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public void leaveVoiceChannelRequest(TextChannel channel, boolean silent) {
-        AudioManager manager = getGuild().getAudioManager();
         if (!silent) {
-            if (manager.getConnectedChannel() == null) {
+            if (LavalinkManager.ins.getConnectedChannel(channel.getGuild()) == null) {
                 channel.sendMessage(I18n.get(getGuild()).getString("playerNotInChannel")).queue();
             } else {
                 channel.sendMessage(MessageFormat.format(I18n.get(getGuild()).getString("playerLeftChannel"), getChannel().getName())).queue();
