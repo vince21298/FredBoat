@@ -343,11 +343,12 @@ public abstract class FredBoat {
             GuildPlayer player = PlayerRegistry.get(channel.getGuild());
             if (player == null) return;
 
-            AudioManager am = channel.getGuild().getAudioManager();
             LavalinkManager.ins.openConnection(channel);
 
-            if (!LavalinkManager.ins.isLavalinkEnabled())
+            if (!LavalinkManager.ins.isLavalinkEnabled()) {
+                AudioManager am = channel.getGuild().getAudioManager();
                 am.setSendingHandler(player);
+            }
         });
 
         channelsToRejoin.clear();

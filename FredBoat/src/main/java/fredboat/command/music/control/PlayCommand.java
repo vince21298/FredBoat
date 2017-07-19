@@ -29,6 +29,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import fredboat.Config;
 import fredboat.audio.player.GuildPlayer;
+import fredboat.audio.player.LavalinkManager;
 import fredboat.audio.player.PlayerRegistry;
 import fredboat.audio.VideoSelection;
 import fredboat.commandmeta.abs.Command;
@@ -126,10 +127,10 @@ public class PlayCommand extends Command implements IMusicCommand, ICommandRestr
             channel.sendMessage(I18n.get(guild).getString("playAlreadyPlaying")).queue();
         } else if (player.getHumanUsersInVC().isEmpty() && guild.getAudioManager().isConnected()) {
             channel.sendMessage(I18n.get(guild).getString("playVCEmpty")).queue();
-        } else if(!guild.getAudioManager().isConnected()) {
+        } else if(LavalinkManager.ins.getConnectedChannel(guild) == null) {
             // When we just want to continue playing, but the user is not in a VC
             JOIN_COMMAND.onInvoke(guild, channel, invoker, message, new String[0]);
-            if(guild.getAudioManager().isConnected() || guild.getAudioManager().isAttemptingToConnect()) {
+            if(LavalinkManager.ins.getConnectedChannel(guild) != null || guild.getAudioManager().isAttemptingToConnect()) {
                 player.play();
                 channel.sendMessage(I18n.get(guild).getString("playWillNowPlay")).queue();
             }

@@ -73,10 +73,10 @@ public class GuildPlayer extends AbstractPlayer {
         this.shard = FredBoat.getInstance(guild.getJDA());
         this.guildId = guild.getId();
 
-        AudioManager manager = guild.getAudioManager();
-
-        if (!LavalinkManager.ins.isLavalinkEnabled())
+        if (!LavalinkManager.ins.isLavalinkEnabled()) {
+            AudioManager manager = guild.getAudioManager();
             manager.setSendingHandler(this);
+        }
         audioTrackProvider = new SimpleTrackProvider();
         audioLoader = new AudioLoader(audioTrackProvider, getPlayerManager(), this);
     }
@@ -104,10 +104,8 @@ public class GuildPlayer extends AbstractPlayer {
             throw new MessagingException(I18n.get(getGuild()).getString("playerJoinSpeakDenied"));
         }
 
-        AudioManager manager = getGuild().getAudioManager();
-
         LavalinkManager.ins.openConnection(targetChannel);
-
+        AudioManager manager = getGuild().getAudioManager();
         manager.setConnectionListener(new DebugConnectionListener(guildId, shard.getShardInfo()));
 
         log.info("Connected to voice channel " + targetChannel);
