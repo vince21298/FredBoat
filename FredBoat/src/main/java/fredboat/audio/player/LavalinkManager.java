@@ -84,6 +84,14 @@ public class LavalinkManager {
         }
     }
 
+    public VoiceChannel getConnectedChannel(Guild guild) {
+        if (lavalinkEnabled) {
+            return lavalink.getConnectedChannel(guild);
+        } else {
+            return guild.getAudioManager().getConnectedChannel();
+        }
+    }
+
     public boolean isLavalinkEnabled() {
         return lavalinkEnabled;
     }
