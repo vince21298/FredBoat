@@ -34,8 +34,8 @@ import fredboat.agent.DBConnectionWatchdogAgent;
 import fredboat.agent.ShardWatchdogAgent;
 import fredboat.api.API;
 import fredboat.api.OAuthManager;
-import fredboat.audio.player.GuildPlayer;
 import fredboat.audio.MusicPersistenceHandler;
+import fredboat.audio.player.GuildPlayer;
 import fredboat.audio.player.LavalinkManager;
 import fredboat.audio.player.PlayerRegistry;
 import fredboat.commandmeta.CommandRegistry;
@@ -66,7 +66,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -181,11 +180,11 @@ public abstract class FredBoat {
         listenerSelf = new EventListenerSelf();
 
         //Commands
-        if(Config.CONFIG.getDistribution() == DistributionEnum.DEVELOPMENT
+        if (Config.CONFIG.getDistribution() == DistributionEnum.DEVELOPMENT
                 || Config.CONFIG.getDistribution() == DistributionEnum.MAIN)
             MainCommandInitializer.initCommands();
 
-        if(Config.CONFIG.getDistribution() == DistributionEnum.DEVELOPMENT
+        if (Config.CONFIG.getDistribution() == DistributionEnum.DEVELOPMENT
                 || Config.CONFIG.getDistribution() == DistributionEnum.MUSIC
                 || Config.CONFIG.getDistribution() == DistributionEnum.PATRON)
             MusicCommandInitializer.initCommands();
@@ -300,7 +299,7 @@ public abstract class FredBoat {
     }
 
     private static void initBotShards(EventListener listener) {
-        for(int i = 0; i < Config.CONFIG.getNumShards(); i++){
+        for (int i = 0; i < Config.CONFIG.getNumShards(); i++) {
             try {
                 shards.add(i, new FredBoatBot(i, listener));
             } catch (Exception e) {
@@ -340,13 +339,15 @@ public abstract class FredBoat {
         //Rejoin old channels if revived
         channelsToRejoin.forEach(vcid -> {
             VoiceChannel channel = jda.getVoiceChannelById(vcid);
-            if(channel == null) return;
+            if (channel == null) return;
             GuildPlayer player = PlayerRegistry.get(channel.getGuild());
-            if(player == null) return;
+            if (player == null) return;
 
             AudioManager am = channel.getGuild().getAudioManager();
             am.openAudioConnection(channel);
-            am.setSendingHandler(player);
+
+            if (!LavalinkManager.instance.isLavalinkEnabled())
+                am.setSendingHandler(player);
         });
 
         channelsToRejoin.clear();
@@ -365,13 +366,14 @@ public abstract class FredBoat {
             log.error("Critical error while handling music persistence.", e);
         }
 
-        for(FredBoat fb : shards) {
+        for (FredBoat fb : shards) {
             fb.getJda().shutdown(false);
         }
 
         try {
             Unirest.shutdown();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
 
         executor.shutdown();
         dbManager.shutdown();
@@ -442,7 +444,7 @@ public abstract class FredBoat {
     public static TextChannel getTextChannelById(String id) {
         for (FredBoat fb : shards) {
             for (TextChannel channel : fb.getJda().getTextChannels()) {
-                if(channel.getId().equals(id)) return channel;
+                if (channel.getId().equals(id)) return channel;
             }
         }
 
@@ -452,7 +454,7 @@ public abstract class FredBoat {
     public static VoiceChannel getVoiceChannelById(String id) {
         for (FredBoat fb : shards) {
             for (VoiceChannel channel : fb.getJda().getVoiceChannels()) {
-                if(channel.getId().equals(id)) return channel;
+                if (channel.getId().equals(id)) return channel;
             }
         }
 
@@ -464,13 +466,13 @@ public abstract class FredBoat {
     }
 
     public static FredBoat getInstance(JDA jda) {
-        if(jda.getAccountType() == AccountType.CLIENT) {
+        if (jda.getAccountType() == AccountType.CLIENT) {
             return fbClient;
         } else {
             int sId = jda.getShardInfo() == null ? 0 : jda.getShardInfo().getShardId();
 
-            for(FredBoat fb : shards) {
-                if(((FredBoatBot) fb).getShardId() == sId) {
+            for (FredBoat fb : shards) {
+                if (((FredBoatBot) fb).getShardId() == sId) {
                     return fb;
                 }
             }
@@ -483,14 +485,14 @@ public abstract class FredBoat {
         return shards.get(id);
     }
 
-    public static JDA getFirstJDA(){
+    public static JDA getFirstJDA() {
         return shards.get(0).getJda();
     }
 
     public ShardInfo getShardInfo() {
         int sId = jda.getShardInfo() == null ? 0 : jda.getShardInfo().getShardId();
 
-        if(jda.getAccountType() == AccountType.CLIENT) {
+        if (jda.getAccountType() == AccountType.CLIENT) {
             return new ShardInfo(0, 1);
         } else {
             return new ShardInfo(sId, Config.CONFIG.getNumShards());

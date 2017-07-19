@@ -26,6 +26,7 @@
 package fredboat.audio.player;
 
 import fredboat.Config;
+import fredboat.FredBoat;
 import lavalink.client.io.Lavalink;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavaplayerPlayerWrapper;
@@ -47,6 +48,7 @@ public class LavalinkManager {
 
         if (hosts.isEmpty()) return;
 
+        lavalink = new Lavalink(Config.CONFIG.getNumShards(), shardId -> FredBoat.getInstance(shardId).getJda());
         lavalinkEnabled = true;
         hosts.forEach(lavalinkHost -> lavalink.addNode(lavalinkHost.getUri(),
                 lavalinkHost.getPassword()));
@@ -58,4 +60,7 @@ public class LavalinkManager {
                 : new LavaplayerPlayerWrapper(AbstractPlayer.getPlayerManager().createPlayer());
     }
 
+    public boolean isLavalinkEnabled() {
+        return lavalinkEnabled;
+    }
 }
