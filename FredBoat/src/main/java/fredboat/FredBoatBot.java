@@ -32,6 +32,7 @@ import fredboat.event.ShardWatchdogListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.EventListener;
 import org.slf4j.Logger;
@@ -109,7 +110,8 @@ public class FredBoatBot extends FredBoat {
             PlayerRegistry.getPlayingPlayers().stream()
                     .filter(guildPlayer -> guildPlayer.getJda().getShardInfo().getShardId() == shardId)
                     .forEach(guildPlayer -> {
-                        if (guildPlayer.getChannel() != null) channelsToRejoin.add(guildPlayer.getChannel().getId());
+                        VoiceChannel channel = guildPlayer.getChannel();
+                        if (channel != null) channelsToRejoin.add(channel.getId());
                     });
         } catch (Exception ex) {
             log.error("Caught exception while reviving shard " + this, ex);

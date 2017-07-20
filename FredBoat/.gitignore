@@ -1,6 +1,5 @@
 /logs/
 /bootloader.json
-/dependency-reduced-pom.xml
 /music_persistence/
 /credentials_test.json
 /credentials.json.old

@@ -32,7 +32,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
@@ -49,7 +48,7 @@ import fredboat.audio.queue.SplitAudioTrackContext;
 import fredboat.audio.queue.TrackEndMarkerHandler;
 import fredboat.audio.source.PlaylistImportSourceManager;
 import fredboat.audio.source.SpotifyPlaylistSourceManager;
-import fredboat.util.constant.DistributionEnum;
+import fredboat.shared.constant.DistributionEnum;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +93,7 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
                 playerManager.useRemoteNodes(Config.CONFIG.getLavaplayerNodes());
             }
             
-            playerManager.setItemLoaderThreadPoolSize(100);
+            playerManager.setItemLoaderThreadPoolSize(500);
         }
     }
 
@@ -111,7 +110,8 @@ public abstract class AbstractPlayer extends AudioEventAdapter implements AudioS
         }
         //add new source managers above the HttpAudio one, because it will either eat your request or throw an exception
         //so you will never reach a source manager below it
-        mng.registerSourceManager(new HttpAudioSourceManager());
+        // commented out to prevent leaking our ip
+//        mng.registerSourceManager(new HttpAudioSourceManager());
         
         return mng;
     }

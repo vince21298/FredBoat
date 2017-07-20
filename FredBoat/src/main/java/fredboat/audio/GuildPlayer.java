@@ -191,8 +191,13 @@ public class GuildPlayer extends AbstractPlayer {
         return l;
     }
 
+    //may return null
     public VoiceChannel getChannel() {
-        return getUserCurrentVoiceChannel(getGuild().getSelfMember());
+        Guild guild = getGuild();
+        if (guild != null)
+            return getUserCurrentVoiceChannel(guild.getSelfMember());
+        else
+            return null;
     }
 
     /**

@@ -26,6 +26,8 @@
 package fredboat.db.entity;
 
 import fredboat.perms.PermissionLevel;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +39,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "guild_permissions")
+@Cache(usage= CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region="guild_permissions")
 public class GuildPermissions implements IEntity {
 
     // Guild ID

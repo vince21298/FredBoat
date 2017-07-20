@@ -32,11 +32,12 @@ import fredboat.db.EntityReader;
 import fredboat.db.EntityWriter;
 import fredboat.db.entity.GuildPermissions;
 import fredboat.feature.I18n;
+import fredboat.feature.togglz.FeatureFlags;
 import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
+import fredboat.shared.constant.BotConstants;
 import fredboat.util.ArgumentUtil;
 import fredboat.util.TextUtils;
-import fredboat.util.constant.BotConstants;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -66,6 +67,11 @@ public class PermissionsCommand extends Command implements IModerationCommand {
 
     @Override
     public void onInvoke(Guild guild, TextChannel channel, Member invoker, Message message, String[] args) {
+        if (!FeatureFlags.PERMISSIONS.isActive()) {
+            channel.sendMessage("Permissions are currently disabled.").queue();
+            return;
+        }
+
         if (args.length < 2) {
             HelpCommand.sendFormattedCommandHelp(message);
             return;

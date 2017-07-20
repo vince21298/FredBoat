@@ -37,10 +37,12 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.requests.RestAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
+import java.util.function.Consumer;
 
 /**
  * Created by napster on 19.04.17.
@@ -62,18 +64,35 @@ public class KickCommand extends Command implements IModerationCommand {
             return;
         }
 
+        //was there a target provided?
         Member target = ArgumentUtil.checkSingleFuzzyMemberSearchResult(channel, args[1]);
-
         if (target == null) return;
 
+        //are we allowed to do that?
         if (!checkKickAuthorization(channel, invoker, target)) return;
 
-        target.getGuild().getController().kick(target).queue(
-                aVoid -> {
-                    TextUtils.replyWithName(channel, invoker, MessageFormat.format(I18n.get(guild).getString("kickSuccess"), target.getUser().getName(), target.getUser().getDiscriminator(), target.getUser().getId()));
-                },
-                throwable -> log.error(MessageFormat.format(I18n.get(guild).getString("kickFail"), target.getUser()))
-        );
+        //putting together a reason
+        String plainReason = DiscordUtil.getReasonForModAction(args, guild);
+        String auditLogReason = DiscordUtil.formatReasonForAuditLog(plainReason, guild, invoker);
+
+        //putting together the action
+        RestAction<Void> modAction = guild.getController().kick(target, auditLogReason);
+
+        //on success
+        String successOutput = MessageFormat.format(I18n.get(guild).getString("kickSuccess"),
+                target.getUser().getName(), target.getUser().getDiscriminator(), target.getUser().getId())
+                + "\n" + plainReason;
+        Consumer<Void> onSuccess = aVoid -> TextUtils.replyWithName(channel, invoker, successOutput);
+
+        //on fail
+        String failOutput = MessageFormat.format(I18n.get(guild).getString("kickFail"), target.getUser());
+        Consumer<Throwable> onFail = t -> {
+            log.error("Failed to kick user {} in guild {}", target.getUser().getIdLong(), guild.getIdLong(), t);
+            TextUtils.replyWithName(channel, invoker, failOutput);
+        };
+
+        //issue the mod action
+        modAction.queue(onSuccess, onFail);
     }
 
     private boolean checkKickAuthorization(TextChannel channel, Member mod, Member target) {
@@ -117,7 +136,7 @@ public class KickCommand extends Command implements IModerationCommand {
 
     @Override
     public String help(Guild guild) {
-        String usage = "{0}{1} <user>\n#";
+        String usage = "{0}{1} <user> <reason>\n#";
         return usage + I18n.get(guild).getString("helpKickCommand");
     }
 }

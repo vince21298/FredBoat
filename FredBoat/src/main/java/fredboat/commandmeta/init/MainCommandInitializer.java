@@ -38,41 +38,47 @@ public class MainCommandInitializer {
 
     public static void initCommands() {
         CommandRegistry.registerCommand("help", new HelpCommand(), "info");
-
-        CommandRegistry.registerCommand("unblacklist", new UnblacklistCommand(), "unlimit");
         CommandRegistry.registerCommand("commands", new CommandsCommand(), "comms", "cmds");
+        CommandRegistry.registerCommand("invite", new InviteCommand());      
+        
+        /* Bot Maintenance */
+        CommandRegistry.registerCommand("unblacklist", new UnblacklistCommand(), "unlimit");
         CommandRegistry.registerCommand("version", new VersionCommand());
-        CommandRegistry.registerCommand("say", new SayCommand());
         CommandRegistry.registerCommand("uptime", new StatsCommand(), "stats");
-        CommandRegistry.registerCommand("serverinfo", new fredboat.command.util.ServerInfoCommand(), "guildinfo");
-        CommandRegistry.registerCommand("invite", new InviteCommand());
-        CommandRegistry.registerCommand("userinfo", new fredboat.command.util.UserInfoCommand(), "memberinfo");
-        CommandRegistry.registerCommand("gitinfo", new GitInfoCommand(), "git");
-        CommandRegistry.registerCommand("exit", new ExitCommand());
-        CommandRegistry.registerCommand("avatar", new AvatarCommand(), "ava");
-        CommandRegistry.registerCommand("test", new TestCommand());
-        CommandRegistry.registerCommand("brainfuck", new BrainfuckCommand());
-        CommandRegistry.registerCommand("joke", new JokeCommand(), "jk");
-        //TODO LeetCommand is borken. Don't throw unnecessary error reports until it's fixed or removed.
-//        CommandRegistry.registerCommand("leet", new LeetCommand(), "1337", "l33t", "1ee7");
-        CommandRegistry.registerCommand("riot", new RiotCommand());
         CommandRegistry.registerCommand("update", new UpdateCommand());
         CommandRegistry.registerCommand("compile", new CompileCommand());
         CommandRegistry.registerCommand("mvntest", new MavenTestCommand());
         CommandRegistry.registerCommand("botrestart", new BotRestartCommand());
-        CommandRegistry.registerCommand("dance", new DanceCommand());
         CommandRegistry.registerCommand("eval", new EvalCommand());
-        CommandRegistry.registerCommand("clear", new ClearCommand());
-        CommandRegistry.registerCommand("talk", new TalkCommand());
-        CommandRegistry.registerCommand("mal", new MALCommand());
-        CommandRegistry.registerCommand("akinator", new AkinatorCommand());
-        CommandRegistry.registerCommand("fuzzy", new FuzzyUserSearchCommand());
+        CommandRegistry.registerCommand("shards", new ShardsCommand());
+        CommandRegistry.registerCommand("revive", new ReviveCommand());
+        CommandRegistry.registerCommand("test", new TestCommand());
+        CommandRegistry.registerCommand("gitinfo", new GitInfoCommand(), "git");
+        CommandRegistry.registerCommand("exit", new ExitCommand());
+        
+        /* Moderation */
         CommandRegistry.registerCommand("hardban", new HardbanCommand());
         CommandRegistry.registerCommand("kick", new KickCommand());
         CommandRegistry.registerCommand("softban", new SoftbanCommand());
+        CommandRegistry.registerCommand("clear", new ClearCommand());
+        
+        /* Util */
+        CommandRegistry.registerCommand("serverinfo", new fredboat.command.util.ServerInfoCommand(), "guildinfo");
+        CommandRegistry.registerCommand("userinfo", new fredboat.command.util.UserInfoCommand(), "memberinfo");
+        CommandRegistry.registerCommand("ping", new PingCommand());
+        CommandRegistry.registerCommand("fuzzy", new FuzzyUserSearchCommand());
+        
+        /* Fun Commands */
+        CommandRegistry.registerCommand("joke", new JokeCommand(), "jk");
+        //TODO LeetCommand is borken. Don't throw unnecessary error reports until it's fixed or removed.
+//        CommandRegistry.registerCommand("leet", new LeetCommand(), "1337", "l33t", "1ee7");
+        CommandRegistry.registerCommand("riot", new RiotCommand());
+        CommandRegistry.registerCommand("dance", new DanceCommand());
+        CommandRegistry.registerCommand("talk", new TalkCommand());
+        CommandRegistry.registerCommand("akinator", new AkinatorCommand());
         CommandRegistry.registerCommand("catgirl", new CatgirlCommand(), "neko", "catgrill");
-        CommandRegistry.registerCommand("shards", new ShardsCommand());
-        CommandRegistry.registerCommand("revive", new ReviveCommand());
+        CommandRegistry.registerCommand("avatar", new AvatarCommand(), "ava");
+        CommandRegistry.registerCommand("say", new SayCommand());
 
         /* Other Anime Discord, Sergi memes or any other memes */
         // saved in this album https://imgur.com/a/wYvDu
@@ -101,13 +107,20 @@ public class MainCommandInitializer {
         CommandRegistry.registerCommand("faceofdisapproval", new TextCommand("ಠ_ಠ"), "fod", "disapproving");
         CommandRegistry.registerCommand("sendenergy", new TextCommand("༼ つ ◕_◕ ༽つ"));
         CommandRegistry.registerCommand("peeking", new TextCommand("┬┴┬┴┤ ͜ʖ ͡°) ├┬┴┬┴"), "peekinglenny", "peek");
-        CommandRegistry.registerCommand("dealwithit", new TextCommand("(•\\_•) ( •\\_•)>⌐■-■ (⌐■_■)"), "dwi"); //NOTE: This may break, depending on how the backlashes are handled.
+        CommandRegistry.registerCommand("dealwithit", new TextCommand("(•\\_•) ( •\\_•)>⌐■-■ (⌐■_■)"), "dwi");
         CommandRegistry.registerCommand("channelingenergy", new TextCommand("(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)"));
         CommandRegistry.registerCommand("butterfly", new TextCommand("Ƹ̵̡Ӝ̵̨̄Ʒ"));
-        CommandRegistry.registerCommand("angrytableflip", new TextCommand("(ノಠ益ಠ)ノ彡┻━┻"), "tableflipbutangry");
+        CommandRegistry.registerCommand("angrytableflip", new TextCommand("(ノಠ益ಠ)ノ彡┻━┻"), "tableflipbutangry", "atp");
         CommandRegistry.registerCommand("cooldog", new DogCommand(), "dog", "dogmeme");
-        CommandRegistry.registerCommand("lood", new TextCommand("T-that's l-lewd, baka!!!"), "lewd");
+        CommandRegistry.registerCommand("lood", new TextCommand("T-that's l-lewd, baka!!!"), "lewd", "l00d");
         CommandRegistry.registerCommand("useless", new TextCommand("This command is useless."));
+        CommandRegistry.registerCommand("swtf", new TextCommand("¯\\\\(°_o)/¯"), "shrugwtf");
+        CommandRegistry.registerCommand("hurray", new TextCommand("ヽ(^o^)ノ"), "yay", "woot");
+        
+        /* Misc - All commands under this line fall in this category */
+        
+        CommandRegistry.registerCommand("mal", new MALCommand());
+        CommandRegistry.registerCommand("brainfuck", new BrainfuckCommand());
 
         CommandRegistry.registerCommand("github", new TextCommand("https://github.com/Frederikam"));
         CommandRegistry.registerCommand("repo", new TextCommand("https://github.com/Frederikam/FredBoat"));

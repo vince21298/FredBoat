@@ -92,6 +92,8 @@ public class DatabaseManager {
             properties.put("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
             properties.put("hibernate.connection.url", jdbcUrl);
             if (dialect != null && !"".equals(dialect)) properties.put("hibernate.dialect", dialect);
+            properties.put("hibernate.cache.use_second_level_cache", "true");
+            properties.put("hibernate.cache.provider_configuration_file_resource_path", "ehcache.xml");
             properties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
 
             //this does a lot of logs
