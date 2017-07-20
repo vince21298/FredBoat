@@ -77,7 +77,7 @@ public class RewindCommand extends Command implements IMusicCommand, ICommandRes
         t = Math.max(0, t);
         t = Math.min(atc.getEffectivePosition(), t);
 
-        at.setPosition(at.getPosition() - t);
+        PlayerRegistry.get(guild).seekTo(at.getPosition() - t);
         channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("rewSuccess"), player.getPlayingTrack().getEffectiveTitle(), TextUtils.formatTime(t))).queue();
     }
 
