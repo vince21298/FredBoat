@@ -92,5 +92,5 @@ public class RewindCommand extends Command implements IMusicCommand, ICommandRes
     public PermissionLevel getMinimumPerms() {
         return PermissionLevel.DJ;
     }
-    
+
 }
