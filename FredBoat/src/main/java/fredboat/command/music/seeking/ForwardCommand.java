@@ -77,7 +77,7 @@ public class ForwardCommand extends Command implements IMusicCommand, ICommandRe
         t = Math.max(0, t);
         t = Math.min(atc.getEffectiveDuration(), t);
 
-        at.setPosition(at.getPosition() + t);
+        PlayerRegistry.get(guild).seekTo(at.getPosition() + t);
         channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("fwdSuccess"), atc.getEffectiveTitle(), TextUtils.formatTime(t))).queue();
     }
 

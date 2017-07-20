@@ -312,4 +312,16 @@ public abstract class AbstractPlayer extends AudioEventAdapterWrapped implements
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
         log.error("Lavaplayer got stuck while playing " + track.getIdentifier() + "\nPerformance stats for stuck track: " + audioLossCounter);
     }
+
+    public long getTrackPosition() {
+        return player.getTrackPosition();
+    }
+
+    public void seekTo(long position) {
+        player.seekTo(position);
+    }
+
+    public IPlayer getPlayer() {
+        return player;
+    }
 }
