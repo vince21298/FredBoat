@@ -25,7 +25,6 @@
 
 package fredboat.command.music.seeking;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import fredboat.Config;
 import fredboat.audio.player.GuildPlayer;
 import fredboat.audio.player.PlayerRegistry;
@@ -71,13 +70,12 @@ public class SeekCommand extends Command implements IMusicCommand, ICommandRestr
         }
 
         AudioTrackContext atc = player.getPlayingTrack();
-        AudioTrack at = atc.getTrack();
 
         //Ensure bounds
         t = Math.max(0, t);
         t = Math.min(atc.getEffectiveDuration(), t);
 
-        at.setPosition(atc.getStartPosition() + t);
+        player.seekTo(atc.getStartPosition() + t);
         channel.sendMessage(MessageFormat.format(I18n.get(guild).getString("seekSuccess"), atc.getEffectiveTitle(), TextUtils.formatTime(t))).queue();
     }
 

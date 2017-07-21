@@ -313,7 +313,7 @@ public abstract class AbstractPlayer extends AudioEventAdapterWrapped implements
         log.error("Lavaplayer got stuck while playing " + track.getIdentifier() + "\nPerformance stats for stuck track: " + audioLossCounter);
     }
 
-    public long getTrackPosition() {
+    public long getPosition() {
         return player.getTrackPosition();
     }
 
