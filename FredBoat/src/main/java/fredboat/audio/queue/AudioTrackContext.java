@@ -95,7 +95,7 @@ public class AudioTrackContext implements Comparable<AudioTrackContext> {
     }
 
     public long getEffectivePosition() {
-        return PlayerRegistry.get(shard.getJda(), guildId).getTrackPosition();
+        return PlayerRegistry.get(shard.getJda(), guildId).getPosition();
     }
 
     public void seekTo(long position) {
