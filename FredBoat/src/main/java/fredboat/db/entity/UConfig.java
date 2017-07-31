@@ -64,6 +64,11 @@ public class UConfig implements IEntity {
         this.userId = id;
     }
 
+    @Override
+    public long getId() {
+        return userId;
+    }
+
     public UConfig() {
     }
 

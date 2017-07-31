@@ -85,7 +85,7 @@ public class OAuthManager {
     private static UConfig saveTokenToConfig(TokenGrant token){
         User user = DiscordUtil.getUserFromBearer(FredBoat.getFirstJDA(), token.getBearer());
 
-        UConfig uconfig = EntityReader.getEntity(user.getIdLong(), UConfig.class);
+        UConfig uconfig = EntityReader.getOrCreateEntity(user.getIdLong(), UConfig.class);
 
         uconfig = uconfig == null ? new UConfig() : uconfig;
 

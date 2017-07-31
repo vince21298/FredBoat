@@ -47,6 +47,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
@@ -57,7 +58,7 @@ import java.util.Map;
 
 public class GuildPlayer extends AbstractPlayer {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(GuildPlayer.class);
+    private static final Logger log = LoggerFactory.getLogger(GuildPlayer.class);
 
     private final FredBoat shard;
     private final long guildId;
@@ -292,7 +293,7 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     //Success, fail message
-    public Pair<Boolean, String> canMemberSkipTracks(TextChannel textChannel, Member member, List<AudioTrackContext> list) {
+    public Pair<Boolean, String> canMemberSkipTracks(Member member, List<AudioTrackContext> list) {
         if (PermsUtil.checkPerms(PermissionLevel.DJ, member)) {
             return new ImmutablePair<>(true, null);
         } else {
@@ -300,7 +301,7 @@ public class GuildPlayer extends AbstractPlayer {
             int otherPeoplesTracks = 0;
 
             for (AudioTrackContext atc : list) {
-                if(!atc.getMember().equals(member)) otherPeoplesTracks++;
+                if (atc.getUserId() != member.getUser().getIdLong()) otherPeoplesTracks++;
             }
 
             if (otherPeoplesTracks > 0) {
@@ -318,7 +319,7 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public Pair<Boolean, String> skipTracksForMemberPerms(TextChannel channel, Member member, List<AudioTrackContext> list) {
-        Pair<Boolean, String> pair = canMemberSkipTracks(channel, member, list);
+        Pair<Boolean, String> pair = canMemberSkipTracks(member, list);
 
         if (pair.getLeft()) {
             skipTracks(list);
@@ -369,7 +370,7 @@ public class GuildPlayer extends AbstractPlayer {
     private boolean isTrackAnnounceEnabled() {
         boolean enabled = false;
         try {
-            GuildConfig config = EntityReader.getEntity(guildId, GuildConfig.class);
+            GuildConfig config = EntityReader.getOrCreateEntity(guildId, GuildConfig.class);
             enabled = config.isTrackAnnounce();
         } catch (DatabaseNotReadyException ignored) {}
 

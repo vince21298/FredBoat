@@ -59,6 +59,11 @@ public class GuildConfig implements IEntity {
         this.guildId = id;
     }
 
+    @Override
+    public long getId() {
+        return guildId;
+    }
+
     public GuildConfig() {
     }
 
