@@ -90,7 +90,7 @@ public class I18n {
         GuildConfig config;
 
         try {
-            config = EntityReader.getEntity(guild.getIdLong(), GuildConfig.class);
+            config = EntityReader.getOrCreateEntity(guild.getIdLong(), GuildConfig.class);
         } catch (DatabaseNotReadyException e) {
             //don't log spam the full exceptions or logs
             return DEFAULT;
@@ -106,7 +106,7 @@ public class I18n {
         if (!LANGS.containsKey(lang))
             throw new LanguageNotSupportedException("Language not found");
 
-        GuildConfig config = EntityReader.getEntity(guild.getIdLong(), GuildConfig.class);
+        GuildConfig config = EntityReader.getOrCreateEntity(guild.getIdLong(), GuildConfig.class);
         config.setLang(lang);
         config = EntityWriter.merge(config);
     }

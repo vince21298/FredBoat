@@ -57,6 +57,11 @@ public class GuildPermissions implements IEntity {
         this.userList = Long.toString(id);
     }
 
+    @Override
+    public long getId() {
+        return id;
+    }
+
     @Column(name = "list_admin", nullable = false, columnDefinition = "text")
     private String adminList = "";
 
