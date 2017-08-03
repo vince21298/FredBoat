@@ -88,7 +88,7 @@
             <!-- Audio player node client -->
             <groupId>com.github.Frederikam</groupId>
             <artifactId>Lavalink</artifactId>
-            <version>f45f9cae1c22d23c59855f102daf9e27d7313f84</version>
+            <version>5ae92a1c4f3913a7ea4c143631b229caebdfcf70</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.Frederikam.Lavalink</groupId>
