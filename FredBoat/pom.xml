@@ -75,13 +75,22 @@
             <version>1.2.39</version>
         </dependency>
         <dependency>
+            <!-- This is just here for convenience -->
+            <groupId>lavalink</groupId>
+            <artifactId>Lavalink-Client</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <optional>true</optional>
+            <systemPath>G:/Lavalink/LavalinkClient/target/Lavalink-Client-1.0.jar</systemPath>
+        </dependency>
+        <dependency>
             <!-- Audio player node client -->
             <groupId>com.github.Frederikam</groupId>
             <artifactId>Lavalink</artifactId>
-            <version>d101cf1528900a9056c02b545bbbd7b11bb7a7c9</version>
+            <version>dc2c5134c5ef857c06f85c615930c4a126932108</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.github.Frederikam</groupId>
+                    <groupId>com.github.Frederikam.Lavalink</groupId>
                     <artifactId>Lavalink-Server</artifactId>
                 </exclusion>
             </exclusions>

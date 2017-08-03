@@ -30,7 +30,6 @@ import fredboat.FredBoat;
 import lavalink.client.io.Lavalink;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavaplayerPlayerWrapper;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
@@ -63,11 +62,6 @@ public class LavalinkManager {
                 : new LavaplayerPlayerWrapper(AbstractPlayer.getPlayerManager().createPlayer());
     }
 
-    public void onJdaReady(JDA jda) {
-        if (lavalinkEnabled)
-            lavalink.interceptJdaAudio(jda);
-    }
-
     public void openConnection(VoiceChannel channel) {
         if (lavalinkEnabled) {
             lavalink.openVoiceConnection(channel);
@@ -96,4 +90,7 @@ public class LavalinkManager {
         return lavalinkEnabled;
     }
 
+    public Lavalink getLavalink() {
+        return lavalink;
+    }
 }

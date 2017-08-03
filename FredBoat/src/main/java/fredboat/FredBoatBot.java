@@ -26,6 +26,7 @@
 package fredboat;
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
+import fredboat.audio.player.LavalinkManager;
 import fredboat.audio.player.PlayerRegistry;
 import fredboat.event.EventLogger;
 import fredboat.event.ShardWatchdogListener;
@@ -77,6 +78,10 @@ public class FredBoatBot extends FredBoat {
                     builder.addEventListener(listener);
                 } else {
                     log.warn("Starting a shard without an event listener!");
+                }
+
+                if (LavalinkManager.ins.isLavalinkEnabled()) {
+                    builder.addEventListener(LavalinkManager.ins.getLavalink());
                 }
 
                 if (!System.getProperty("os.arch").equalsIgnoreCase("arm")
