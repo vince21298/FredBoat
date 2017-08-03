@@ -74,15 +74,16 @@
             <artifactId>lavaplayer</artifactId>
             <version>1.2.39</version>
         </dependency>
+        <!-- This is just here for convenience -->
+        <!--
         <dependency>
-            <!-- This is just here for convenience -->
             <groupId>lavalink</groupId>
             <artifactId>Lavalink-Client</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <optional>true</optional>
             <systemPath>G:/Lavalink/LavalinkClient/target/Lavalink-Client-1.0.jar</systemPath>
         </dependency>
+        -->
         <dependency>
             <!-- Audio player node client -->
             <groupId>com.github.Frederikam</groupId>
