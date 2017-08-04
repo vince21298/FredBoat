@@ -78,15 +78,11 @@ public class SkipCommand extends Command implements IMusicCommand, ICommandRestr
             return;
         }
 
-        if (!guildIdToLastSkip.containsKey(guild.getId())) {
-            guildIdToLastSkip.put(guild.getId(), System.currentTimeMillis());
-        }
-
         if (isOnCooldown(guild)) {
             return;
+        } else {
+            guildIdToLastSkip.put(guild.getId(), System.currentTimeMillis());
         }
-
-        guildIdToLastSkip.put(guild.getId(), System.currentTimeMillis());
 
         if (args.length == 1) {
             skipNext(guild, channel, invoker, args);
@@ -108,7 +104,7 @@ public class SkipCommand extends Command implements IMusicCommand, ICommandRestr
      */
     private boolean isOnCooldown(Guild guild) {
         long currentTIme = System.currentTimeMillis();
-        return currentTIme - guildIdToLastSkip.get(guild.getId()) <= SKIP_COOLDOWN;
+        return currentTIme - guildIdToLastSkip.getOrDefault(guild.getId(), 0L) <= SKIP_COOLDOWN;
     }
 
     private void skipGivenIndex(GuildPlayer player, TextChannel channel, Member invoker, String[] args) {
