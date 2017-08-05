@@ -81,7 +81,7 @@ public class SpotifyAPIWrapper {
 
     /**
      * Do not call this.
-     * Get an ins of this class by using SpotifyAPIWrapper.getApi()
+     * Get an instance of this class by using SpotifyAPIWrapper.getApi()
      */
     private SpotifyAPIWrapper() {
         this.clientId = Config.CONFIG.getSpotifyId();

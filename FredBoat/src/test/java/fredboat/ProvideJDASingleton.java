@@ -168,7 +168,7 @@ public abstract class ProvideJDASingleton {
             testChannel.sendMessage(out).complete();
 
             initialized = true;
-            //post final test stats and shut down the JDA ins when testing is done
+            //post final test stats and shut down the JDA instance when testing is done
             Runtime.getRuntime().addShutdownHook(SHUTDOWNHOOK);
         } catch (RateLimitedException | LoginException | InterruptedException | IOException e) {
             log.error("Could not create JDA object for tests", e);

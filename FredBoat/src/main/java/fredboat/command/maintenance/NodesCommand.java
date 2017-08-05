@@ -34,6 +34,7 @@ import fredboat.commandmeta.abs.IMaintenanceCommand;
 import fredboat.perms.PermsUtil;
 import fredboat.util.TextUtils;
 import lavalink.client.io.Lavalink;
+import lavalink.client.io.LavalinkLoadBalancer;
 import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.RemoteStats;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -83,6 +84,10 @@ public class NodesCommand extends Command implements IMaintenanceCommand {
             str += stats.getAvgFramesSentPerMinute() + " player average frames sent\n";
             str += stats.getAvgFramesNulledPerMinute() + " player average frames nulled\n";
             str += stats.getAvgFramesDeficitPerMinute() + " player average frames deficit\n";
+
+            str += "\n";
+
+            str += LavalinkLoadBalancer.getPenalties(socket).toString();
 
             str += "\n";
             str += "\n";
