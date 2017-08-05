@@ -104,7 +104,6 @@ public abstract class FredBoat {
     private static DBConnectionWatchdogAgent dbConnectionWatchdogAgent;
 
     private static DatabaseManager dbManager;
-    private boolean hasReadiedOnce = false;
 
     public static void main(String[] args) throws LoginException, IllegalArgumentException, InterruptedException, IOException, UnirestException {
         Runtime.getRuntime().addShutdownHook(new Thread(ON_SHUTDOWN, "FredBoat main shutdownhook"));
@@ -147,8 +146,6 @@ public abstract class FredBoat {
         } catch (Exception e) {
             log.info("Failed to ignite Spark, FredBoat API unavailable", e);
         }
-
-        LavalinkManager.ins.start();
 
         if (!Config.CONFIG.getJdbcUrl().equals("")) {
             dbManager = new DatabaseManager(Config.CONFIG.getJdbcUrl(), null, Config.CONFIG.getHikariPoolSize());
@@ -318,9 +315,8 @@ public abstract class FredBoat {
     }
 
     public void onInit(ReadyEvent readyEvent) {
-        if (!hasReadiedOnce) {
-            numShardsReady.incrementAndGet();
-            hasReadiedOnce = false;
+        if (numShardsReady.getAndIncrement() == 0) {
+            LavalinkManager.ins.start(readyEvent.getJDA().getSelfUser().getId());
         }
 
         log.info("Received ready event for " + FredBoat.getInstance(readyEvent.getJDA()).getShardInfo().getShardString());

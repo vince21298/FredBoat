@@ -45,7 +45,7 @@ public class LavalinkManager {
     private boolean lavalinkEnabled = false;
     private Lavalink lavalink = null;
 
-    public void start() {
+    public void start(String userId) {
         List<Config.LavalinkHost> hosts = Config.CONFIG.getLavalinkHosts();
 
         if (hosts.isEmpty()) return;
@@ -53,7 +53,8 @@ public class LavalinkManager {
         lavalink = new Lavalink(Config.CONFIG.getNumShards(), shardId -> FredBoat.getInstance(shardId).getJda());
         lavalinkEnabled = true;
         hosts.forEach(lavalinkHost -> lavalink.addNode(lavalinkHost.getUri(),
-                lavalinkHost.getPassword()));
+                lavalinkHost.getPassword(),
+                userId));
     }
 
     IPlayer createPlayer(String guildId) {
