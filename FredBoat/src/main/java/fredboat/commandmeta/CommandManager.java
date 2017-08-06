@@ -32,6 +32,8 @@ import fredboat.commandmeta.abs.ICommandRestricted;
 import fredboat.commandmeta.abs.IMusicBackupCommand;
 import fredboat.commandmeta.abs.IMusicCommand;
 import fredboat.feature.I18n;
+import fredboat.feature.PatronageChecker;
+import fredboat.feature.togglz.FeatureFlags;
 import fredboat.perms.PermissionLevel;
 import fredboat.perms.PermsUtil;
 import fredboat.shared.constant.BotConstants;
@@ -56,10 +58,26 @@ public class CommandManager {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(CommandManager.class);
 
     public static final AtomicInteger commandsExecuted = new AtomicInteger(0);
+    private static PatronageChecker patronageChecker = null;
 
     public static void prefixCalled(Command invoked, Guild guild, TextChannel channel, Member invoker, Message message) {
         String[] args = commandToArguments(message.getRawContent());
         commandsExecuted.getAndIncrement();
+
+        if (FeatureFlags.PATRON_VALIDATION.isActive()) {
+            if (patronageChecker == null) patronageChecker = new PatronageChecker();
+
+            PatronageChecker.Status status = patronageChecker.getStatus(guild);
+            if (!status.isValid()) {
+                String msg = "Access denied. This bot can only be used if invited from <https://patron.fredboat.com/> "
+                        + "by someone who currently has a valid pledge on Patreon.\nDenial reason: " + status.getReason();
+
+                msg += "Do you believe this to be a mistake? If so you can reach out to Fre_d on Patreon <https://www.patreon.com/fredboat>";
+
+                channel.sendMessage(msg).queue();
+                return;
+            }
+        }
 
         if (invoked instanceof IMusicBackupCommand
                 && guild.getJDA().getSelfUser().getId().equals(BotConstants.MUSIC_BOT_ID)
