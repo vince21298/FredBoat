@@ -41,6 +41,7 @@ import fredboat.util.Tuple2;
 import fredboat.util.ratelimit.Ratelimiter;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -201,7 +202,7 @@ public class EventListenerBoat extends AbstractEventListener {
     @Override
     public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
         checkForAutoPause(event.getChannelLeft());
-        checkForAutoResume(event.getChannelJoined());
+        checkForAutoResume(event.getChannelJoined(), event.getMember());
 
         //were we moved?
         if (event.getMember().getUser().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
@@ -211,10 +212,13 @@ public class EventListenerBoat extends AbstractEventListener {
 
     @Override
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
-        checkForAutoResume(event.getChannelJoined());
+        checkForAutoResume(event.getChannelJoined(), event.getMember());
     }
 
-    private void checkForAutoResume(VoiceChannel joinedChannel) {
+    private void checkForAutoResume(VoiceChannel joinedChannel, Member joined) {
+        //ignore bot users joining / moving
+        if (joined.getUser().isBot()) return;
+
         Guild guild = joinedChannel.getGuild();
         GuildPlayer player = PlayerRegistry.getExisting(guild);
 
