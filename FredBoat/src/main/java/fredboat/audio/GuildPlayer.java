@@ -25,11 +25,13 @@
 
 package fredboat.audio;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import fredboat.FredBoat;
-import fredboat.audio.queue.*;
+import fredboat.audio.queue.AbstractTrackProvider;
+import fredboat.audio.queue.AudioLoader;
+import fredboat.audio.queue.AudioTrackContext;
+import fredboat.audio.queue.IdentifierContext;
+import fredboat.audio.queue.RepeatMode;
+import fredboat.audio.queue.SimpleTrackProvider;
 import fredboat.commandmeta.MessagingException;
 import fredboat.db.DatabaseNotReadyException;
 import fredboat.db.EntityReader;
@@ -52,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,12 +66,17 @@ public class GuildPlayer extends AbstractPlayer {
     private final FredBoat shard;
     private final long guildId;
     public final Map<String, VideoSelection> selections = new HashMap<>();
-    private String currentTCId;
+    private long currentTCId;
 
     private final AudioLoader audioLoader;
 
     @SuppressWarnings("LeakingThisInConstructor")
     public GuildPlayer(Guild guild) {
+        log.debug("Constructing GuildPlayer({})", guild.getIdLong());
+
+        onPlayHook = this::announceTrack;
+        onErrorHook = this::handleError;
+
         this.shard = FredBoat.getInstance(guild.getJDA());
         this.guildId = guild.getIdLong();
 
@@ -76,6 +84,18 @@ public class GuildPlayer extends AbstractPlayer {
         manager.setSendingHandler(this);
         audioTrackProvider = new SimpleTrackProvider();
         audioLoader = new AudioLoader(audioTrackProvider, getPlayerManager(), this);
+    }
+
+    private void announceTrack(AudioTrackContext atc) {
+        if (getRepeatMode() != RepeatMode.SINGLE && isTrackAnnounceEnabled() && !isPaused()) {
+            getActiveTextChannel().sendMessage(MessageFormat.format(I18n.get(getGuild()).getString("trackAnnounce"), atc.getEffectiveTitle())).queue();
+        }
+    }
+
+    private void handleError(Throwable t) {
+        log.error("Guild player error", t);
+        TextChannel tc = getActiveTextChannel();
+        if (tc != null) tc.sendMessageFormat("Something went wrong!\n%s", t.getMessage()).queue();
     }
 
     public void joinChannel(Member usr) throws MessagingException {
@@ -89,6 +109,7 @@ public class GuildPlayer extends AbstractPlayer {
         }
         if (targetChannel.equals(getChannel())) {
             // already connected to the channel
+            //NOTE: getChannel() might use an outdated jda object when reviving
             return;
         }
 
@@ -102,9 +123,7 @@ public class GuildPlayer extends AbstractPlayer {
         }
 
         AudioManager manager = getGuild().getAudioManager();
-
         manager.openAudioConnection(targetChannel);
-
         manager.setConnectionListener(new DebugConnectionListener(guildId, shard.getShardInfo()));
 
         log.info("Connected to voice channel " + targetChannel);
@@ -129,10 +148,6 @@ public class GuildPlayer extends AbstractPlayer {
         return member.getVoiceState().getChannel();
     }
 
-    public void queue(String identifier, TextChannel channel) {
-        queue(identifier, channel, null);
-    }
-
     public void queue(String identifier, TextChannel channel, Member invoker) {
         IdentifierContext ic = new IdentifierContext(identifier, channel, invoker);
 
@@ -152,44 +167,59 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public void queue(AudioTrackContext atc){
-        if(atc.getMember() != null) {
-            joinChannel(atc.getMember());
+        Member member = getGuild().getMemberById(atc.getUserId());
+        if (member != null) {
+            joinChannel(member);
         }
         audioTrackProvider.add(atc);
         play();
     }
 
-    public int getSongCount() {
-        return getRemainingTracks().size();
+    public int getTrackCount() {
+        int trackCount = audioTrackProvider.size();
+        if (player.getPlayingTrack() != null) trackCount++;
+        return trackCount;
     }
 
-    public long getTotalRemainingMusicTimeSeconds() {
-        //Live streams are considered to have a length of 0
-        long millis = 0;
-        for (AudioTrackContext atc : getQueuedTracks()) {
-            if (!atc.getTrack().getInfo().isStream) {
-                millis += atc.getEffectiveDuration();
+    public List<AudioTrackContext> getTracksInRange(int start, int end) {
+        log.debug("getTracksInRange({} {})", start, end);
+
+        List<AudioTrackContext> result = new ArrayList<>();
+
+        //adjust args for whether there is a track playing or not
+        if (player.getPlayingTrack() != null) {
+            if (start <= 0) {
+                result.add(context);
+                end--;//shorten the requested range by 1, but still start at 0, since that's the way the trackprovider counts its tracks
+            } else {
+                //dont add the currently playing track, drop the args by one since the "first" track is currently playing
+                start--;
+                end--;
             }
+        } else {
+            //nothing to do here, args are fine to pass on
         }
 
-        AudioTrackContext atc = getPlayingTrack();
+        result.addAll(audioTrackProvider.getTracksInRange(start, end));
+        return result;
+    }
+
+    public long getTotalRemainingMusicTimeMillis() {
+        //Live streams are considered to have a length of 0
+        long millis = audioTrackProvider.getDurationMillis();
+
+        AudioTrackContext atc = player.getPlayingTrack() != null ? context : null;
         if (atc != null && !atc.getTrack().getInfo().isStream) {
             millis += Math.max(0, atc.getEffectiveDuration() - atc.getEffectivePosition());
         }
-
-        return millis / 1000;
+        return millis;
     }
-    
-    public List<AudioTrack> getLiveTracks() {
-        ArrayList<AudioTrack> l = new ArrayList<>();
-        
-        for(AudioTrackContext atc : getRemainingTracks()){
-            if(atc.getTrack().getInfo().isStream){
-                l.add(atc.getTrack());
-            }
-        }
-        
-        return l;
+
+    public long getStreamsCount() {
+        long streams = audioTrackProvider.streamsCount();
+        AudioTrackContext atc = player.getPlayingTrack() != null ? context : null;
+        if (atc != null && atc.getTrack().getInfo().isStream) streams++;
+        return streams;
     }
 
     //may return null
@@ -221,12 +251,11 @@ public class GuildPlayer extends AbstractPlayer {
     public List<Member> getHumanUsersInVC() {
         VoiceChannel vc = getChannel();
         if (vc == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
-        List<Member> members = vc.getMembers();
         ArrayList<Member> nonBots = new ArrayList<>();
-        for (Member member : members) {
+        for (Member member : vc.getMembers()) {
             if (!member.getUser().isBot()) {
                 nonBots.add(member);
             }
@@ -250,7 +279,7 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public boolean isShuffle() {
-        return audioTrackProvider instanceof SimpleTrackProvider && ((SimpleTrackProvider) audioTrackProvider).isShuffle();
+        return audioTrackProvider instanceof AbstractTrackProvider && ((AbstractTrackProvider) audioTrackProvider).isShuffle();
     }
 
     public void setRepeatMode(RepeatMode repeatMode) {
@@ -262,23 +291,25 @@ public class GuildPlayer extends AbstractPlayer {
     }
 
     public void setShuffle(boolean shuffle) {
-        if (audioTrackProvider instanceof SimpleTrackProvider) {
-            ((SimpleTrackProvider) audioTrackProvider).setShuffle(shuffle);
+        if (audioTrackProvider instanceof AbstractTrackProvider) {
+            ((AbstractTrackProvider) audioTrackProvider).setShuffle(shuffle);
         } else {
             throw new UnsupportedOperationException("Can't shuffle " + audioTrackProvider.getClass());
         }
     }
 
     public void reshuffle() {
-        if (audioTrackProvider instanceof SimpleTrackProvider) {
-            ((SimpleTrackProvider) audioTrackProvider).reshuffle();
+        if (audioTrackProvider instanceof AbstractTrackProvider) {
+            ((AbstractTrackProvider) audioTrackProvider).reshuffle();
         } else {
             throw new UnsupportedOperationException("Can't reshuffle " + audioTrackProvider.getClass());
         }
     }
 
-    public void setCurrentTC(TextChannel currentTC) {
-        this.currentTCId = currentTC.getId();
+    public void setCurrentTC(TextChannel tc) {
+        if (this.currentTCId != tc.getIdLong()) {
+            this.currentTCId = tc.getIdLong();
+        }
     }
 
     /**
@@ -312,58 +343,35 @@ public class GuildPlayer extends AbstractPlayer {
         }
     }
 
-    public Pair<Boolean, String> skipTracksForMemberPerms(TextChannel channel, Member member, AudioTrackContext atc) {
-        List<AudioTrackContext> list = new ArrayList<>();
-        list.add(atc);
-        return skipTracksForMemberPerms(channel, member, list);
-    }
-
-    public Pair<Boolean, String> skipTracksForMemberPerms(TextChannel channel, Member member, List<AudioTrackContext> list) {
+    public void skipTracksForMemberPerms(TextChannel channel, Member member, List<AudioTrackContext> list, String successMessage) {
         Pair<Boolean, String> pair = canMemberSkipTracks(member, list);
 
         if (pair.getLeft()) {
+            channel.sendMessageFormat(successMessage).queue();
             skipTracks(list);
         } else {
             TextUtils.replyWithName(channel, member, pair.getRight());
         }
-
-        return pair;
     }
 
     private void skipTracks(List<AudioTrackContext> list) {
         boolean skipCurrentTrack = false;
 
+        List<AudioTrackContext> toRemove = new ArrayList<>();
+        AudioTrackContext playing = getPlayingTrack();
         for (AudioTrackContext atc : list) {
-            if(atc.equals(getPlayingTrack())){
+            if (atc.equals(playing)) {
                 //Should be skipped last, in respect to PlayerEventListener
                 skipCurrentTrack = true;
             } else {
-                skipTrack(atc);
+                toRemove.add(atc);
             }
         }
 
+        audioTrackProvider.removeAll(toRemove);
+
         if(skipCurrentTrack) {
             skip();
-        }
-    }
-
-    private void skipTrack(AudioTrackContext atc) {
-        if(getPlayingTrack().equals(atc)) {
-            skip();
-        } else {
-            audioTrackProvider.remove(atc);
-        }
-    }
-
-    @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        super.onTrackEnd(player, track, endReason);
-
-        if((endReason == AudioTrackEndReason.FINISHED || endReason == AudioTrackEndReason.STOPPED)
-                && getPlayingTrack() != null
-                && getRepeatMode() != RepeatMode.SINGLE
-                && isTrackAnnounceEnabled()){
-            getActiveTextChannel().sendMessage(MessageFormat.format(I18n.get(getGuild()).getString("trackAnnounce"), getPlayingTrack().getEffectiveTitle())).queue();
         }
     }
 

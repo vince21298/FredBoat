@@ -113,7 +113,7 @@ public class MusicPersistenceHandler {
 
                     JSONObject ident = new JSONObject()
                             .put("message", Base64.encodeBase64String(baos.toByteArray()))
-                            .put("user", atc.getMember().getUser().getId());
+                            .put("user", atc.getUserId());
 
                     if(atc instanceof SplitAudioTrackContext) {
                         JSONObject split = new JSONObject();
@@ -173,8 +173,8 @@ public class MusicPersistenceHandler {
                 //TODO: Make shard in-specific
                 boolean isPaused = data.getBoolean("isPaused");
                 final JSONArray sources = data.getJSONArray("sources");
-                VoiceChannel vc = FredBoat.getVoiceChannelById(data.getString("vc"));
-                TextChannel tc = FredBoat.getTextChannelById(data.getString("tc"));
+                VoiceChannel vc = FredBoat.getVoiceChannelById(Long.valueOf(data.getString("vc")));
+                TextChannel tc = FredBoat.getTextChannelById(Long.valueOf(data.getString("tc")));
                 float volume = Float.parseFloat(data.getString("volume"));
                 RepeatMode repeatMode = data.getEnum(RepeatMode.class, "repeatMode");
                 boolean shuffle = data.getBoolean("shuffle");
