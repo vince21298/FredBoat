@@ -204,6 +204,12 @@
             <version>2.4.1.Final</version>
         </dependency>
         <dependency>
+            <!-- Used for CacheBuilder -->
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>22.0</version>
+        </dependency>
+        <dependency>
             <!-- testing library -->
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
