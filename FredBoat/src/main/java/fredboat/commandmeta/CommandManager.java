@@ -70,9 +70,9 @@ public class CommandManager {
             PatronageChecker.Status status = patronageChecker.getStatus(guild);
             if (!status.isValid()) {
                 String msg = "Access denied. This bot can only be used if invited from <https://patron.fredboat.com/> "
-                        + "by someone who currently has a valid pledge on Patreon.\nDenial reason: " + status.getReason();
+                        + "by someone who currently has a valid pledge on Patreon.\n**Denial reason:** " + status.getReason() + "\n\n";
 
-                msg += "Do you believe this to be a mistake? If so you can reach out to Fre_d on Patreon <https://www.patreon.com/fredboat>";
+                msg += "Do you believe this to be a mistake? If so reach out to Fre_d on Patreon <https://www.patreon.com/fredboat>";
 
                 channel.sendMessage(msg).queue();
                 return;
