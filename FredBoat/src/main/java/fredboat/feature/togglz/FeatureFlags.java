@@ -49,6 +49,9 @@ public enum FeatureFlags implements Feature {
     @Label("Permissions")
     @EnabledByDefault
     PERMISSIONS,
+
+    @Label("Patron validation")
+    PATRON_VALIDATION,
     ;
 
     public boolean isActive() {
